@@ -32,7 +32,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
 
     if (user != null) {
-      Navigator.pushReplacement(
+        Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (_) => LoginPage()
