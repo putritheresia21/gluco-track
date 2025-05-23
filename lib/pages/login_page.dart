@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import '../services/auth_service.dart';
+import '../services/Auth_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'register_page.dart';
 import 'home_page.dart';
 
@@ -23,13 +25,28 @@ class _LoginPageState extends State<LoginPage> {
     );
 
     if (user != null) {
+      final uid = user.uid;
+      final userDoc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+      String username = "";
+
+      if (userDoc.exists) {
+        final userData = userDoc.data();
+        username = (userData?['username'] as String?)?.trim() ?? "";
+      }
+      if (username.isEmpty){
+        username = user.email ?? "User";
+      }
+
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => HomePage()), //nanti diganti ke navigasi home    
+        MaterialPageRoute(builder: (_) => HomePage(
+          userId: user.uid,
+          username: username,
+        )),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Login failed")),
+        SnackBar(content: Text("Login failed."))
       );
     }
   }

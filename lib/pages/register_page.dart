@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../services/auth_service.dart';
+import '../services/Auth_service.dart';
+import 'profile_page.dart';
 import 'login_page.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -35,7 +36,7 @@ class _RegisterPageState extends State<RegisterPage> {
         Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (_) => LoginPage()
+          builder: (_) => ProfilePage()
         ),
       );
     } else {
