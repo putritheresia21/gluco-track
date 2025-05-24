@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:glucotrack_app/pages/navbar.dart';
 import '../services/Auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -39,7 +40,7 @@ class _LoginPageState extends State<LoginPage> {
 
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => HomePage(
+        MaterialPageRoute(builder: (_) => CustomBottomNav(
           userId: user.uid,
           username: username,
         )),

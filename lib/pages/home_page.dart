@@ -6,7 +6,7 @@ class HomePage extends StatefulWidget {
   final String userId;
   final String username;
   const HomePage({Key? key, required this.userId, required this.username}) : super(key: key);
-
+  
   @override
   State<HomePage> createState() => HomePageState();
 }
@@ -19,7 +19,8 @@ class HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     checkProfile();
-  }
+  } 
+
 
   Future<void> checkProfile() async {
     bool exists = await userService.checkUserProfileExists(widget.userId);
@@ -50,7 +51,7 @@ class HomePageState extends State<HomePage> {
                     context,
                     MaterialPageRoute(builder: (_) => ProfilePage()),
                   );
-                  checkProfile();
+                  //checkProfile();
                 },
                 child: Text("Lengkapi Profile"),
               ),

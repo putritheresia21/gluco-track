@@ -122,9 +122,7 @@ class profilePageState extends State<ProfilePage> {
                     TextFormField(
                       controller: ageController,
                       readOnly: true,
-                      decoration: InputDecoration(
-                        labelText: "Age",
-                      ),
+                      decoration: InputDecoration(labelText: "Age"),
                     ),
                     SizedBox(height: 20),
                     DropdownButtonFormField<Gender>(
