@@ -11,9 +11,14 @@ class AuthService {
         password: password
         );
       return result.user;
-    } catch (e) {
-      print("Error register: $e");
-      return null;
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'email-already-in-use') {
+        throw Exception('Email Has Been Added');
+      }else {
+        throw Exception('Register Failed: ${e.message}');
+      }
+    }catch (e) {
+      throw Exception("There is an error: $e");
     }
   }
 

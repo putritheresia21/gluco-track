@@ -15,12 +15,21 @@ class ProfilePage extends StatefulWidget {
 
 class profilePageState extends State<ProfilePage> {
   final formKey= GlobalKey<FormState>();
-
   final TextEditingController usernameController = TextEditingController();
+  final TextEditingController ageController = TextEditingController();
   DateTime ? selectedBirthDate;
   Gender? selectedGender;
 
   bool isLoading = false;
+
+  int calculateAge(DateTime birthDate) {
+    final today = DateTime.now();
+    int age = today.year - birthDate.year;
+    if (today.month < birthDate.year || (today.month == birthDate.month && today.day < birthDate.day)){
+      age--;
+    }
+    return age;
+  }
 
   Future<void> saveProfile() async {
     if (!formKey.currentState!.validate() || selectedBirthDate == null || selectedGender == null) {
@@ -30,25 +39,21 @@ class profilePageState extends State<ProfilePage> {
       return;
     }
     setState(() => isLoading = true);
-    final uid = FirebaseAuth.instance.currentUser!.uid;
-    final email = FirebaseAuth.instance.currentUser!.email ?? "";
-
-    //fungsi untuk Hitung umur berdasarkan tanggal lahir
-    int age = DateTime.now().year - selectedBirthDate!.year;
-    if (DateTime.now().month < selectedBirthDate!.month || (DateTime.now().month == selectedBirthDate!.month && DateTime.now().day < selectedBirthDate!.day)){
-      age--;
-    }
-
-    UserProfile profile = UserProfile(
-      uid: uid,
-      username: usernameController.text.trim(),
-      email: email,
-      gender: selectedGender!,
-      birthDate: selectedBirthDate!,
-      age: age,
-    );
-
+    
     try {
+      final uid = FirebaseAuth.instance.currentUser!.uid;
+      final email = FirebaseAuth.instance.currentUser!.email ?? "";
+      final int age = calculateAge(selectedBirthDate!);
+      
+      final UserProfile profile = UserProfile(
+        uid: uid,
+        username: usernameController.text.trim(),
+        email: email,
+        gender: selectedGender!,
+        birthDate: selectedBirthDate!,
+        age: age,
+      );
+
       await FirebaseFirestore.instance.collection('users').doc(uid).set(profile.toMap());
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Profile Saved Succesfully")),
@@ -80,7 +85,11 @@ class profilePageState extends State<ProfilePage> {
     );
 
     if (picked != null) {
-      setState(() => selectedBirthDate = picked);
+      setState(() {
+        selectedBirthDate = picked;
+        int calculatedAge = calculateAge(picked);
+        ageController.text = calculatedAge.toString();
+      });
     }
   }
 
@@ -108,6 +117,14 @@ class profilePageState extends State<ProfilePage> {
                           : "${selectedBirthDate!.toLocal()}".split(' ')[0]),
                         trailing: Icon(Icons.calendar_today),
                         onTap: pickDate,
+                    ),
+                    SizedBox(height: 20),
+                    TextFormField(
+                      controller: ageController,
+                      readOnly: true,
+                      decoration: InputDecoration(
+                        labelText: "Age",
+                      ),
                     ),
                     SizedBox(height: 20),
                     DropdownButtonFormField<Gender>(

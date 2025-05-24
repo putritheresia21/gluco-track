@@ -1,7 +1,6 @@
 class Glucoserecord {
   final String id;
   final String userId;
-  final double irValue;
   final double glucoseLevel;
   final DateTime timeStamp;
   final GlucoseCondition condition;
@@ -10,7 +9,6 @@ class Glucoserecord {
     required this.id,
     required this.userId,
     required this.glucoseLevel,
-    required this.irValue,
     required this.timeStamp,
     required this.condition,
   });
@@ -21,7 +19,6 @@ class Glucoserecord {
       'timeStamp': timeStamp.toIso8601String(),
       'glucoseLevel': glucoseLevel,
       'condition': condition.name,
-      'irValue': irValue,
     };
   }
 
@@ -34,8 +31,7 @@ class Glucoserecord {
       condition: GlucoseCondition.values.firstWhere(
         (e) => e.name == map['condition'],
         orElse: () => GlucoseCondition.beforeMeal,
-      ),
-      irValue: map['irValue']?.toDouble() ?? 0.0,
+      )
     );
   }
 }

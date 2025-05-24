@@ -18,7 +18,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final AuthService _authService = AuthService();
 
   void handleRegister() async {
-    //vaidasi konfirmasi pasword
+    //validasi konfirmasi pasword
     if (passwordController.text != passwordConfirmController.text) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Password confirmation does not match"))
@@ -26,22 +26,21 @@ class _RegisterPageState extends State<RegisterPage> {
       return;
     }
 
-    final user = await _authService.register(
-      emailController.text.trim(),
-      passwordController.text.trim(),
-    );
-
-
-    if (user != null) {
-        Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) => ProfilePage()
-        ),
+    try {
+      final user = await _authService.register(
+        emailController.text.trim(),
+        passwordController.text.trim(),
       );
-    } else {
+
+      if (user != null) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => ProfilePage()),
+        );
+      }
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Register failed"))
+        SnackBar(content: Text(e.toString().replaceAll('Exception: ', ''))),
       );
     }
   }
