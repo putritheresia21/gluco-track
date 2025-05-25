@@ -1,31 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:glucotrack_app/pages/calculator_page.dart';
+import 'package:glucotrack_app/pages/glucose_chart.dart';
 import 'package:glucotrack_app/pages/home_page.dart';
 import 'package:glucotrack_app/pages/login_page.dart';
+import 'package:glucotrack_app/pages/notification_page.dart';
 import 'package:glucotrack_app/pages/profile_page.dart';
 import 'package:glucotrack_app/pages/register_page.dart';
+
+import 'glucose_measuring.dart';
 
 class CustomBottomNav extends StatefulWidget {
   final String userId;
   final String username;
 
-  const CustomBottomNav({Key? key, required this.userId, required this.username}) : super(key: key);
+  const CustomBottomNav(
+      {Key? key, required this.userId, required this.username})
+      : super(key: key);
 
-  @override   
+  @override
   CustomBottomNavState createState() => CustomBottomNavState();
 }
 
 class CustomBottomNavState extends State<CustomBottomNav> {
-  
   int selectedIndex = 0;
   late final List<Widget> pages;
 
-  List<String> labels = ["Home", "Search", "Cart", "Profile"];
+  List<String> labels = ["Home", "Chart", "Notification", "Profile"];
   List<String> iconPaths = [
-    'assets/navbar/home.png',
-    'assets/navbar/search.png',
-    'assets/navbar/cart.png',
-    'assets/navbar/user.png',
+    'assets/navbar/newhome.png',
+    'assets/navbar/newchart.png',
+    'assets/navbar/notification.png',
+    'assets/navbar/newprofile.png',
   ];
 
   @override
@@ -33,8 +38,8 @@ class CustomBottomNavState extends State<CustomBottomNav> {
     super.initState();
     pages = [
       HomePage(userId: widget.userId, username: widget.username),
-      LoginPage(),
-      RegisterPage(),
+      GlucoseChart(),
+      NotificationPage(),
       ProfilePage(),
     ];
   }
@@ -45,19 +50,35 @@ class CustomBottomNavState extends State<CustomBottomNav> {
     });
   }
 
-
-  @override  
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: pages[selectedIndex],
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        backgroundColor: Colors.deepPurple,
-        child: Image.asset(
-          'assets/navbar/shop.png',
-          width: 28,
-          height: 38,
-          color: Colors.white,
+      floatingActionButton: Container(
+        width: 56,
+        height: 56,
+        decoration: const BoxDecoration(
+          shape: BoxShape.circle,
+          gradient: LinearGradient(
+            colors: [Colors.black, Color(0xFF2C7796)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: RawMaterialButton(
+          shape: const CircleBorder(),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const GlucoseMeasuring()),
+            );
+          },
+          child: Image.asset(
+            'assets/navbar/calc2.png',
+            width: 28,
+            height: 38,
+            color: Colors.white,
+          ),
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
@@ -87,7 +108,7 @@ class CustomBottomNavState extends State<CustomBottomNav> {
     final isActive = selectedIndex == index;
     return GestureDetector(
       onTap: () => onItemTapped(index),
-      child: Padding(  
+      child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -96,13 +117,13 @@ class CustomBottomNavState extends State<CustomBottomNav> {
               iconPaths[index],
               width: 24,
               height: 24,
-              color: isActive ? Colors.deepPurple : Colors.grey,
+              color: isActive ? Color(0xFF2C7796) : Colors.grey,
             ),
             Text(
               labels[index],
-              style: TextStyle( 
+              style: TextStyle(
                 fontSize: 12,
-                color: isActive ? Colors.deepPurple : Colors.grey,
+                color: isActive ? Color(0xFF2C7796) : Colors.grey,
               ),
             ),
           ],
