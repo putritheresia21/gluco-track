@@ -3,6 +3,7 @@ import 'package:glucotrack_app/pages/navbar.dart';
 import '../services/Auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'register_page.dart';
 import 'home_page.dart';
 
@@ -11,6 +12,12 @@ class LoginPage extends StatefulWidget {
 
   @override
   State<LoginPage> createState() => _LoginPageState();
+}
+
+Future<void> saveLoginData(String userId, String username) async {
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.setString('userId', userId);
+  await prefs.setString('username', username);
 }
 
 class _LoginPageState extends State<LoginPage> {
@@ -37,6 +44,11 @@ class _LoginPageState extends State<LoginPage> {
       if (username.isEmpty){
         username = user.email ?? "User";
       }
+
+      await saveLoginData(uid, username);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Welcome back, $username!"))
+      );
 
       Navigator.pushReplacement(
         context,
