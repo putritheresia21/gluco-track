@@ -16,7 +16,7 @@ class Glucoserecord {
   Map<String, dynamic> toMap(){
     return{
       'userId': userId,
-      'timeStamp': timeStamp.toIso8601String(),
+      'timestamp': timeStamp.toIso8601String(),
       'glucoseLevel': glucoseLevel,
       'condition': condition.name,
     };
