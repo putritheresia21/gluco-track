@@ -215,3 +215,29 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 }
+
+Widget buildInputField({
+  required IconData icon,
+  required String hint,
+  required TextEditingController contoller,
+  required bool obscureText,
+}) {
+  return Container(
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(24),
+    ),
+    child: TextField(
+      controller: contoller,
+      obscureText: obscureText,
+      style: const TextStyle(color: Colors.black),
+      decoration: InputDecoration(
+        prefixIcon: Icon(icon, color: Colors.grey),
+        hintText: hint,
+        hintStyle: const TextStyle(color: Colors.grey),
+        border: InputBorder.none,
+        contentPadding: const EdgeInsets.symmetric(vertical: 20),
+      ),
+    ),
+  );
+}
