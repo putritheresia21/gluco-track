@@ -4,6 +4,7 @@ import 'firebase_options.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../pages/login_page.dart';
 import '../pages/navbar.dart';
+import '../pages/splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,9 +27,10 @@ class MainApp extends StatelessWidget {
         username: username,
       );
     } else {
-      return const LoginPage();
+      return const SplashScreen();
     }
   }
+
   const MainApp({super.key});
 
   @override

@@ -4,7 +4,7 @@ import 'package:glucotrack_app/pages/glucose_chart.dart';
 import 'package:glucotrack_app/pages/home_page.dart';
 import 'package:glucotrack_app/pages/login_page.dart';
 import 'package:glucotrack_app/pages/notification_page.dart';
-import 'package:glucotrack_app/pages/profile_page.dart';
+import 'package:glucotrack_app/pages/profile.dart';
 import 'package:glucotrack_app/pages/register_page.dart';
 
 import 'glucose_measuring.dart';
@@ -25,11 +25,11 @@ class CustomBottomNavState extends State<CustomBottomNav> {
   int selectedIndex = 0;
   late final List<Widget> pages;
 
-  List<String> labels = ["Home", "Chart", "Notification", "Profile"];
+  List<String> labels = ["Home", "Chart", "News", "Profile"];
   List<String> iconPaths = [
     'assets/navbar/newhome.png',
     'assets/navbar/newchart.png',
-    'assets/navbar/notification.png',
+    'assets/navbar/article.png',
     'assets/navbar/newprofile.png',
   ];
 
@@ -40,7 +40,7 @@ class CustomBottomNavState extends State<CustomBottomNav> {
       HomePage(userId: widget.userId, username: widget.username),
       GlucoseChart(),
       NotificationPage(),
-      ProfilePage(),
+      Profile(),
     ];
   }
 
