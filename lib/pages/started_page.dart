@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'login_page.dart';
 
 class GetStartedPage extends StatelessWidget {
@@ -29,9 +28,9 @@ class GetStartedPage extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
+                      const Text(
                         'Gluc',
-                        style: GoogleFonts.poppins(
+                        style: TextStyle(
                           fontSize: 36,
                           fontWeight: FontWeight.w700,
                           color: Colors.white,
@@ -45,9 +44,9 @@ class GetStartedPage extends StatelessWidget {
                           height: 30,
                         ),
                       ),
-                      Text(
+                      const Text(
                         'Track',
-                        style: GoogleFonts.poppins(
+                        style: TextStyle(
                           fontSize: 40,
                           fontWeight: FontWeight.w800,
                           color: Colors.white,
@@ -56,11 +55,11 @@ class GetStartedPage extends StatelessWidget {
                     ],
                   ),
                   const Spacer(),
-                  Align(
+                  const Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
                       'Track Your Glucose\nImprove Your Life',
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(
                         color: Colors.white,
                         fontSize: 32,
                         fontWeight: FontWeight.bold,
@@ -68,11 +67,11 @@ class GetStartedPage extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  Align(
+                  const Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
                       'Track your blood sugar levels easily\nanytime anywhere. Stay in control and\nlive healthier every day',
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(
                         color: Colors.white,
                         fontSize: 16,
                         fontWeight: FontWeight.w300,
@@ -97,9 +96,9 @@ class GetStartedPage extends StatelessWidget {
                           MaterialPageRoute(builder: (_) => const LoginPage()),
                         );
                       },
-                      child: Text(
+                      child: const Text(
                         'Get Started!',
-                        style: GoogleFonts.poppins(
+                        style: TextStyle(
                           fontWeight: FontWeight.w700,
                           fontSize: 16,
                         ),
