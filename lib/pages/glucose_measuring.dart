@@ -17,7 +17,7 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
   bool useCurrentTime = true;
   DateTime? selectedDateTime;
 
-  Future<void> _selectedDateTime() async {
+  Future<void> pickDateTime() async {
     final DateTime? pickDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -47,12 +47,19 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
     if (!formKey.currentState!.validate()) return;
     formKey.currentState!.save();
 
+    if (!useCurrentTime && selectedDateTime == null) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("Pilih Tanggal dan Waktu terlebih dahulu."),
+      ));
+      return;
+    }
+
     final prefs = await SharedPreferences.getInstance();
     final userId = prefs.getString('userId');
 
     if (userId == null) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("User not logged in. Please log in first."),
+        content: Text("User belum login."),
       ));
       return;
     }
@@ -64,11 +71,22 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
       timeStamp: useCurrentTime ? DateTime.now() : selectedDateTime!, 
       condition: selectedCondition,
     );
-    await FirebaseFirestore.instance.collection('glucose_records').add(Record.toMap());
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text("Glucose record added successfully!"),
-    ));
-    Navigator.pop(context);
+    
+    try {
+      await FirebaseFirestore.instance
+          .collection('glucose_records')
+          .add(Record.toMap());
+
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("Data glukosa berhasil disimpan."),
+      ));
+      Navigator.pop(context);
+    } catch (e) {
+      print('Error saat menyimpan: $e');
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("Gagal menyimpan data: $e"),
+      ));
+    }
   }
 
   @override 
@@ -98,7 +116,7 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
                 items: GlucoseCondition.values.map((condition) {
                   return DropdownMenuItem(
                     value: condition,
-                    child: Text(condition.toString().split('.').last),
+                    child: Text(condition == GlucoseCondition.beforeMeal ? 'Sebelum Makan' : 'Setelah Makan'),
                   );
                 }).toList(),
                 onChanged: (value) {
@@ -121,7 +139,7 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
               ),
               if (!useCurrentTime)
                 ElevatedButton(
-                  onPressed: _selectedDateTime,
+                  onPressed: pickDateTime,
                   child: Text(selectedDateTime == null 
                     ? "Pilih Tanggal & Waktu" 
                     : "Tanggal dan Waktu: ${selectedDateTime!.toLocal()}"),

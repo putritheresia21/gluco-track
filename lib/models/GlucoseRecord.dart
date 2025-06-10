@@ -13,6 +13,17 @@ class Glucoserecord {
     required this.condition,
   });
 
+  factory Glucoserecord.empty() {
+    return Glucoserecord(
+      id: '',
+      userId: '',
+      glucoseLevel: 0.0,
+      timeStamp: DateTime.now(),
+      condition: GlucoseCondition.beforeMeal,
+    );
+  }
+
+  
   Map<String, dynamic> toMap(){
     return{
       'userId': userId,
@@ -23,13 +34,15 @@ class Glucoserecord {
   }
 
   factory Glucoserecord.fromMap(String id, Map<String, dynamic> map){
+    final timestampStr = map['timestamp'];
+    final conditionStr = map['condition'];
     return Glucoserecord(
       id: id,
       userId: map['userId'] ?? '',
-      timeStamp: DateTime.parse(map['timestamp']),
-      glucoseLevel: map['glucoseLevel']?.toDouble() ?? 0.0,
+      glucoseLevel: (map['glucoseLevel'] ?? 0.0).toDouble(),
+      timeStamp: timestampStr != null ? DateTime.parse(timestampStr) : DateTime.now(),
       condition: GlucoseCondition.values.firstWhere(
-        (e) => e.name == map['condition'],
+        (e) => e.name == conditionStr,
         orElse: () => GlucoseCondition.beforeMeal,
       )
     );
@@ -40,3 +53,7 @@ enum GlucoseCondition{
   beforeMeal,
   afterMeal,
 }
+
+bool isSameDay(DateTime a, DateTime b){
+    return a.year == b.year && a.month == b.month && a.day == b.day;
+  }
