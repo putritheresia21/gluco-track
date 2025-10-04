@@ -45,6 +45,11 @@ class HomePageState extends State<HomePage> {
     // }
     // kau ini apaa yaa
     // kau nihh monyet
+    // kau ni babi
+    // stash
+    // pull
+    //apply stash
+    //merge
     return Scaffold(
       appBar: AppBar(title: Text("This is Home Page")),
       body: Center(
