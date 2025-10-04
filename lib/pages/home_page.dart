@@ -76,6 +76,7 @@ class HomePageState extends State<HomePage> {
             //     },
             //     child: Text("Lengkapi Profile"),
             //   ),
+            // kau nih apee? kau tuh cigga
           ],
         ),
       ),
