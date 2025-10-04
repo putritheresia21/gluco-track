@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:glucotrack_app/pages/navbar.dart';
-import '../services/Auth_service.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'register_page.dart';
 import 'home_page.dart';
@@ -11,7 +9,7 @@ class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<LoginPage> createState() => LoginPageState();
 }
 
 Future<void> saveLoginData(String userId, String username) async {
@@ -20,53 +18,114 @@ Future<void> saveLoginData(String userId, String username) async {
   await prefs.setString('username', username);
 }
 
-class _LoginPageState extends State<LoginPage> {
+class LoginPageState extends State<LoginPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   bool rememberMe = false;
-
-  final AuthService _authService = AuthService();
+  bool isLoading = false;
 
   void handleLogin() async {
-    final user = await _authService.login(
-      emailController.text.trim(),
-      passwordController.text.trim(),
-    );
+    final email = emailController.text.trim();
+    final pass = passwordController.text;
 
-    if (user != null) {
-      final uid = user.uid;
-      final userDoc =
-          await FirebaseFirestore.instance.collection('users').doc(uid).get();
-      String username = "";
+    if (email.isEmpty || pass.isEmpty){
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Email dan Password wajib diisi.")),
+      );
+      return;
+    }
 
-      if (userDoc.exists) {
-        final userData = userDoc.data();
-        username = (userData?['username'] as String?)?.trim() ?? "";
+    setState(() => isLoading = true);
+    try {
+      final sb = Supabase.instance.client;
+
+      //buat login iyeahh
+      await sb.auth.signInWithPassword(
+        email: email,
+        password: pass,
+      );
+      final session = sb.auth.currentSession;
+      if (session == null){
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Sesi belum aktif. Coba lagi.")),
+        );
+        return;
       }
-      if (username.isEmpty) {
-        username = user.email ?? "User";
+      final uid = session.user.id;
+
+      //ambil dulu ntuhh username dari profiles
+      final row = await sb
+          .from('profiles')
+          .select('username')
+          .eq('id', uid)
+          .maybeSingle();
+
+      String username = (row?['username'] as String?)?.trim() ?? '';
+      if (username.isEmpty){
+        final mail = session.user.email ?? 'User';
+        username = mail.split('@').first;
       }
 
-      await saveLoginData(uid, username);
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text("Welcome back, $username!")));
+      //ini buat simpan login eluh agar selalu diingat dan dikenang awokawok
+      if (rememberMe){
+        await saveLoginData(uid, username);
+      }
 
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Welcome back, $username!")),
+      );
+
+      //habis tuhh move on ke home page, jangan gamon!!!
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-            builder: (_) => CustomBottomNav(
-                  userId: user.uid,
-                  username: username,
-                )),
+          builder: (context) => HomePage(),
+        ),
       );
-    } else {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text("Login failed.")));
+    } on AuthException catch (e){
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.message)),
+      );
+    } on PostgrestException catch (e){
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Gagal Login.")),
+      );
+    } finally {
+      if (mounted) setState(() => isLoading = false);
+    }
+  }
+
+  //enih buat luh pada yang pelupa, lupa password terus mau ganti.
+  Future<void> handleForgotPassword() async {
+    final email = emailController.text.trim();
+    if (email.isEmpty){
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Masukkan email untuk reset password.")),
+      );
+      return;
+    }
+    try {
+      await Supabase.instance.client.auth.resetPasswordForEmail(email);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Cek email untuk instruksi reset password.")),
+      );
+    } on AuthException catch (e){
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.message)),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final loading = isLoading;
+
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(

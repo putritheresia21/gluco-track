@@ -1,59 +1,54 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-class AuthService {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+class AuthService{
+  final SupabaseClient client = Supabase.instance.client;
 
-  //register
-  Future<User?> register(String email, String password) async {
+  //login user
+  Future<AuthResponse?> login(String email, String password) async {
     try {
-      UserCredential result = await _auth.createUserWithEmailAndPassword(
-        email: email, 
-        password: password
-        );
-      return result.user;
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'email-already-in-use') {
-        throw Exception('Email Has Been Added');
-      }else {
-        throw Exception('Register Failed: ${e.message}');
-      }
-    }catch (e) {
-      throw Exception("There is an error: $e");
-    }
-  }
-
-  //login
-  Future<User?> login(String email, String password) async {
-    try {
-      UserCredential result = await _auth.signInWithEmailAndPassword(
+      final response = await client.auth.signInWithPassword(
+        password: password,
         email: email,
-        password: password
       );
-      return result.user;
-    } on FirebaseAuthException catch (e) {
-      print("Login error: ${e.code} - ${e.message}");
-
-      if(e.code == 'user-not-found') {
-        print('No user found for that email.');
-      } else if (e.code == 'wrong-password') {
-        print('Wrong password provided.');
-      }
-
-      return null;
-    } catch (e) {
-      print("Error login: $e");
-      return null;
+      return response;
+    } on AuthException catch (e) {
+      throw Exception(e.message);
     }
   }
 
-
-  //logout
-  Future<void> logout() async {
-    await _auth.signOut();
+  //register user
+  Future<AuthResponse?> register({required String email, required String password, required String username}) async{
+    try {
+      final response = await client.auth.signUp(
+        email: email,
+        password: password,
+        data: {'username': username},
+      );
+      if (response.session != null && response.user != null) {
+        await client.from('profiles').insert({
+          'id': response.user!.id,
+          'username': username,
+        });
+      }
+      return response;
+    } on PostgrestException catch (e){
+        print("Auth error: ${e.message}");
+    } on AuthException catch (e){
+      print("Auth error: ${e.message}");
+    }
   }
 
-  //check user login atau nggak
-  User? getCurrentUser() {
-    return _auth.currentUser;
+  //reset password via email
+  Future<void> resetPassword(String email) async{
+    try {
+      await client.auth.resetPasswordForEmail(email);
+    } on AuthException catch (e){
+      throw Exception(e.message);
+    }
+  }
+
+  //logout user
+  Future<void> logout() async{
+    await client.auth.signOut();
   }
 }

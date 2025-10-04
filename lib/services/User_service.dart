@@ -1,27 +1,82 @@
-import "package:cloud_firestore/cloud_firestore.dart";
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/User.dart';
 
 class UserService {
-  final _auth = FirebaseAuth.instance;
-  final _db = FirebaseFirestore.instance;
+  final SupabaseClient sb = Supabase.instance.client;
+  String? get currentUserId => sb.auth.currentUser?.id;
 
+  Future<bool> checkUserProfileExists(String uid) async {
+    final response = await sb
+        .from('users')
+        .select('id')
+        .eq('id', uid)
+        .maybeSingle();
+    return response != null;
+  }
+
+  Future<UserProfile?> getUserProfile(String uid) async {
+    final response = await sb
+        .from('users')
+        .select('id, username, email, gender, birth_date, age')
+        .eq('id', uid)
+        .maybeSingle();
+    if (response == null) return null;
+    return UserProfile.fromMap(uid, response);
+  }
+  
   Future<void> saveUserProfile(UserProfile profile) async {
-    await _db.collection('users').doc(profile.uid).set(profile.toMap());
+    await sb
+        .from('users')
+        .upsert(profile.toMap());
   }
 
-  Future<UserProfile?> getUserProfile() async {
-    final user = _auth.currentUser;
-    if (user == null) return null;
+  Future<void> updateUserProfile({
+    required String uid,
+    String? username,
+    String? email,
+    Gender? gender,
+    DateTime? birthDate,
+    int? age,
+  }) async {
+    final payload = <String, dynamic>{};
+    if (username != null) payload['username'] = username;
+    if (email != null) payload['email'] = email;
+    if (gender != null) payload['gender'] = gender.toShortString();
+    if (birthDate != null) payload['birth_date'] = birthDate.toIso8601String();
+    if (age != null) payload['age'] = age;
 
-    final doc = await _db.collection('users').doc(user.uid).get();
-    if (!doc.exists) return null;
+    if (payload.isEmpty) return;
 
-    return UserProfile.fromMap(user.uid, doc.data()!);
+    await sb.from('profiles')
+      .update(payload)
+      .eq('id', uid);
   }
 
-  Future<bool> checkUserProfileExists(String uid) async{
-    final doc = await _db.collection('users').doc(uid).get();
-    return doc.exists;
+ Future<UserProfile> ensureProfileForCurrentUser() async {
+    final user = sb.auth.currentUser;
+    if (user == null) {
+      throw Exception('No current user/session');
+    }
+
+    final exists = await checkUserProfileExists(user.id);
+    if (!exists) {
+      final defaultUsername = (user.email ?? 'user').split('@').first;
+      final profile = UserProfile(
+        id: user.id,
+        username: defaultUsername,
+        email: user.email ?? '',
+        gender: Gender.male,          // default
+        birthDate: DateTime(2000,1,1),// default
+        age: 0,                       // default
+      );
+      await saveUserProfile(profile);
+      return profile;
+    } else {
+      final p = await getUserProfile(user.id);
+      if (p == null) {
+        throw Exception('Profile row not readable (RLS?)');
+      }
+      return p;
+    }
   }
 }

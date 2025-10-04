@@ -47,7 +47,7 @@ class profilePageState extends State<ProfilePage> {
       final int age = calculateAge(selectedBirthDate!);
 
       final UserProfile profile = UserProfile(
-        uid: uid,
+        id: uid,
         username: usernameController.text.trim(),
         email: email,
         gender: selectedGender!,

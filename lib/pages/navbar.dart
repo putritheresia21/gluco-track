@@ -37,7 +37,7 @@ class CustomBottomNavState extends State<CustomBottomNav> {
   void initState() {
     super.initState();
     pages = [
-      HomePage(userId: widget.userId, username: widget.username),
+      HomePage(),
       GlucoseChart(),
       NotificationPage(),
       Profile(),

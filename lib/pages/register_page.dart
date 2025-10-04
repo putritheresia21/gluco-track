@@ -1,46 +1,73 @@
 import 'package:flutter/material.dart';
+import 'package:glucotrack_app/pages/home_page.dart';
 import '../services/Auth_service.dart';
 import 'profile_page.dart';
 import 'login_page.dart';
+import '../pages/navbar.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({Key? key}) : super(key: key);
 
   @override
-  State<RegisterPage> createState() => _RegisterPageState();
+  State<RegisterPage> createState() => RegisterPageState();
 }
 
-class _RegisterPageState extends State<RegisterPage> {
+class RegisterPageState extends State<RegisterPage> {
   final emailController = TextEditingController();
+  final usernameController = TextEditingController();
   final passwordController = TextEditingController();
   final passwordConfirmController = TextEditingController();
 
-  final AuthService _authService = AuthService();
+  final AuthService authService = AuthService();
+  bool isLoading = false;
 
-  void handleRegister() async {
+  Future<void> handleRegister() async {
+    final email = emailController.text.trim();
+    var username = usernameController.text.trim();
+    final pass = passwordController.text;
+    final passConfirm = passwordConfirmController.text;
+
+    //validasi email dulu, jangan sampe kosong. awas aja sampe kosonggg
+    if (email.isEmpty){
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Email tidak boleh kosong")));
+      return;
+    }
     //validasi konfirmasi pasword
     if (passwordController.text != passwordConfirmController.text) {
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Password confirmation does not match")));
       return;
     }
+    setState(() => isLoading = true);
 
     try {
-      final user = await _authService.register(
-        emailController.text.trim(),
-        passwordController.text.trim(),
+      final response = await authService.register(
+        email: email,
+        password: pass,
+        username: username,
       );
 
-      if (user != null) {
+      if (response != null && response.user != null) {
+        //final uid = response?.user?.id;
+        final uid = response.user!.id;
+        final displayName = response.user!.email?.split('@').first ?? 'User';
+
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (_) => ProfilePage()),
+          MaterialPageRoute(
+          builder: (context) => HomePage(),
+        )
         );
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(e.toString().replaceAll('Exception: ', ''))),
       );
+    } finally {
+      if (mounted) {
+        setState(() => isLoading = false);
+      }
     }
   }
 

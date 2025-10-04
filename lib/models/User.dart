@@ -2,7 +2,8 @@ enum Gender {
   male,
   female;
 
-  static Gender fromString(String genderStr) {
+  static Gender fromString(String? genderStr) {
+    if (genderStr == null) return Gender.male;
     return genderStr.toLowerCase() == 'female' ? Gender.female : Gender.male;
   }
 
@@ -13,7 +14,7 @@ enum Gender {
 
 
 class UserProfile {
-  final String uid;
+  final String id;
   final String username;
   final String email;
   final Gender gender;
@@ -21,7 +22,7 @@ class UserProfile {
   final int age;
 
   UserProfile({
-    required this.uid,
+    required this.id,
     required this.username,
     required this.email,
     required this.gender,
@@ -31,22 +32,22 @@ class UserProfile {
 
   Map<String, dynamic> toMap() {
     return {
-      'uid': uid,
+      'id': id,
       'username': username,
       'email': email,
       'gender': gender.toShortString(),
-      'birthDate': birthDate.toIso8601String(),
+      'birth_date': birthDate.toIso8601String(),
       'age': age,
     };
   }
 
-  factory UserProfile.fromMap(String uid, Map<String, dynamic> map){
+  factory UserProfile.fromMap(String id, Map<String, dynamic> map){
     return UserProfile(
-      uid:uid,
+      id:map['id'] ?? id,
       username: map['username'] ?? '',
       email: map['email'] ?? '',
-      gender: Gender.fromString(map['gender'] ?? 'male'),
-      birthDate: DateTime.parse(map['birthDate']),
+      gender: Gender.fromString(map['gender']),
+      birthDate: DateTime.parse(map['birth_date'] ?? ''),
       age: map['age'] ?? 0,
     );
   }

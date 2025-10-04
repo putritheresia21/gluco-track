@@ -53,6 +53,10 @@ class GlucoseChartState extends State<GlucoseChart> {
     });
   }
 
+  bool isSameDay(DateTime a, DateTime b) {
+    return a.year == b.year && a.month == b.month && a.day == b.day;
+  }
+
   Widget buildChart(){
     final allRecords = [...beforeMeal, ...afterMeal];
     allRecords.sort((a, b) => a.timeStamp.compareTo(b.timeStamp));
@@ -120,7 +124,7 @@ class GlucoseChartState extends State<GlucoseChart> {
         barTouchData: BarTouchData(
           enabled: true,
           touchTooltipData: BarTouchTooltipData(
-            tooltipBgColor: Colors.black87,
+            getTooltipColor: (touchedSpot) => Colors.black87,
             getTooltipItem: (group, groupIndex, rod, rodIndex){
               return BarTooltipItem(
                 rod.toY.toStringAsFixed(1),
