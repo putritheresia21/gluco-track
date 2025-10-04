@@ -16,7 +16,7 @@ class HomePage extends StatefulWidget {
 
 class HomePageState extends State<HomePage> {
   //final UserService userService = UserService();
- // bool? profileExists;
+  // bool? profileExists;
 
   @override
   void initState() {
@@ -51,19 +51,17 @@ class HomePageState extends State<HomePage> {
           children: [
             Text("Horray! You are logged in! Cukkurukuuukkk"),
             ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context, 
-                  MaterialPageRoute(builder: (context) => PublicFeedPage())
-                );
-              }, 
-              child: Text("Social Media Feed")
-            ),
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => PublicFeedPage()));
+                },
+                child: Text("Social Media Feed")),
             ElevatedButton(onPressed: () {}, child: Text("Register Page")),
             ElevatedButton(onPressed: () {}, child: Text("Koneksi IOT")),
             ElevatedButton(onPressed: () {}, child: Text("testing sosmed")),
 
-            
             // if (!profileExists!)
             //   ElevatedButton(
             //     onPressed: () async {
@@ -75,6 +73,7 @@ class HomePageState extends State<HomePage> {
             //     },
             //     child: Text("Lengkapi Profile"),
             //   ),
+            // anything kau ni apa
           ],
         ),
       ),
