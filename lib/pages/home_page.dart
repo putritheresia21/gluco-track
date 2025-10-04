@@ -50,6 +50,8 @@ class HomePageState extends State<HomePage> {
     // pull
     //apply stash
     //merge
+    //haiii
+
     return Scaffold(
       appBar: AppBar(title: Text("This is Home Page")),
       body: Center(
