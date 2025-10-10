@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:glucotrack_app/pages/navbar.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../Widget/custom_input_field.dart';
 import 'register_page.dart';
 import 'home_page.dart';
 
@@ -28,7 +29,7 @@ class LoginPageState extends State<LoginPage> {
     final email = emailController.text.trim();
     final pass = passwordController.text;
 
-    if (email.isEmpty || pass.isEmpty){
+    if (email.isEmpty || pass.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Email dan Password wajib diisi.")),
       );
@@ -45,7 +46,7 @@ class LoginPageState extends State<LoginPage> {
         password: pass,
       );
       final session = sb.auth.currentSession;
-      if (session == null){
+      if (session == null) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Sesi belum aktif. Coba lagi.")),
@@ -62,13 +63,13 @@ class LoginPageState extends State<LoginPage> {
           .maybeSingle();
 
       String username = (row?['username'] as String?)?.trim() ?? '';
-      if (username.isEmpty){
+      if (username.isEmpty) {
         final mail = session.user.email ?? 'User';
         username = mail.split('@').first;
       }
 
       //ini buat simpan login eluh agar selalu diingat dan dikenang awokawok
-      if (rememberMe){
+      if (rememberMe) {
         await saveLoginData(uid, username);
       }
 
@@ -84,12 +85,12 @@ class LoginPageState extends State<LoginPage> {
           builder: (context) => HomePage(),
         ),
       );
-    } on AuthException catch (e){
+    } on AuthException catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(e.message)),
       );
-    } on PostgrestException catch (e){
+    } on PostgrestException catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Gagal Login.")),
@@ -102,7 +103,7 @@ class LoginPageState extends State<LoginPage> {
   //enih buat luh pada yang pelupa, lupa password terus mau ganti.
   Future<void> handleForgotPassword() async {
     final email = emailController.text.trim();
-    if (email.isEmpty){
+    if (email.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Masukkan email untuk reset password.")),
       );
@@ -112,9 +113,10 @@ class LoginPageState extends State<LoginPage> {
       await Supabase.instance.client.auth.resetPasswordForEmail(email);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Cek email untuk instruksi reset password.")),
+        const SnackBar(
+            content: Text("Cek email untuk instruksi reset password.")),
       );
-    } on AuthException catch (e){
+    } on AuthException catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(e.message)),
@@ -164,19 +166,21 @@ class LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: 32),
 
-                buildInputField(
+                CustomInputField(
                   icon: Icons.email,
                   hint: "Enter your email",
-                  contoller: emailController,
+                  controller: emailController,
                   obscureText: false,
+                  borderRadius: 24,
                 ),
                 const SizedBox(height: 16),
 
-                buildInputField(
+                CustomInputField(
                   icon: Icons.lock,
                   hint: "Enter your password",
-                  contoller: passwordController,
+                  controller: passwordController,
                   obscureText: true,
+                  borderRadius: 24,
                 ),
                 const SizedBox(height: 8),
 
@@ -273,30 +277,4 @@ class LoginPageState extends State<LoginPage> {
       ),
     );
   }
-}
-
-Widget buildInputField({
-  required IconData icon,
-  required String hint,
-  required TextEditingController contoller,
-  required bool obscureText,
-}) {
-  return Container(
-    decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(24),
-    ),
-    child: TextField(
-      controller: contoller,
-      obscureText: obscureText,
-      style: const TextStyle(color: Colors.black),
-      decoration: InputDecoration(
-        prefixIcon: Icon(icon, color: Colors.grey),
-        hintText: hint,
-        hintStyle: const TextStyle(color: Colors.grey),
-        border: InputBorder.none,
-        contentPadding: const EdgeInsets.symmetric(vertical: 20),
-      ),
-    ),
-  );
 }
