@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:glucotrack_app/Widget/custom_input_field.dart';
 import 'package:glucotrack_app/pages/home_page.dart';
 import '../services/Auth_service.dart';
 import 'profile_page.dart';
@@ -28,9 +29,9 @@ class RegisterPageState extends State<RegisterPage> {
     final passConfirm = passwordConfirmController.text;
 
     //validasi email dulu, jangan sampe kosong. awas aja sampe kosonggg
-    if (email.isEmpty){
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Email tidak boleh kosong")));
+    if (email.isEmpty) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text("Email tidak boleh kosong")));
       return;
     }
     //validasi konfirmasi pasword
@@ -54,11 +55,10 @@ class RegisterPageState extends State<RegisterPage> {
         final displayName = response.user!.email?.split('@').first ?? 'User';
 
         Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-          builder: (context) => HomePage(),
-        )
-        );
+            context,
+            MaterialPageRoute(
+              builder: (context) => HomePage(),
+            ));
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -115,30 +115,30 @@ class RegisterPageState extends State<RegisterPage> {
                   ),
                   const SizedBox(height: 32),
 
-                  // Email Field
-                  buildInputField(
+                  CustomInputField(
                     icon: Icons.email,
                     hint: "Enter your email",
-                    contoller: emailController,
+                    controller: emailController,
                     obscureText: false,
+                    borderRadius: 24,
                   ),
                   const SizedBox(height: 16),
 
-                  // Password Field
-                  buildInputField(
+                  CustomInputField(
                     icon: Icons.lock,
                     hint: "Create a password",
-                    contoller: passwordController,
+                    controller: passwordController,
                     obscureText: true,
+                    borderRadius: 24,
                   ),
                   const SizedBox(height: 16),
 
-                  // Confirm Password Field
-                  buildInputField(
+                  CustomInputField(
                     icon: Icons.lock,
                     hint: "Confirm password",
-                    contoller: passwordConfirmController,
+                    controller: passwordConfirmController,
                     obscureText: true,
+                    borderRadius: 24,
                   ),
                   const SizedBox(height: 150),
 
@@ -197,30 +197,4 @@ class RegisterPageState extends State<RegisterPage> {
       ),
     );
   }
-}
-
-Widget buildInputField({
-  required IconData icon,
-  required String hint,
-  required TextEditingController contoller,
-  required bool obscureText,
-}) {
-  return Container(
-    decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(24),
-    ),
-    child: TextField(
-      controller: contoller,
-      obscureText: obscureText,
-      style: const TextStyle(color: Colors.black),
-      decoration: InputDecoration(
-        prefixIcon: Icon(icon, color: Colors.grey),
-        hintText: hint,
-        hintStyle: const TextStyle(color: Colors.grey),
-        border: InputBorder.none,
-        contentPadding: const EdgeInsets.symmetric(vertical: 20),
-      ),
-    ),
-  );
 }
