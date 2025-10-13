@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:glucotrack_app/pages/register_page.dart';
 import 'package:glucotrack_app/services/user_service.dart';
 import 'profile_page.dart';
 import 'package:glucotrack_app/pages/SocialMedia/feeds.dart';
@@ -16,7 +17,7 @@ class HomePage extends StatefulWidget {
 
 class HomePageState extends State<HomePage> {
   //final UserService userService = UserService();
- // bool? profileExists;
+  // bool? profileExists;
 
   @override
   void initState() {
@@ -52,19 +53,24 @@ class HomePageState extends State<HomePage> {
           children: [
             Text("Horray! You are logged in! Cukkurukuuukkk"),
             ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context, 
-                  MaterialPageRoute(builder: (context) => PublicFeedPage())
-                );
-              }, 
-              child: Text("Social Media Feed")
-            ),
-            ElevatedButton(onPressed: () {}, child: Text("Register Page")),
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => PublicFeedPage()));
+                },
+                child: Text("Social Media Feed")),
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => RegisterPage()),
+                  );
+                },
+                child: const Text("Register Page")),
             ElevatedButton(onPressed: () {}, child: Text("Koneksi IOT")),
             ElevatedButton(onPressed: () {}, child: Text("testing sosmed")),
 
-            
             // if (!profileExists!)
             //   ElevatedButton(
             //     onPressed: () async {

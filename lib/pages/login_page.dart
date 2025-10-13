@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:glucotrack_app/pages/navbar.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../Widget/custom_button.dart';
 import '../Widget/custom_input_field.dart';
 import 'register_page.dart';
 import 'home_page.dart';
@@ -221,27 +222,17 @@ class LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: 165),
 
-                // Login Button
-                SizedBox(
+                CustomButton(
+                  text: loading ? "Loading..." : "Login",
+                  onPressed: handleLogin,
+                  backgroundColor: Colors.white,
+                  textColor: Colors.black,
+                  fontSize: 16,
                   width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: handleLogin,
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 20),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(24),
-                      ),
-                      backgroundColor: Colors.white,
-                    ),
-                    child: const Text(
-                      "Login",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
+                  height: 50,
+                  borderRadius: 24,
+                  isLoading: loading,
+                  isLoadingColor: Colors.black,
                 ),
                 const SizedBox(height: 16),
 

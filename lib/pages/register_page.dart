@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:glucotrack_app/Widget/custom_input_field.dart';
 import 'package:glucotrack_app/pages/home_page.dart';
+import '../Widget/custom_button.dart';
 import '../services/Auth_service.dart';
 import 'profile_page.dart';
 import 'login_page.dart';
@@ -49,16 +50,19 @@ class RegisterPageState extends State<RegisterPage> {
         username: username,
       );
 
+      //kalau berhasil register, langsung cus ke login page TP MASIH ERROR JING
       if (response != null && response.user != null) {
         //final uid = response?.user?.id;
-        final uid = response.user!.id;
-        final displayName = response.user!.email?.split('@').first ?? 'User';
+        // final uid = response.user!.id;
+        // final displayName = response.user!.email?.split('@').first ?? 'User';
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Registration successful!")),
+        );
 
         Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => HomePage(),
-            ));
+          context,
+          MaterialPageRoute(builder: (context) => LoginPage()),
+        );
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -73,6 +77,7 @@ class RegisterPageState extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
+    final loading = isLoading;
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -134,7 +139,7 @@ class RegisterPageState extends State<RegisterPage> {
                   const SizedBox(height: 16),
 
                   CustomInputField(
-                    icon: Icons.lock,
+                    icon: Icons.lock_reset,
                     hint: "Confirm password",
                     controller: passwordConfirmController,
                     obscureText: true,
@@ -142,27 +147,17 @@ class RegisterPageState extends State<RegisterPage> {
                   ),
                   const SizedBox(height: 150),
 
-                  // Sign Up Button
-                  SizedBox(
+                  CustomButton(
+                    text: loading ? "Loading..." : "Sign Up",
+                    onPressed: handleRegister,
+                    backgroundColor: Colors.white,
+                    textColor: Colors.black,
+                    fontSize: 16,
                     width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: handleRegister,
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 20),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(24),
-                        ),
-                        backgroundColor: Colors.white,
-                      ),
-                      child: const Text(
-                        "Sign Up",
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
+                    height: 50,
+                    borderRadius: 24,
+                    isLoading: loading,
+                    isLoadingColor: Colors.black,
                   ),
                   const SizedBox(height: 16),
 
