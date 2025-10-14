@@ -13,6 +13,7 @@ class PublicFeedPage extends StatefulWidget {
 class _PublicFeedPageState extends State<PublicFeedPage> {
   final _svc = PostService();
   final _posts = <Map<String, dynamic>>[];
+  Map<String, List<Map<String, dynamic>>> _mediaMap = {};
   Map<String, Map<String, dynamic>> _profiles = {};
   bool _loading = false;
   bool _end = false;
@@ -32,6 +33,7 @@ class _PublicFeedPageState extends State<PublicFeedPage> {
       if (reset) {
         _posts.clear();
         _profiles = {};
+        _mediaMap = {};
         _end = false;
         _page = 0;
       }
@@ -46,6 +48,10 @@ class _PublicFeedPageState extends State<PublicFeedPage> {
         final fetched = await _svc.fetchProfilesByIds(missing);
         _profiles.addAll(fetched);
       }
+
+      final postIds = rows.map((r) => r['id'] as String).toList();
+      final media = await _svc.fetchMediaForPosts(postIds);
+      _mediaMap.addAll(media);
 
       _posts.addAll(rows);
       if (rows.length < _pageSize) _end = true;
@@ -92,8 +98,13 @@ class _PublicFeedPageState extends State<PublicFeedPage> {
             final username = (profile?['username'] as String?) ?? 'User';
             final avatarUrl = profile?['avatar_url'] as String?;
             final body = (p['body'] as String?) ?? '';
+            final postId = p['id'] as String;
+            final medias = _mediaMap[postId] ?? const [];
             final createdAt =
                 DateTime.tryParse(p['created_at'] ?? '') ?? DateTime.now();
+            
+
+                
 
             return Padding(
               padding: const EdgeInsets.fromLTRB(12, 6, 12, 6),
@@ -111,6 +122,7 @@ class _PublicFeedPageState extends State<PublicFeedPage> {
                           children: [
                             _Header(username: username, createdAt: createdAt),
                             const SizedBox(height: 6),
+                
                             Text(body, style: const TextStyle(fontSize: 15)),
                           ],
                         ),
