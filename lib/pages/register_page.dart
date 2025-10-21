@@ -35,7 +35,15 @@ class RegisterPageState extends State<RegisterPage> {
           .showSnackBar(SnackBar(content: Text("Email tidak boleh kosong")));
       return;
     }
-    //validasi konfirmasi pasword
+
+    //validasi username
+    if (username.isEmpty) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text("Username tidak boleh kosong")));
+      return;
+    }
+
+    //validasi konfirmasi password
     if (passwordController.text != passwordConfirmController.text) {
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Password confirmation does not match")));
@@ -50,21 +58,26 @@ class RegisterPageState extends State<RegisterPage> {
         username: username,
       );
 
-      //kalau berhasil register, langsung cus ke login page TP MASIH ERROR JING
-      if (response != null && response.user != null) {
-        //final uid = response?.user?.id;
-        // final uid = response.user!.id;
-        // final displayName = response.user!.email?.split('@').first ?? 'User';
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Registration successful!")),
-        );
+      if (!mounted) return;
 
-        Navigator.pushReplacement(
+      if (response == null){
+         ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Registration failed. Cek email/username atau coba lagi.")),
+        );
+        return;
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Registration successful! Please check your email.")),
+      );
+
+      Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => LoginPage()),
-        );
-      }
+      );
+
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(e.toString().replaceAll('Exception: ', ''))),
       );
@@ -122,6 +135,16 @@ class RegisterPageState extends State<RegisterPage> {
 
                   CustomInputField(
                     icon: Icons.email,
+                    hint: "Enter your username",
+                    controller: usernameController,
+                    obscureText: false,
+                    borderRadius: 24,
+                  ),
+                  const SizedBox(height: 16),
+
+
+                  CustomInputField(
+                    icon: Icons.email,
                     hint: "Enter your email",
                     controller: emailController,
                     obscureText: false,
@@ -149,7 +172,7 @@ class RegisterPageState extends State<RegisterPage> {
 
                   CustomButton(
                     text: loading ? "Loading..." : "Sign Up",
-                    onPressed: handleRegister,
+                    onPressed: isLoading ? null : handleRegister,
                     backgroundColor: Colors.white,
                     textColor: Colors.black,
                     fontSize: 16,
