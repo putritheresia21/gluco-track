@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:glucotrack_app/services/social_services/PostServices.dart';
 import 'package:glucotrack_app/Widget/post_composser.dart';
+import 'package:glucotrack_app/services/social_services/post_media_service.dart';
 
 class PublicFeedPage extends StatefulWidget {
   const PublicFeedPage({super.key});
@@ -26,45 +27,73 @@ class _PublicFeedPageState extends State<PublicFeedPage> {
     _load(reset: true);
   }
 
-  Future<void> _load({bool reset = false}) async {
-    if (_loading) return;
-    setState(() => _loading = true);
-    try {
-      if (reset) {
-        _posts.clear();
-        _profiles = {};
-        _mediaMap = {};
-        _end = false;
-        _page = 0;
-      }
-      final from = _page * _pageSize;
-      final to = from + _pageSize - 1;
-
-      final rows = await _svc.fetchPublicPosts(from: from, to: to);
-
-      final ids = rows.map((r) => r['author_id'] as String).toSet().toList();
-      final missing = ids.where((id) => !_profiles.containsKey(id)).toList();
-      if (missing.isNotEmpty) {
-        final fetched = await _svc.fetchProfilesByIds(missing);
-        _profiles.addAll(fetched);
-      }
-
-      final postIds = rows.map((r) => r['id'] as String).toList();
-      final media = await _svc.fetchMediaForPosts(postIds);
-      _mediaMap.addAll(media);
-
-      _posts.addAll(rows);
-      if (rows.length < _pageSize) _end = true;
-      _page++;
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Gagal load feed: $e')));
-    } finally {
-      if (mounted) setState(() => _loading = false);
+ Future<void> _load({bool reset = false}) async {
+  if (_loading) return;
+  setState(() => _loading = true);
+  try {
+    if (reset) {
+      _posts.clear();
+      _profiles = {};
+      _mediaMap = {};
+      _end = false;
+      _page = 0;
     }
-  }
+    final from = _page * _pageSize;
+    final to = from + _pageSize - 1;
 
+    final rows = await _svc.loadPublicFeed(from: from, to: to);
+
+    final ids = rows.map((r) => r['author_id'] as String).toSet().toList();
+    final missing = ids.where((id) => !_profiles.containsKey(id)).toList();
+    if (missing.isNotEmpty) {
+      final fetched = await _svc.fetchProfilesByIds(missing);
+      _profiles.addAll(fetched);
+    }
+
+    final postIds = rows.map((r) => r['id'] as String).toList();
+    final media = await _svc.fetchMediaForPosts(postIds);
+    
+    print('DEBUG: Found ${media.length} posts with media');
+    media.forEach((postId, items) {
+      print('DEBUG: Post $postId has ${items.length} media items');
+      for (var item in items) {
+        print('DEBUG: Media item: ${item['storage_path']} (${item['mime_type']})');
+      }
+    });
+
+    final mediaSvc = PostMediaService();               
+    final mapped = <String, List<Map<String, dynamic>>>{};
+    media.forEach((pid, items) {
+      mapped[pid] = items.map((m) {
+        final path = m['storage_path'] as String?;
+        if (path == null || path.isEmpty) {
+          print('DEBUG: storage_path is null or empty for media item');
+          return {
+            ...m,
+            'url': '',          
+          };
+        }
+        final url = mediaSvc.publicUrl(path);
+        print('DEBUG: Generated URL for $path: $url');
+        return {
+          ...m,
+          'url': url,          
+        };
+      }).toList();
+    });
+    _mediaMap.addAll(mapped);
+
+    _posts.addAll(rows);
+    if (rows.length < _pageSize) _end = true;
+    _page++;
+  } catch (e) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text('Gagal load feed: $e')));
+  } finally {
+    if (mounted) setState(() => _loading = false);
+  }
+}
   Future<void> _refresh() => _load(reset: true);
 
   @override
@@ -100,11 +129,12 @@ class _PublicFeedPageState extends State<PublicFeedPage> {
             final body = (p['body'] as String?) ?? '';
             final postId = p['id'] as String;
             final medias = _mediaMap[postId] ?? const [];
-            final createdAt =
-                DateTime.tryParse(p['created_at'] ?? '') ?? DateTime.now();
+            final createdAt = DateTime.tryParse(p['created_at'] as String? ?? '') ?? DateTime.now();
             
-
-                
+            print('DEBUG: Rendering post $postId with ${medias.length} media items');
+            if (medias.isNotEmpty) {
+              print('DEBUG: Media URLs: ${medias.map((m) => m['url']).toList()}');
+            }
 
             return Padding(
               padding: const EdgeInsets.fromLTRB(12, 6, 12, 6),
@@ -122,8 +152,11 @@ class _PublicFeedPageState extends State<PublicFeedPage> {
                           children: [
                             _Header(username: username, createdAt: createdAt),
                             const SizedBox(height: 6),
-                
-                            Text(body, style: const TextStyle(fontSize: 15)),
+                              if (body.isNotEmpty) Text(body, style: const TextStyle(fontSize: 15)),
+                              if (medias.isNotEmpty) ...[
+    const SizedBox(height: 8),
+    _MediaGrid(medias: medias),
+  ],
                           ],
                         ),
                       ),
@@ -157,6 +190,101 @@ class _Avatar extends StatelessWidget {
     );
   }
 }
+
+class _MediaGrid extends StatelessWidget {
+  const _MediaGrid({required this.medias});
+  final List<Map<String, dynamic>> medias;
+
+  @override
+  Widget build(BuildContext context) {
+    print('DEBUG: _MediaGrid build called with ${medias.length} media items');
+    
+    // ambil hanya image; kalau ada video, kamu bisa handle terpisah
+    final imgs = medias
+        .where((m) => ((m['mime_type'] as String?) ?? '').startsWith('image/'))
+        .toList();
+
+    print('DEBUG: Filtered to ${imgs.length} image items');
+    if (imgs.isEmpty) {
+      print('DEBUG: No images found, returning empty widget');
+      return const SizedBox.shrink();
+    }
+
+    // tata letak sederhana: 1 = penuh, 2–3 = grid 2 kolom, 4+ = grid 3 kolom
+    final count = imgs.length;
+    final cross = count == 1 ? 1 : (count <= 3 ? 2 : 3);
+
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: count,
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: cross,
+        crossAxisSpacing: 6,
+        mainAxisSpacing: 6,
+      ),
+      itemBuilder: (context, i) {
+        final mediaItem = imgs[i];
+        final url = mediaItem['url'] as String?;
+        
+        print('DEBUG: Trying to load image URL: $url');
+        
+        if (url == null || url.isEmpty) {
+          print('DEBUG: URL is null or empty');
+          return Container(
+            color: Colors.grey.shade200,
+            alignment: Alignment.center,
+            child: const Icon(Icons.broken_image),
+          );
+        }
+        
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: AspectRatio(
+            aspectRatio: 1,
+            child: Image.network(
+              url,
+              fit: BoxFit.cover,
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) return child;
+                return Container(
+                  color: Colors.grey.shade100,
+                  alignment: Alignment.center,
+                  child: CircularProgressIndicator(
+                    value: loadingProgress.expectedTotalBytes != null
+                        ? loadingProgress.cumulativeBytesLoaded /
+                            loadingProgress.expectedTotalBytes!
+                        : null,
+                  ),
+                );
+              },
+              errorBuilder: (context, error, stackTrace) {
+                print('DEBUG: Image loading error: $error');
+                return Container(
+                  color: Colors.grey.shade200,
+                  alignment: Alignment.center,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.broken_image),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Error loading image',
+                        style: TextStyle(fontSize: 10, color: Colors.grey.shade600),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
 
 class _Header extends StatelessWidget {
   const _Header({required this.username, required this.createdAt});
