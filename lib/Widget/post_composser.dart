@@ -4,7 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:glucotrack_app/services/social_services/PostServices.dart';
 
 class PostComposer extends StatefulWidget {
-  const PostComposer({super.key, this.onPosted});
+  const  PostComposer({super.key, this.onPosted});
   final VoidCallback? onPosted;
 
   @override
@@ -113,4 +113,4 @@ class _PostComposerState extends State<PostComposer> {
       ),
     );
   }
-}
+} 
