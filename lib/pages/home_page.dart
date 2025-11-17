@@ -45,6 +45,14 @@ class HomePageState extends State<HomePage> {
     //   );
     // }
     // kau ini apaa yaa
+    // kau nihh monyet
+    // kau ni babi
+    // stash
+    // pull
+    //apply stash
+    //merge
+    //haiii
+
     return Scaffold(
       appBar: AppBar(title: Text("This is Home Page")),
       body: Center(
@@ -60,14 +68,7 @@ class HomePageState extends State<HomePage> {
                           builder: (context) => PublicFeedPage()));
                 },
                 child: Text("Social Media Feed")),
-            ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => RegisterPage()),
-                  );
-                },
-                child: const Text("Register Page")),
+            ElevatedButton(onPressed: () {}, child: Text("Register Page")),
             ElevatedButton(onPressed: () {}, child: Text("Koneksi IOT")),
             ElevatedButton(onPressed: () {}, child: Text("testing sosmed")),
 
@@ -82,7 +83,9 @@ class HomePageState extends State<HomePage> {
             //     },
             //     child: Text("Lengkapi Profile"),
             //   ),
+            // anything kau ni apa
             // kau nih apee? kau tuh cigga
+            //heyoo sup
           ],
         ),
       ),

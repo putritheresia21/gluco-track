@@ -4,7 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'started_page.dart';
 import 'navbar.dart';
-import 'login_page.dart'; 
+import 'login_page.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -13,7 +13,6 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-
   @override
   void initState() {
     super.initState();
@@ -62,7 +61,8 @@ class _SplashScreenState extends State<SplashScreen> {
       debugPrint("[Splash] has session -> Navbar");
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => CustomBottomNav(userId: uid, username: username)),
+        MaterialPageRoute(
+            builder: (_) => CustomBottomNav(userId: uid, username: username)),
       );
     } else {
       debugPrint("[Splash] no session -> LoginPage / GetStartedPage");
@@ -82,11 +82,19 @@ class _SplashScreenState extends State<SplashScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: const [
-            Text('Gluc', style: TextStyle(fontSize: 36, fontWeight: FontWeight.w700, color: Colors.white)),
+            Text('Gluc',
+                style: TextStyle(
+                    fontSize: 36,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white)),
             // pastikan assets/Logo.png ada di pubspec.yaml
             // Transform.translate(offset: Offset(0, 2), child: Image.asset('assets/Logo.png', width: 27, height: 30)),
             SizedBox(width: 8),
-            Text('Track', style: TextStyle(fontSize: 40, fontWeight: FontWeight.w800, color: Colors.white)),
+            Text('Track',
+                style: TextStyle(
+                    fontSize: 40,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white)),
           ],
         ),
       ),
