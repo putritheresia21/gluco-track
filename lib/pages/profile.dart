@@ -47,14 +47,14 @@ class Profile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profileyh'),
+        title: const Text('Profile Page'),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text(
-              'enih profile yah KOKEKAB',
+              'Profile Page',
               style: TextStyle(fontSize: 18),
             ),
             const SizedBox(height: 20),

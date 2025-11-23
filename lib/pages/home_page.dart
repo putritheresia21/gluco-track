@@ -41,7 +41,7 @@ class HomePageState extends State<HomePage> {
                           'Hello,',
                           style: TextStyle(
                             color: Colors.black,
-                            fontSize: 30,
+                            fontSize: 40,
                             height: 1.0,
                           ),
                         ),
@@ -49,7 +49,7 @@ class HomePageState extends State<HomePage> {
                           'Milden!',
                           style: TextStyle(
                             color: Colors.black,
-                            fontSize: 40,
+                            fontSize: 50,
                             fontWeight: FontWeight.bold,
                             height: 1.0,
                           ),
@@ -63,7 +63,7 @@ class HomePageState extends State<HomePage> {
                   ],
                 ),
 
-                const SizedBox(height: 15),
+                const SizedBox(height: 30),
 
                 // 🔹 Card Weekly Summary
                 Container(
@@ -114,7 +114,7 @@ class HomePageState extends State<HomePage> {
                   ),
                 ),
 
-                const SizedBox(height: 15),
+                const SizedBox(height: 25),
 
                 // 🔹 Lowest & Highest Card
                 Row(
@@ -271,7 +271,7 @@ class HomePageState extends State<HomePage> {
                   ],
                 ),
 
-                const SizedBox(height: 15),
+                const SizedBox(height: 20),
 
                 // 🔹 Your Mission Header
                 Padding(
@@ -407,7 +407,7 @@ class HomePageState extends State<HomePage> {
                     ],
                   ),
                 ),
-                SizedBox(height: 11),
+                SizedBox(height: 20),
                 Padding(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 1, vertical: 3),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:glucotrack_app/models/GlucoseRecord.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
 class GlucoseMeasuring extends StatefulWidget {
   const GlucoseMeasuring({super.key});
@@ -56,17 +56,12 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
     }
 
     final prefs = await SharedPreferences.getInstance();
-    final userId = prefs.getString('userId');
 
-    if (userId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("User belum login.")),
-      );
-      return;
-    }
+    // Ambil userId atau gunakan default jika tidak ada
+    String userId = prefs.getString('userId') ?? 'default_user';
 
     final record = Glucoserecord(
-      id: '',
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
       userId: userId,
       glucoseLevel: glucoseLevel!,
       timeStamp: useCurrentTime ? DateTime.now() : selectedDateTime!,
@@ -74,9 +69,19 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
     );
 
     try {
-      await FirebaseFirestore.instance
-          .collection('glucose_records')
-          .add(record.toMap());
+      // Ambil data yang sudah ada
+      final String? recordsJson = prefs.getString('glucose_records');
+      List<Map<String, dynamic>> records = [];
+
+      if (recordsJson != null) {
+        records = List<Map<String, dynamic>>.from(json.decode(recordsJson));
+      }
+
+      // Tambahkan record baru
+      records.add(record.toMap());
+
+      // Simpan kembali
+      await prefs.setString('glucose_records', json.encode(records));
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Data glukosa berhasil disimpan.")),
@@ -116,8 +121,7 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
             ),
             centerTitle: true,
             leading: Padding(
-              padding:
-                  const EdgeInsets.only(top: 15), // atur nilai ini biar pas
+              padding: const EdgeInsets.only(top: 15),
               child: IconButton(
                 icon: const Icon(Icons.arrow_back, color: Colors.white),
                 iconSize: 30,

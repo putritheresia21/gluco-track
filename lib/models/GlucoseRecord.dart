@@ -23,9 +23,10 @@ class Glucoserecord {
     );
   }
 
-  
-  Map<String, dynamic> toMap(){
-    return{
+  // PERBAIKAN: Tambahkan 'id' dalam toMap
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
       'userId': userId,
       'timestamp': timeStamp.toIso8601String(),
       'glucoseLevel': glucoseLevel,
@@ -33,27 +34,46 @@ class Glucoserecord {
     };
   }
 
-  factory Glucoserecord.fromMap(String id, Map<String, dynamic> map){
+  // PERBAIKAN: fromMap yang menerima 2 parameter sesuai signature asli
+  factory Glucoserecord.fromMap(String id, Map<String, dynamic> map) {
     final timestampStr = map['timestamp'];
     final conditionStr = map['condition'];
     return Glucoserecord(
       id: id,
       userId: map['userId'] ?? '',
       glucoseLevel: (map['glucoseLevel'] ?? 0.0).toDouble(),
-      timeStamp: timestampStr != null ? DateTime.parse(timestampStr) : DateTime.now(),
+      timeStamp:
+          timestampStr != null ? DateTime.parse(timestampStr) : DateTime.now(),
       condition: GlucoseCondition.values.firstWhere(
         (e) => e.name == conditionStr,
         orElse: () => GlucoseCondition.beforeMeal,
-      )
+      ),
+    );
+  }
+
+  // TAMBAHAN: fromMapSimple untuk membaca data yang sudah ada 'id' di dalam map
+  factory Glucoserecord.fromMapSimple(Map<String, dynamic> map) {
+    final timestampStr = map['timestamp'];
+    final conditionStr = map['condition'];
+    return Glucoserecord(
+      id: map['id'] ?? '',
+      userId: map['userId'] ?? '',
+      glucoseLevel: (map['glucoseLevel'] ?? 0.0).toDouble(),
+      timeStamp:
+          timestampStr != null ? DateTime.parse(timestampStr) : DateTime.now(),
+      condition: GlucoseCondition.values.firstWhere(
+        (e) => e.name == conditionStr,
+        orElse: () => GlucoseCondition.beforeMeal,
+      ),
     );
   }
 }
 
-enum GlucoseCondition{
+enum GlucoseCondition {
   beforeMeal,
   afterMeal,
 }
 
-bool isSameDay(DateTime a, DateTime b){
-    return a.year == b.year && a.month == b.month && a.day == b.day;
-  }
+bool isSameDay(DateTime a, DateTime b) {
+  return a.year == b.year && a.month == b.month && a.day == b.day;
+}
