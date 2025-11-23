@@ -10,7 +10,7 @@ import '../pages/splash_screen.dart';
 // const supabaseUrl = String.fromEnvironment('SUPABASE_URL');
 // const supabaseAnonKey = String.fromEnvironment('SUPABASE_ANON_KEY');
 
-Future <void> main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
 
@@ -32,6 +32,11 @@ class MainApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'GlucoTrack',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.blue)
+            .copyWith(secondary: Colors.blueAccent),
+      ),
       home: const _Root(),
     );
   }
@@ -93,7 +98,7 @@ class _RootState extends State<_Root> {
 
     final session = Supabase.instance.client.auth.currentSession;
     if (session == null) {
-      return const SplashScreen(); 
+      return const SplashScreen();
     } else {
       return CustomBottomNav(
         userId: userId!,
@@ -102,5 +107,3 @@ class _RootState extends State<_Root> {
     }
   }
 }
-
-

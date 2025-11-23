@@ -4,7 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:glucotrack_app/services/social_services/PostServices.dart';
 
 class PostComposer extends StatefulWidget {
-  const  PostComposer({super.key, this.onPosted});
+  const PostComposer({super.key, this.onPosted});
   final VoidCallback? onPosted;
 
   @override
@@ -55,6 +55,7 @@ class _PostComposerState extends State<PostComposer> {
   @override
   Widget build(BuildContext context) {
     return Card(
+      color: const Color(0xFFFCFCFC),
       margin: const EdgeInsets.all(12),
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -85,7 +86,8 @@ class _PostComposerState extends State<PostComposer> {
                         child: const CircleAvatar(
                           radius: 10,
                           backgroundColor: Colors.black54,
-                          child: Icon(Icons.close, size: 12, color: Colors.white),
+                          child:
+                              Icon(Icons.close, size: 12, color: Colors.white),
                         ),
                       ),
                     )
@@ -113,4 +115,4 @@ class _PostComposerState extends State<PostComposer> {
       ),
     );
   }
-} 
+}
