@@ -163,7 +163,7 @@ class _PublicFeedPageState extends State<PublicFeedPage> {
               // Already on feed page
             },
             onNewsPressed: () {
-              // TODO: Navigate to News page
+              // Navigate to News page
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   content: Text('News page coming soon!'),
@@ -327,7 +327,7 @@ class _PublicFeedPageState extends State<PublicFeedPage> {
                                 // Like button
                                 InkWell(
                                   onTap: () {
-                                    // TODO: Implement like functionality
+                                    // Implement like functionality
                                   },
                                   child: Row(
                                     children: [
@@ -352,7 +352,7 @@ class _PublicFeedPageState extends State<PublicFeedPage> {
                                 // Comment button
                                 InkWell(
                                   onTap: () {
-                                    // TODO: Implement comment functionality
+                                    // Implement comment functionality
                                   },
                                   child: Row(
                                     children: [

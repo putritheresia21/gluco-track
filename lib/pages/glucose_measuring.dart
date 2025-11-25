@@ -149,30 +149,87 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
               Row(
                 children: [
                   Expanded(
-                    child: TextFormField(
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Colors.white,
-                        contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 12),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(
-                              color: Color(0xFF2C7796), width: 1.2),
+                    child: Stack(
+                      alignment: Alignment.centerRight,
+                      children: [
+                        TextFormField(
+                          decoration: InputDecoration(
+                            filled: true,
+                            fillColor: Colors.white,
+                            contentPadding: const EdgeInsets.only(
+                              left: 16,
+                              right: 110,
+                              top: 20,
+                              bottom: 20,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: const BorderSide(
+                                  color: Color(0xFF2C7796), width: 1.2),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: const BorderSide(
+                                  color: Color(0xFF2C7796), width: 1.2),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: const BorderSide(
+                                  color: Color(0xFF2C7796), width: 1.2),
+                            ),
+                          ),
+                          keyboardType: TextInputType.number,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Kadar gula darah tidak boleh kosong";
+                            }
+                            if (double.tryParse(value) == null) {
+                              return "Masukkan angka yang valid";
+                            }
+                            return null;
+                          },
+                          onSaved: (value) =>
+                              glucoseLevel = double.tryParse(value!),
                         ),
-                      ),
-                      keyboardType: TextInputType.number,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return "Kadar gula darah tidak boleh kosong";
-                        }
-                        if (double.tryParse(value) == null) {
-                          return "Masukkan angka yang valid";
-                        }
-                        return null;
-                      },
-                      onSaved: (value) =>
-                          glucoseLevel = double.tryParse(value!),
+                        Positioned(
+                          right: 8,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFEC3E3E),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                onTap: () {
+                                  // Navigasi ke halaman deteksi gula darah invasif dengan IoT
+                                  // Navigator.push(
+                                  //   context,
+                                  //   MaterialPageRoute(
+                                  //     builder: (context) => IoTGlucoseDetectionPage(),
+                                  //   ),
+                                  // );
+                                },
+                                borderRadius: BorderRadius.circular(8),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 10,
+                                  ),
+                                  child: const Text(
+                                    "Otomatis",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -246,7 +303,8 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 14, horizontal: 20),
                   ),
                   child: Text(
                     selectedDateTime == null
