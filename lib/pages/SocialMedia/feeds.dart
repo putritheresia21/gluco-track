@@ -151,7 +151,7 @@ class _PublicFeedPageState extends State<PublicFeedPage> {
     final currentUserId = currentUser?.id;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFE9F0F2),
+      backgroundColor: const Color(0xFFF5F5F5),
       body: Column(
         children: [
           // Custom Header menggunakan SocialHeader widget

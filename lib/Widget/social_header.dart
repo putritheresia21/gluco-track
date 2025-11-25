@@ -49,7 +49,7 @@ class _SocialHeaderState extends State<SocialHeader> {
     final firstName = _getFirstName(currentUsername);
 
     return Container(
-      color: const Color(0xFFE9F0F2),
+      color: const Color(0xFFF5F5F5),
       padding: EdgeInsets.only(
         top: MediaQuery.of(context).padding.top + 30,
         left: 16,

@@ -20,7 +20,7 @@ class HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFE9F0F2),
+      backgroundColor: const Color(0xFFF5F5F5),
       body: SafeArea(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
@@ -71,7 +71,7 @@ class HomePageState extends State<HomePage> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFD4E2EF),
+                    color: const Color(0xFFD6E5EA),
                     borderRadius: BorderRadius.circular(25),
                     boxShadow: [
                       BoxShadow(
