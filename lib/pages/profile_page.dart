@@ -278,7 +278,11 @@ class profilePageState extends State<ProfilePage> {
                             child: Text(g.toShortString()),
                           ))
                       .toList(),
-                  hint: const Text("Select Gender"),
+                  hint: const Text(
+                    "Select Gender",
+                    style: TextStyle(
+                        color: Colors.black, fontWeight: FontWeight.normal),
+                  ),
                   onChanged: (val) => setState(() => selectedGender = val),
                   validator: (val) => val == null ? "Gender required" : null,
                 ),
