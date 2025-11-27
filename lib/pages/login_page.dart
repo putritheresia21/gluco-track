@@ -5,7 +5,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../Widget/custom_button.dart';
 import '../Widget/custom_input_field.dart';
 import 'register_page.dart';
-import 'home_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -75,15 +74,18 @@ class LoginPageState extends State<LoginPage> {
       }
 
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Welcome back, $username!")),
-      );
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(content: Text("Welcome back, $username!")),
+      // );
 
       //habis tuhh move on ke home page, jangan gamon!!!
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => HomePage(),
+          builder: (context) => CustomBottomNav(
+            userId: uid,
+            username: username,
+          ),
         ),
       );
     } on AuthException catch (e) {
