@@ -235,44 +235,55 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
                 ],
               ),
               if (!useCurrentTime)
-                ElevatedButton(
-                  onPressed: pickDateTime,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF2C7796),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                  ),
-                  child: Text(
-                    selectedDateTime == null
-                        ? "Pilih Tanggal & Waktu"
-                        : "Tanggal & Waktu: ${selectedDateTime!.toLocal()}",
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                ),
-              const SizedBox(height: 300),
-              Center(
-                child: ElevatedButton(
-                  onPressed: submit,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF2C7796),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(25),
-                    ),
-                    minimumSize: const Size(double.infinity, 60),
-                  ),
-                  child: const Text(
-                    "Save",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+                GestureDetector(
+                  onTap: pickDateTime,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 14, horizontal: 14),
+                    decoration: BoxDecoration(
                       color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.black),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.calendar_today, color: Colors.black87),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            selectedDateTime == null
+                                ? "Pilih Tanggal & Waktu"
+                                : "${selectedDateTime!.day}-${selectedDateTime!.month}-${selectedDateTime!.year} "
+                                    "${selectedDateTime!.hour}:${selectedDateTime!.minute.toString().padLeft(2, '0')}",
+                            style: const TextStyle(
+                              fontSize: 15,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
-              ),
             ],
+          ),
+        ),
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(20),
+        child: ElevatedButton(
+          onPressed: submit,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFF2C7796),
+            padding: const EdgeInsets.symmetric(vertical: 18),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(24),
+            ),
+          ),
+          child: const Text(
+            "Save",
+            style: TextStyle(
+                fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
           ),
         ),
       ),

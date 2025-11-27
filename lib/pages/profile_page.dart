@@ -260,55 +260,53 @@ class profilePageState extends State<ProfilePage> {
                 ),
                 const SizedBox(height: 8),
 
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(14),
-                    color: Colors.white,
-                    border: Border.all(color: Colors.black),
-                  ),
-                  child: DropdownButtonFormField<Gender>(
-                    value: selectedGender,
-                    decoration: const InputDecoration(
-                      border: InputBorder.none,
-                    ),
-                    items: Gender.values
-                        .map((g) => DropdownMenuItem(
-                              value: g,
-                              child: Text(g.toShortString()),
-                            ))
-                        .toList(),
-                    hint: const Text("Select Gender"),
-                    onChanged: (val) => setState(() => selectedGender = val),
-                    validator: (val) => val == null ? "Gender required" : null,
-                  ),
-                ),
-
-                const SizedBox(height: 40),
-
-                // ================= SUBMIT BUTTON =================
-                SizedBox(
-                  width: double.infinity,
-                  height: 55,
-                  child: ElevatedButton(
-                    onPressed: saveProfile,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF2C7796),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                    ),
-                    child: const Text(
-                      "Submit",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
+                DropdownButtonFormField<Gender>(
+                  value: selectedGender,
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: Colors.white,
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: Colors.black),
                     ),
                   ),
+                  items: Gender.values
+                      .map((g) => DropdownMenuItem(
+                            value: g,
+                            child: Text(g.toShortString()),
+                          ))
+                      .toList(),
+                  hint: const Text("Select Gender"),
+                  onChanged: (val) => setState(() => selectedGender = val),
+                  validator: (val) => val == null ? "Gender required" : null,
                 ),
               ],
+            ),
+          ),
+        ),
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(20),
+        child: SizedBox(
+          width: double.infinity,
+          height: 55,
+          child: ElevatedButton(
+            onPressed: saveProfile,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF2C7796),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30),
+              ),
+            ),
+            child: const Text(
+              "Submit",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
             ),
           ),
         ),
