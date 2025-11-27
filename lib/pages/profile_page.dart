@@ -138,7 +138,7 @@ class profilePageState extends State<ProfilePage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // ================= USERNAME =================
+                // USERNAME
                 const Text(
                   "Username",
                   style: TextStyle(
@@ -165,11 +165,11 @@ class profilePageState extends State<ProfilePage> {
 
                 const SizedBox(height: 25),
 
-                // ================ BIRTHDATE + AGE ROW ================
+                //  BIRTHDATE + AGE ROW
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    // ------ Birthdate ------
+                    // Birthdate
                     Expanded(
                       flex: 1,
                       child: Column(
@@ -214,7 +214,7 @@ class profilePageState extends State<ProfilePage> {
 
                     const SizedBox(width: 20),
 
-                    // ------ Age ------
+                    // Age
                     Expanded(
                       flex: 1,
                       child: Column(
@@ -250,7 +250,7 @@ class profilePageState extends State<ProfilePage> {
                 ),
 
                 const SizedBox(height: 25),
-
+                // Gender
                 const Text(
                   "Gender",
                   style: TextStyle(

@@ -53,7 +53,6 @@ class Profile extends StatelessWidget {
         child: ListView(
           physics: const BouncingScrollPhysics(),
           children: [
-            // ✅ ganti ke list
             Column(
               children: [
                 Stack(
@@ -156,13 +155,13 @@ class Profile extends StatelessWidget {
                 ),
                 const SizedBox(height: 70),
 
-                // 🔹 Lowest & Highest Card
+                // Lowest & Highest Card
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      // === Lowest Card ===
+                      // Lowest Card
                       Expanded(
                         child: Container(
                           height: 149,
@@ -238,7 +237,7 @@ class Profile extends StatelessWidget {
                         ),
                       ),
 
-                      // === Highest Card ===
+                      // Highest Card
                       Expanded(
                         child: Container(
                           height: 149,
@@ -317,7 +316,7 @@ class Profile extends StatelessWidget {
                 ),
                 const SizedBox(height: 20),
 
-                // 🔹 Your Mission Header
+                // Your Mission
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Row(
@@ -408,8 +407,7 @@ class Profile extends StatelessWidget {
                             ),
                             const SizedBox(width: 10),
                             SizedBox(
-                              width:
-                                  120, // atur lebar tombol sesuai yang diinginkan
+                              width: 120,
                               height: 45,
                               child: ElevatedButton(
                                 onPressed: () {

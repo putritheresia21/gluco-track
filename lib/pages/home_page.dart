@@ -29,7 +29,7 @@ class HomePageState extends State<HomePage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // 🔹 Header
+                // Header
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -65,7 +65,7 @@ class HomePageState extends State<HomePage> {
 
                 const SizedBox(height: 15),
 
-                // 🔹 Card Weekly Summary
+                // Card Weekly Summary
                 Container(
                   width: double.infinity,
                   padding:
@@ -116,11 +116,11 @@ class HomePageState extends State<HomePage> {
 
                 const SizedBox(height: 15),
 
-                // 🔹 Lowest & Highest Card
+                //  Lowest & Highest Card
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // === Lowest Card ===
+                    //  Lowest Card
                     Expanded(
                       child: Container(
                         height: 149,
@@ -195,7 +195,7 @@ class HomePageState extends State<HomePage> {
                       ),
                     ),
 
-                    // === Highest Card ===
+                    // Highest Card
                     Expanded(
                       child: Container(
                         height: 149,
@@ -273,7 +273,7 @@ class HomePageState extends State<HomePage> {
 
                 const SizedBox(height: 15),
 
-                // 🔹 Your Mission Header
+                // Your Mission Header
                 Padding(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 1, vertical: 3),
@@ -300,7 +300,7 @@ class HomePageState extends State<HomePage> {
 
                 const SizedBox(height: 3),
 
-                // 🔹 Mission Card
+                // Mission Card
                 Container(
                   width: double.infinity,
                   padding:
@@ -449,7 +449,7 @@ class HomePageState extends State<HomePage> {
                       ),
                       const SizedBox(height: 14),
 
-                      // 🔹 Notifikasi baris pertama
+                      //  Notifikasi baris pertama
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
@@ -460,7 +460,7 @@ class HomePageState extends State<HomePage> {
                           ),
                           const SizedBox(width: 10),
 
-                          // 🔹 Teks nama + komentar
+                          // 🔹Teks nama + komentar
                           Expanded(
                             child: Text(
                               'Eric Sohn comment: Busett',
@@ -475,7 +475,7 @@ class HomePageState extends State<HomePage> {
 
                           const SizedBox(width: 10),
 
-                          // 🔹 Teks waktu di kanan
+                          //  Teks waktu di kanan
                           const Text(
                             '2 days ago',
                             style: TextStyle(
@@ -490,7 +490,7 @@ class HomePageState extends State<HomePage> {
                       const SizedBox(height: 10),
                       Divider(color: Colors.white.withOpacity(0.4)),
 
-                      // 🔹 Notifikasi baris kedua (contoh lain)
+                      //  Notifikasi baris kedua
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
