@@ -342,7 +342,7 @@ class Profile extends StatelessWidget {
 
                 const SizedBox(height: 3),
 
-                // 🔹 Mission Card
+                // Mission Card
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Container(
