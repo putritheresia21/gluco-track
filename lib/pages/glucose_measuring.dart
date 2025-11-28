@@ -296,11 +296,13 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
                 ],
               ),
               if (!useCurrentTime)
-                ElevatedButton(
-                  onPressed: pickDateTime,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF2C7796),
-                    shape: RoundedRectangleBorder(
+                GestureDetector(
+                  onTap: pickDateTime,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 14, horizontal: 14),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     padding: const EdgeInsets.symmetric(
