@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:glucotrack_app/models/GlucoseRecord.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
 class GlucoseMeasuring extends StatefulWidget {
   const GlucoseMeasuring({super.key});
 
-  @override 
+  @override
   State<GlucoseMeasuring> createState() => GlucoseMeasuringState();
 }
 
@@ -48,75 +48,206 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
     formKey.currentState!.save();
 
     if (!useCurrentTime && selectedDateTime == null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("Pilih Tanggal dan Waktu terlebih dahulu."),
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text("Pilih tanggal dan waktu terlebih dahulu.")),
+      );
       return;
     }
 
     final prefs = await SharedPreferences.getInstance();
-    final userId = prefs.getString('userId');
 
-    if (userId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("User belum login."),
-      ));
-      return;
-    }
+    String userId = prefs.getString('userId') ?? 'default_user';
 
-    final Record = Glucoserecord(
-      id: '', 
-      userId: userId, 
-      glucoseLevel: glucoseLevel!, 
-      timeStamp: useCurrentTime ? DateTime.now() : selectedDateTime!, 
+    final record = Glucoserecord(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      userId: userId,
+      glucoseLevel: glucoseLevel!,
+      timeStamp: useCurrentTime ? DateTime.now() : selectedDateTime!,
       condition: selectedCondition,
     );
-    
-    try {
-      await FirebaseFirestore.instance
-          .collection('glucose_records')
-          .add(Record.toMap());
 
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("Data glukosa berhasil disimpan."),
-      ));
+    try {
+      final String? recordsJson = prefs.getString('glucose_records');
+      List<Map<String, dynamic>> records = [];
+
+      if (recordsJson != null) {
+        records = List<Map<String, dynamic>>.from(json.decode(recordsJson));
+      }
+
+      records.add(record.toMap());
+
+      await prefs.setString('glucose_records', json.encode(records));
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Data glukosa berhasil disimpan.")),
+      );
       Navigator.pop(context);
     } catch (e) {
-      print('Error saat menyimpan: $e');
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("Gagal menyimpan data: $e"),
-      ));
+      print('Error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Gagal menyimpan data: $e")),
+      );
     }
   }
 
-  @override 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Catatan Glukosa"),
+      backgroundColor: const Color(0xFFF5F5F5),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(80),
+        child: ClipRRect(
+          borderRadius: const BorderRadius.only(
+            bottomLeft: Radius.circular(30),
+            bottomRight: Radius.circular(30),
+          ),
+          child: AppBar(
+            backgroundColor: const Color(0xFF2C7796),
+            title: const Padding(
+              padding: EdgeInsets.only(top: 20),
+              child: Text(
+                "Catatan Glukosa",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  fontSize: 24,
+                ),
+              ),
+            ),
+            centerTitle: true,
+            leading: Padding(
+              padding: const EdgeInsets.only(top: 15),
+              child: IconButton(
+                icon: const Icon(Icons.arrow_back, color: Colors.white),
+                iconSize: 30,
+                onPressed: () => Navigator.pop(context),
+              ),
+            ),
+          ),
+        ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
         child: Form(
           key: formKey,
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              TextFormField(
-                decoration: InputDecoration(labelText: "Kadar Gula Darah (mg/dL)"),
-                keyboardType: TextInputType.number,
-                validator: (value) {
-                  if (value == null || value.isEmpty) return "Kadar gula darah tidak boleh kosong";
-                  if (double.tryParse(value) == null) return "Masukkan angka yang valid";
-                  return null;
-                },
-                onSaved: (value) => glucoseLevel = double.tryParse(value!),
+              const Text(
+                "Kadar Gula Darah (mg/dL)",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Expanded(
+                    child: Stack(
+                      alignment: Alignment.centerRight,
+                      children: [
+                        TextFormField(
+                          decoration: InputDecoration(
+                            filled: true,
+                            fillColor: Colors.white,
+                            contentPadding: const EdgeInsets.only(
+                              left: 16,
+                              right: 110,
+                              top: 20,
+                              bottom: 20,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: const BorderSide(
+                                  color: Color(0xFF2C7796), width: 1.2),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: const BorderSide(
+                                  color: Color(0xFF2C7796), width: 1.2),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: const BorderSide(
+                                  color: Color(0xFF2C7796), width: 1.2),
+                            ),
+                          ),
+                          keyboardType: TextInputType.number,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Kadar gula darah tidak boleh kosong";
+                            }
+                            if (double.tryParse(value) == null) {
+                              return "Masukkan angka yang valid";
+                            }
+                            return null;
+                          },
+                          onSaved: (value) =>
+                              glucoseLevel = double.tryParse(value!),
+                        ),
+                        Positioned(
+                          right: 8,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFEC3E3E),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                onTap: () {
+                                  // Navigasi ke halaman deteksi gula darah invasif dengan IoT
+                                  // Navigator.push(
+                                  //   context,
+                                  //   MaterialPageRoute(
+                                  //     builder: (context) => IoTGlucoseDetectionPage(),
+                                  //   ),
+                                  // );
+                                },
+                                borderRadius: BorderRadius.circular(8),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 10,
+                                  ),
+                                  child: const Text(
+                                    "Otomatis",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                ],
+              ),
+              const SizedBox(height: 24),
+              const Text(
+                "Kondisi Waktu Pengukuran",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 8),
               DropdownButtonFormField<GlucoseCondition>(
                 value: selectedCondition,
                 items: GlucoseCondition.values.map((condition) {
                   return DropdownMenuItem(
                     value: condition,
-                    child: Text(condition == GlucoseCondition.beforeMeal ? 'Sebelum Makan' : 'Setelah Makan'),
+                    child: Text(condition == GlucoseCondition.beforeMeal
+                        ? 'BeforeMeal'
+                        : 'AfterMeal'),
                   );
                 }).toList(),
                 onChanged: (value) {
@@ -126,36 +257,78 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
                     });
                   }
                 },
-                decoration: InputDecoration(labelText: "Kondisi Waktu Pengukuran"),
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.white,
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide:
+                        const BorderSide(color: Color(0xFF2C7796), width: 1.2),
+                  ),
+                ),
               ),
-              SwitchListTile(
-                title: Text("Gunakan Waktu Saat Ini"),
-                value: useCurrentTime,
-                onChanged: (value) {
-                  setState(() {
-                    useCurrentTime = value;
-                  });
-                },
+              const SizedBox(height: 24),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    "Gunakan Waktu Saat ini",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  Switch(
+                    value: useCurrentTime,
+                    onChanged: (value) {
+                      setState(() {
+                        useCurrentTime = value;
+                      });
+                    },
+                    activeColor: const Color(0xFF2C7796),
+                  ),
+                ],
               ),
               if (!useCurrentTime)
                 ElevatedButton(
                   onPressed: pickDateTime,
-                  child: Text(selectedDateTime == null 
-                    ? "Pilih Tanggal & Waktu" 
-                    : "Tanggal dan Waktu: ${selectedDateTime!.toLocal()}"),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF2C7796),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 14, horizontal: 20),
+                  ),
+                  child: Text(
+                    selectedDateTime == null
+                        ? "Pilih Tanggal & Waktu"
+                        : "Tanggal & Waktu: ${selectedDateTime!.toLocal()}",
+                    style: const TextStyle(color: Colors.white),
+                  ),
                 ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  if (!useCurrentTime && selectedDateTime == null){
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("Pilih tanggal dan Waktu"))
-                    );
-                    return;
-                  }
-                  submit();
-                },
-                child: Text("Simpan"),
+              const SizedBox(height: 300),
+              Center(
+                child: ElevatedButton(
+                  onPressed: submit,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF2C7796),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                    minimumSize: const Size(double.infinity, 60),
+                  ),
+                  child: const Text(
+                    "Save",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
