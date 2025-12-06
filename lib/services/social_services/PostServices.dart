@@ -116,11 +116,9 @@ class PostService {
     int from = 0,
     int to = 19,
   }) async {
-    // 1) ambil posts
     final posts = await _fetchPostsRange(from, to);
     if (posts.isEmpty) return posts;
 
-    // (opsional) filter di sisi klien agar aman
     final filtered = posts
         .where((p) => (p['visibility'] ?? 'public') == 'public')
         .toList();

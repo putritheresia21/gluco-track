@@ -6,7 +6,7 @@ class SocialHeader extends StatefulWidget {
   final VoidCallback? onNewsPressed;
   final VoidCallback? onFeedPressed;
   final Function(String)? onSearchChanged;
-  final Map<String, Map<String, dynamic>> profiles;
+  final Map<String, dynamic> profiles;
 
   const SocialHeader({
     super.key,

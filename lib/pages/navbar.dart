@@ -3,8 +3,9 @@ import 'package:glucotrack_app/pages/calculator_page.dart';
 import 'package:glucotrack_app/pages/glucose_chart.dart';
 import 'package:glucotrack_app/pages/home_page.dart';
 import 'package:glucotrack_app/pages/login_page.dart';
-import 'package:glucotrack_app/pages/notification_page.dart';
+//import 'package:glucotrack_app/pages/notification_page.dart';
 import 'package:glucotrack_app/pages/profile.dart';
+import 'SocialMedia/feeds.dart';
 import 'package:glucotrack_app/pages/register_page.dart';
 
 import 'glucose_measuring.dart';
@@ -39,7 +40,7 @@ class CustomBottomNavState extends State<CustomBottomNav> {
     pages = [
       HomePage(),
       GlucoseChart(),
-      NotificationPage(),
+      PublicFeedPage(),
       Profile(),
     ];
   }

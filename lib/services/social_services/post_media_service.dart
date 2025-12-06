@@ -9,7 +9,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 final sb = Supabase.instance.client;
 
 class PostMediaService {
-  static const String bucket = 'post-images'; // pastikan sama dengan di Storage
+  static const String bucket = 'post-images'; 
 
   Future<String> uploadToStorage(File file, [String? userId]) async {
     final user = sb.auth.currentUser;
@@ -34,7 +34,7 @@ class PostMediaService {
           ),
         );
 
-    return path; // storage_path untuk disimpan di tabel
+    return path; 
   }
 
   String publicUrl(String storagePath) {
