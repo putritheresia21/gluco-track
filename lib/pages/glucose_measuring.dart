@@ -57,7 +57,6 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
 
     final prefs = await SharedPreferences.getInstance();
 
-    // Ambil userId atau gunakan default jika tidak ada
     String userId = prefs.getString('userId') ?? 'default_user';
 
     final record = Glucoserecord(
@@ -69,7 +68,6 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
     );
 
     try {
-      // Ambil data yang sudah ada
       final String? recordsJson = prefs.getString('glucose_records');
       List<Map<String, dynamic>> records = [];
 
@@ -77,10 +75,8 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
         records = List<Map<String, dynamic>>.from(json.decode(recordsJson));
       }
 
-      // Tambahkan record baru
       records.add(record.toMap());
 
-      // Simpan kembali
       await prefs.setString('glucose_records', json.encode(records));
 
       ScaffoldMessenger.of(context).showSnackBar(

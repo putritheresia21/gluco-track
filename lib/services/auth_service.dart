@@ -43,6 +43,19 @@ class AuthService{
       password: password,
       data: {'username': username},
     );
+    final user = response.user;
+    if (user == null) {
+      final payload = {
+         'id': user?.id,
+          'email': email,
+          'username': username.isEmpty ? '' : username,
+          'gender': 'male', 
+          'birth_date': DateTime(2000, 1, 1).toIso8601String(),
+          'age': 0,
+          'updated_at': DateTime.now().toUtc().toIso8601String(),
+      };
+      await client.from('profiles').upsert(payload);
+    }
     return response;
 
   //   final user = response.user;

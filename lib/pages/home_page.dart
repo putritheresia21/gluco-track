@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:glucotrack_app/models/User.dart';
 import 'package:glucotrack_app/pages/register_page.dart';
 import 'package:glucotrack_app/services/user_service.dart';
 import 'profile_page.dart';
 import 'package:glucotrack_app/pages/SocialMedia/feeds.dart';
+import 'package:glucotrack_app/services/auth_service.dart';
 
 //Semangat cukurukuuukkkk
 
@@ -12,9 +14,29 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> {
+  final AuthService authService = AuthService();
+  Map<String, dynamic>? userProfile;
+  bool loadingProfile = true;
+
   @override
   void initState() {
     super.initState();
+    loadProfile();
+  }
+
+  Future<void> loadProfile() async {
+    try{
+      final data = await authService.getMyProfile();
+      if (!mounted) return;
+      setState(() {
+        userProfile = data;
+        loadingProfile = false;
+      });
+    } catch (e) {
+      setState(() {
+        loadingProfile = false;
+      });
+    }
   }
 
   @override
@@ -33,7 +55,7 @@ class HomePageState extends State<HomePage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
-                  children: const [
+                  children:[
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -41,19 +63,21 @@ class HomePageState extends State<HomePage> {
                           'Hello,',
                           style: TextStyle(
                             color: Colors.black,
-                            fontSize: 40,
+                            fontSize: 30,
                             height: 1.0,
                           ),
                         ),
                         Text(
-                          'Milden!',
-                          style: TextStyle(
+                          loadingProfile
+                              ? '...'
+                              : (userProfile?['username'] ?? 'unknown'),
+                          style: const TextStyle(
                             color: Colors.black,
-                            fontSize: 50,
+                            fontSize: 40,
                             fontWeight: FontWeight.bold,
                             height: 1.0,
                           ),
-                        ),
+                        )
                       ],
                     ),
                     CircleAvatar(
@@ -116,7 +140,6 @@ class HomePageState extends State<HomePage> {
 
                 const SizedBox(height: 25),
 
-                // 🔹 Lowest & Highest Card
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
