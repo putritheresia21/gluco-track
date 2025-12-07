@@ -5,6 +5,7 @@ import 'package:glucotrack_app/services/user_service.dart';
 import 'profile_page.dart';
 import 'package:glucotrack_app/pages/SocialMedia/feeds.dart';
 import 'package:glucotrack_app/services/auth_service.dart';
+import 'package:glucotrack_app/Widget/status_bar_helper.dart';
 
 //Semangat cukurukuuukkkk
 
@@ -21,6 +22,7 @@ class HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    StatusBarHelper.setLightStatusBar();
     loadProfile();
   }
 

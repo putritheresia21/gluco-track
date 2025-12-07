@@ -5,6 +5,7 @@ import 'package:glucotrack_app/services/social_services/PostServices.dart';
 import 'package:glucotrack_app/Widget/post_composser.dart';
 import 'package:glucotrack_app/services/social_services/post_media_service.dart';
 import 'package:glucotrack_app/Widget/social_header.dart'; // Import widget header
+import 'package:glucotrack_app/Widget/status_bar_helper.dart';
 
 class PublicFeedPage extends StatefulWidget {
   const PublicFeedPage({super.key});
@@ -29,6 +30,7 @@ class _PublicFeedPageState extends State<PublicFeedPage> {
   @override
   void initState() {
     super.initState();
+    StatusBarHelper.setLightStatusBar();
     _load(reset: true);
   }
 

@@ -2,11 +2,46 @@ import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:shared_preferences/shared_preferences.dart'; //nanti boleh dipindah ngikut ke button logout
 import 'package:glucotrack_app/pages/login_page.dart';
+import 'package:glucotrack_app/services/auth_service.dart';
+import 'package:glucotrack_app/Widget/status_bar_helper.dart';
 import 'profile_page.dart'; //ini juga. sementara aku taruh sini dlu buat testing
 //Semangat cukurukuuukkkk
 
-class Profile extends StatelessWidget {
+class Profile extends StatefulWidget {
   const Profile({super.key});
+
+  @override
+  State<Profile> createState() => _ProfileState();
+}
+
+class _ProfileState extends State<Profile> {
+  final AuthService authService = AuthService();
+  String username = 'Loading...';
+  bool loadingUsername = true;
+
+  @override
+  void initState() {
+    super.initState();
+    StatusBarHelper.setDarkStatusBar();
+    loadUsername();
+  }
+
+  Future<void> loadUsername() async {
+    try {
+      final data = await authService.getMyProfile();
+      if (!mounted) return;
+      setState(() {
+        username = data?['username'] ?? 'User';
+        loadingUsername = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        username = 'User';
+        loadingUsername = false;
+      });
+    }
+  }
 
   void logout(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
@@ -83,7 +118,7 @@ class Profile extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    "Milden Hargrove",
+                                    loadingUsername ? '...' : username,
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 20,

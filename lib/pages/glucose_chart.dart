@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:glucotrack_app/models/GlucoseRecord.dart';
 import 'dart:convert';
 import 'package:intl/intl.dart';
+import 'package:glucotrack_app/Widget/status_bar_helper.dart';
 
 class GlucoseChart extends StatefulWidget {
   const GlucoseChart({super.key});
@@ -19,6 +20,7 @@ class _GlucoseChartState extends State<GlucoseChart> {
   @override
   void initState() {
     super.initState();
+    StatusBarHelper.setLightStatusBar();
     loadRecords();
   }
 

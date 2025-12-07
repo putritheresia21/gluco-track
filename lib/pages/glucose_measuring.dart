@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:glucotrack_app/Widget/custom_button.dart';
 import 'package:glucotrack_app/models/GlucoseRecord.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
@@ -310,26 +311,16 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
                   ),
                 ),
               const SizedBox(height: 300),
-              Center(
-                child: ElevatedButton(
-                  onPressed: submit,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF2C7796),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(25),
-                    ),
-                    minimumSize: const Size(double.infinity, 60),
-                  ),
-                  child: const Text(
-                    "Save",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
+              CustomButton(
+                  text: "Save",
+                  backgroundColor: const Color(0xFF2C7796),
+                  textColor: Colors.white,
+                  fontSize: 18,
+                  width: double.infinity,
+                  height: 60,
+                  borderRadius: 25,
+                  isLoading: false,
+                  onPressed: submit),
             ],
           ),
         ),
