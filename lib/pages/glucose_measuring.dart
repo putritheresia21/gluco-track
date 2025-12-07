@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:glucotrack_app/models/GlucoseRecord.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import 'package:glucotrack_app/pages/GlucosePrediction.dart';
 
 class GlucoseMeasuring extends StatefulWidget {
   const GlucoseMeasuring({super.key});
@@ -198,15 +199,16 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
                               color: Colors.transparent,
                               child: InkWell(
                                 onTap: () {
-                                  // Navigasi ke halaman deteksi gula darah invasif dengan IoT
-                                  // Navigator.push(
-                                  //   context,
-                                  //   MaterialPageRoute(
-                                  //     builder: (context) => IoTGlucoseDetectionPage(),
-                                  //   ),
-                                  // );
+                                 // Navigasi ke halaman deteksi gula darah invasif dengan IoT
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => Glucoseprediction(),
+                                    ),
+                                  );
                                 },
                                 borderRadius: BorderRadius.circular(8),
+                                
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 16,

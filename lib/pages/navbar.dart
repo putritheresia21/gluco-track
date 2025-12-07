@@ -6,6 +6,7 @@ import 'package:glucotrack_app/pages/login_page.dart';
 //import 'package:glucotrack_app/pages/notification_page.dart';
 import 'package:glucotrack_app/pages/profile.dart';
 import 'SocialMedia/feeds.dart';
+import 'package:glucotrack_app/pages/GlucosePrediction.dart';
 import 'package:glucotrack_app/pages/register_page.dart';
 
 import 'glucose_measuring.dart';
@@ -41,7 +42,7 @@ class CustomBottomNavState extends State<CustomBottomNav> {
       HomePage(),
       GlucoseChart(),
       PublicFeedPage(),
-      Profile(),
+      Glucoseprediction(),
     ];
   }
 
@@ -56,8 +57,8 @@ class CustomBottomNavState extends State<CustomBottomNav> {
     return Scaffold(
       body: pages[selectedIndex],
       floatingActionButton: Container(
-        width: 56,
-        height: 56,
+        width: 48,
+        height: 48,
         decoration: const BoxDecoration(
           shape: BoxShape.circle,
           gradient: LinearGradient(
