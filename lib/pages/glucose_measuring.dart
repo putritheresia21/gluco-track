@@ -4,6 +4,7 @@ import 'package:glucotrack_app/models/GlucoseRecord.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:glucotrack_app/pages/GlucosePrediction.dart';
+import 'package:glucotrack_app/pages/glucose_share_template.dart';
 
 class GlucoseMeasuring extends StatefulWidget {
   const GlucoseMeasuring({super.key});
@@ -14,10 +15,18 @@ class GlucoseMeasuring extends StatefulWidget {
 
 class GlucoseMeasuringState extends State<GlucoseMeasuring> {
   final formKey = GlobalKey<FormState>();
+  final TextEditingController glucoseController = TextEditingController();
   double? glucoseLevel;
   GlucoseCondition selectedCondition = GlucoseCondition.beforeMeal;
   bool useCurrentTime = true;
   DateTime? selectedDateTime;
+  bool isFromIoT = false;
+
+  @override
+  void dispose() {
+    glucoseController.dispose();
+    super.dispose();
+  }
 
   Future<void> pickDateTime() async {
     final DateTime? pickDate = await showDatePicker(
@@ -42,6 +51,103 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
           );
         });
       }
+    }
+  }
+
+  Future<void> showShareDialog() async {
+    final bool? shouldShare = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF2C7796).withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(
+                  Icons.share,
+                  color: Color(0xFF2C7796),
+                  size: 24,
+                ),
+              ),
+              const SizedBox(width: 12),
+              const Expanded(
+                child: Text(
+                  'Bagikan Hasil',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          content: const Text(
+            'Apakah Anda ingin membagikan hasil tes gula darah Anda saat ini?',
+            style: TextStyle(fontSize: 16),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              style: TextButton.styleFrom(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 12,
+                ),
+              ),
+              child: const Text(
+                'Tidak',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.grey,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF2C7796),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 12,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text(
+                'Ya, Bagikan',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (shouldShare == true) {
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => GlucoseShareTemplate(
+            glucoseLevel: glucoseLevel!,
+            condition: selectedCondition,
+            timestamp: useCurrentTime ? DateTime.now() : selectedDateTime!,
+            isFromIoT: isFromIoT,
+          ),
+        ),
+      );
     }
   }
 
@@ -84,7 +190,14 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Data glukosa berhasil disimpan.")),
       );
-      Navigator.pop(context);
+
+      // Show share dialog after successful save
+      await showShareDialog();
+
+      // Pop back to previous screen after share dialog completes
+      if (mounted) {
+        Navigator.pop(context);
+      }
     } catch (e) {
       print('Error: $e');
       ScaffoldMessenger.of(context).showSnackBar(
@@ -151,6 +264,7 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
                       alignment: Alignment.centerRight,
                       children: [
                         TextFormField(
+                          controller: glucoseController,
                           decoration: InputDecoration(
                             filled: true,
                             fillColor: Colors.white,
@@ -199,17 +313,36 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
                             child: Material(
                               color: Colors.transparent,
                               child: InkWell(
-                                onTap: () {
-                                 // Navigasi ke halaman deteksi gula darah invasif dengan IoT
-                                  Navigator.push(
+                                onTap: () async {
+                                  // Navigasi ke halaman deteksi gula darah invasif dengan IoT
+                                  final result = await Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => Glucoseprediction(),
                                     ),
                                   );
+
+                                  // Handle data from IoT measurement
+                                  if (result != null &&
+                                      result is Map<String, dynamic>) {
+                                    setState(() {
+                                      glucoseController.text =
+                                          result['glucoseLevel']
+                                              .toStringAsFixed(1);
+                                      glucoseLevel = result['glucoseLevel'];
+                                      isFromIoT = result['isFromIoT'] ?? false;
+                                    });
+
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                            "Data dari IoT berhasil dimuat"),
+                                        backgroundColor: Colors.green,
+                                      ),
+                                    );
+                                  }
                                 },
                                 borderRadius: BorderRadius.circular(8),
-                                
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 16,
@@ -234,6 +367,28 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
                   const SizedBox(width: 10),
                 ],
               ),
+              if (isFromIoT)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.sensors,
+                        size: 16,
+                        color: Colors.blue[700],
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        'Data dari Perangkat IoT',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.blue[700],
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               const SizedBox(height: 24),
               const Text(
                 "Kondisi Waktu Pengukuran",

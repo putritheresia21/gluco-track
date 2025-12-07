@@ -9,7 +9,7 @@ class Glucoseprediction extends StatefulWidget {
 
 class _GlucosepredictionState extends State<Glucoseprediction> {
   final SupabaseService _supabaseService = SupabaseService();
-  
+
   String status = 'idle'; // idle, measuring, success, error
   GlucoseData? glucoseData;
   String errorMessage = '';
@@ -28,7 +28,7 @@ class _GlucosepredictionState extends State<Glucoseprediction> {
     // Kirim trigger
     final triggerTime = DateTime.now();
     final triggerSent = await _supabaseService.sendMeasurementTrigger(userId);
-    
+
     if (!triggerSent) {
       setState(() {
         status = 'error';
@@ -64,6 +64,15 @@ class _GlucosepredictionState extends State<Glucoseprediction> {
         });
         break;
       }
+    }
+  }
+
+  void saveAndReturn() {
+    if (glucoseData != null) {
+      Navigator.pop(context, {
+        'glucoseLevel': glucoseData!.glucosePredict,
+        'isFromIoT': true,
+      });
     }
   }
 
@@ -114,8 +123,60 @@ class _GlucosepredictionState extends State<Glucoseprediction> {
 
               SizedBox(height: 30),
 
-              // Action Button
-              if (status != 'measuring')
+              // Action Buttons
+              if (status == 'success') ...[
+                // Save Button
+                ElevatedButton(
+                  onPressed: saveAndReturn,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                    foregroundColor: Colors.white,
+                    padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    elevation: 5,
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.save),
+                      SizedBox(width: 10),
+                      Text(
+                        'Simpan Hasil',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 15),
+                // Measure Again Button
+                ElevatedButton(
+                  onPressed: startMeasurement,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    foregroundColor: Colors.white,
+                    padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    elevation: 5,
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.refresh),
+                      SizedBox(width: 10),
+                      Text(
+                        'Ukur Lagi',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                ),
+              ] else if (status != 'measuring')
                 ElevatedButton(
                   onPressed: startMeasurement,
                   style: ElevatedButton.styleFrom(
@@ -133,13 +194,13 @@ class _GlucosepredictionState extends State<Glucoseprediction> {
                       Icon(Icons.play_arrow),
                       SizedBox(width: 10),
                       Text(
-                        status == 'success' ? 'Ukur Lagi' : 'Mulai Pengukuran',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        'Mulai Pengukuran',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
                 ),
-                
             ],
           ),
         ),
@@ -237,7 +298,8 @@ class _GlucosepredictionState extends State<Glucoseprediction> {
               decoration: BoxDecoration(
                 color: glucoseData!.getGlucoseColor().withOpacity(0.1),
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: glucoseData!.getGlucoseColor(), width: 2),
+                border:
+                    Border.all(color: glucoseData!.getGlucoseColor(), width: 2),
               ),
               child: Text(
                 glucoseData!.getGlucoseStatus(),
@@ -260,7 +322,8 @@ class _GlucosepredictionState extends State<Glucoseprediction> {
                   decoration: BoxDecoration(
                     color: glucoseData!.getConfidenceColor().withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: glucoseData!.getConfidenceColor()),
+                    border:
+                        Border.all(color: glucoseData!.getConfidenceColor()),
                   ),
                   child: Text(
                     glucoseData!.confidence,
