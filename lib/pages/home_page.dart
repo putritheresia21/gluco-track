@@ -166,7 +166,7 @@ class HomePageState extends State<HomePage> {
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 3),
+                            const SizedBox(height: 7),
                             Text(
                               'Thursday, 1 May 2025, 19:07',
                               style: TextStyle(
@@ -175,6 +175,7 @@ class HomePageState extends State<HomePage> {
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
+                            const SizedBox(height: 5),
                             const Row(
                               crossAxisAlignment: CrossAxisAlignment.baseline,
                               textBaseline: TextBaseline.alphabetic,
@@ -248,7 +249,7 @@ class HomePageState extends State<HomePage> {
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 3),
+                            const SizedBox(height: 7),
                             Text(
                               'Saturday, 3 May 2025, 14:00',
                               style: TextStyle(
