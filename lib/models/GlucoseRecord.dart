@@ -1,9 +1,14 @@
+enum GlucoseCondition { beforeMeal, afterMeal }
+
 class Glucoserecord {
   final String id;
   final String userId;
   final double glucoseLevel;
   final DateTime timeStamp;
   final GlucoseCondition condition;
+  final bool isFromIoT;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
 
   Glucoserecord({
     required this.id,
@@ -11,69 +16,60 @@ class Glucoserecord {
     required this.glucoseLevel,
     required this.timeStamp,
     required this.condition,
+    this.isFromIoT = false,
+    this.createdAt,
+    this.updatedAt,
   });
 
-  factory Glucoserecord.empty() {
-    return Glucoserecord(
-      id: '',
-      userId: '',
-      glucoseLevel: 0.0,
-      timeStamp: DateTime.now(),
-      condition: GlucoseCondition.beforeMeal,
-    );
-  }
-
-  // PERBAIKAN: Tambahkan 'id' dalam toMap
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'userId': userId,
+      'user_id': userId,
+      'glucose_level': glucoseLevel,
       'timestamp': timeStamp.toIso8601String(),
-      'glucoseLevel': glucoseLevel,
-      'condition': condition.name,
+      'condition': condition == GlucoseCondition.beforeMeal ? 'beforeMeal' : 'afterMeal',
+      'is_from_iot': isFromIoT,
     };
   }
 
-  // PERBAIKAN: fromMap yang menerima 2 parameter sesuai signature asli
-  factory Glucoserecord.fromMap(String id, Map<String, dynamic> map) {
-    final timestampStr = map['timestamp'];
-    final conditionStr = map['condition'];
+  factory Glucoserecord.fromMap(Map<String, dynamic> map) {
     return Glucoserecord(
-      id: id,
-      userId: map['userId'] ?? '',
-      glucoseLevel: (map['glucoseLevel'] ?? 0.0).toDouble(),
-      timeStamp:
-          timestampStr != null ? DateTime.parse(timestampStr) : DateTime.now(),
-      condition: GlucoseCondition.values.firstWhere(
-        (e) => e.name == conditionStr,
-        orElse: () => GlucoseCondition.beforeMeal,
-      ),
+      id: map['id'] as String,
+      userId: map['user_id'] as String,
+      glucoseLevel: (map['glucose_level'] as num).toDouble(),
+      timeStamp: DateTime.parse(map['timestamp'] as String),
+      condition: map['condition'] == 'beforeMeal' 
+          ? GlucoseCondition.beforeMeal 
+          : GlucoseCondition.afterMeal,
+      isFromIoT: map['is_from_iot'] as bool? ?? false,
+      createdAt: map['created_at'] != null 
+          ? DateTime.parse(map['created_at'] as String) 
+          : null,
+      updatedAt: map['updated_at'] != null 
+          ? DateTime.parse(map['updated_at'] as String) 
+          : null,
     );
   }
 
-  // TAMBAHAN: fromMapSimple untuk membaca data yang sudah ada 'id' di dalam map
-  factory Glucoserecord.fromMapSimple(Map<String, dynamic> map) {
-    final timestampStr = map['timestamp'];
-    final conditionStr = map['condition'];
+  Glucoserecord copyWith({
+    String? id,
+    String? userId,
+    double? glucoseLevel,
+    DateTime? timeStamp,
+    GlucoseCondition? condition,
+    bool? isFromIoT,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) {
     return Glucoserecord(
-      id: map['id'] ?? '',
-      userId: map['userId'] ?? '',
-      glucoseLevel: (map['glucoseLevel'] ?? 0.0).toDouble(),
-      timeStamp:
-          timestampStr != null ? DateTime.parse(timestampStr) : DateTime.now(),
-      condition: GlucoseCondition.values.firstWhere(
-        (e) => e.name == conditionStr,
-        orElse: () => GlucoseCondition.beforeMeal,
-      ),
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      glucoseLevel: glucoseLevel ?? this.glucoseLevel,
+      timeStamp: timeStamp ?? this.timeStamp,
+      condition: condition ?? this.condition,
+      isFromIoT: isFromIoT ?? this.isFromIoT,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
     );
   }
-}
-
-enum GlucoseCondition {
-  beforeMeal,
-  afterMeal,
-}
-
-bool isSameDay(DateTime a, DateTime b) {
-  return a.year == b.year && a.month == b.month && a.day == b.day;
 }
