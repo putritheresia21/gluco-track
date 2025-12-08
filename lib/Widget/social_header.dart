@@ -146,7 +146,6 @@ class _SocialHeaderState extends State<SocialHeader> {
               ),
             ],
           ),
-          // Search Bar (conditional)
           if (_isSearching) ...[
             const SizedBox(height: 12),
             TextField(
