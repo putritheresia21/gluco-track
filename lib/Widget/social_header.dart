@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:glucotrack_app/services/auth_service.dart';
 
 class SocialHeader extends StatefulWidget {
   final String currentPage; // 'feed' atau 'news'
   final VoidCallback? onNewsPressed;
   final VoidCallback? onFeedPressed;
   final Function(String)? onSearchChanged;
-  final Map<String, dynamic> profiles;
 
   const SocialHeader({
     super.key,
@@ -14,7 +13,6 @@ class SocialHeader extends StatefulWidget {
     this.onNewsPressed,
     this.onFeedPressed,
     this.onSearchChanged,
-    required this.profiles,
   });
 
   @override
@@ -24,6 +22,30 @@ class SocialHeader extends StatefulWidget {
 class _SocialHeaderState extends State<SocialHeader> {
   bool _isSearching = false;
   final TextEditingController _searchController = TextEditingController();
+  final AuthService _authService = AuthService();
+
+  Map<String, dynamic>? _currentUserProfile;
+  bool _isLoadingProfile = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserProfile();
+  }
+
+  Future<void> _loadUserProfile() async {
+    try {
+      final profile = await _authService.getMyProfile();
+      setState(() {
+        _currentUserProfile = profile;
+        _isLoadingProfile = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoadingProfile = false;
+      });
+    }
+  }
 
   @override
   void dispose() {
@@ -39,13 +61,9 @@ class _SocialHeaderState extends State<SocialHeader> {
 
   @override
   Widget build(BuildContext context) {
-    final currentUser = Supabase.instance.client.auth.currentUser;
-    final currentUserId = currentUser?.id;
-    final currentUserProfile =
-        currentUserId != null ? widget.profiles[currentUserId] : null;
     final currentUsername =
-        currentUserProfile?['username'] as String? ?? 'User';
-    final currentAvatarUrl = currentUserProfile?['avatar_url'] as String?;
+        _currentUserProfile?['username'] as String? ?? 'User';
+    final currentAvatarUrl = _currentUserProfile?['avatar_url'] as String?;
     final firstName = _getFirstName(currentUsername);
 
     return Container(
@@ -62,22 +80,28 @@ class _SocialHeaderState extends State<SocialHeader> {
           Row(
             children: [
               // Avatar
-              CircleAvatar(
-                radius: 28,
-                backgroundImage:
-                    (currentAvatarUrl != null && currentAvatarUrl.isNotEmpty)
-                        ? NetworkImage(currentAvatarUrl)
-                        : null,
-                child: (currentAvatarUrl == null || currentAvatarUrl.isEmpty)
-                    ? Text(
-                        firstName[0].toUpperCase(),
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                        ),
-                      )
-                    : null,
-              ),
+              _isLoadingProfile
+                  ? const CircleAvatar(
+                      radius: 28,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : CircleAvatar(
+                      radius: 28,
+                      backgroundImage: (currentAvatarUrl != null &&
+                              currentAvatarUrl.isNotEmpty)
+                          ? NetworkImage(currentAvatarUrl)
+                          : null,
+                      child:
+                          (currentAvatarUrl == null || currentAvatarUrl.isEmpty)
+                              ? Text(
+                                  firstName[0].toUpperCase(),
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20,
+                                  ),
+                                )
+                              : null,
+                    ),
               const SizedBox(width: 12),
               // Greeting Text
               Expanded(

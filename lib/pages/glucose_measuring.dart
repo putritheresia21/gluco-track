@@ -231,14 +231,14 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
               ),
             ),
             centerTitle: true,
-            leading: Padding(
-              padding: const EdgeInsets.only(top: 15),
-              child: IconButton(
-                icon: const Icon(Icons.arrow_back, color: Colors.white),
-                iconSize: 30,
-                onPressed: () => Navigator.pop(context),
-              ),
-            ),
+            // leading: Padding(
+            //   padding: const EdgeInsets.only(top: 15),
+            //   child: IconButton(
+            //     icon: const Icon(Icons.arrow_back, color: Colors.white),
+            //     iconSize: 30,
+            //     onPressed: () => Navigator.pop(context),
+            //   ),
+            // ),
           ),
         ),
       ),
@@ -467,7 +467,7 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
                     style: const TextStyle(color: Colors.white),
                   ),
                 ),
-              const SizedBox(height: 300),
+              const SizedBox(height: 260),
               CustomButton(
                   text: "Save",
                   backgroundColor: const Color(0xFF2C7796),

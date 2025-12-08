@@ -1,9 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:glucotrack_app/models/User.dart';
-import 'package:glucotrack_app/pages/register_page.dart';
-import 'package:glucotrack_app/services/user_service.dart';
-import 'profile_page.dart';
-import 'package:glucotrack_app/pages/SocialMedia/feeds.dart';
 import 'package:glucotrack_app/services/auth_service.dart';
 import 'package:glucotrack_app/Widget/status_bar_helper.dart';
 
@@ -191,12 +186,12 @@ class HomePageState extends State<HomePage> {
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 7),
+                            const SizedBox(height: 12),
                             Text(
                               'Thursday, 1 May 2025, 19:07',
                               style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 9,
+                                fontSize: 11,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -274,12 +269,12 @@ class HomePageState extends State<HomePage> {
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 7),
+                            const SizedBox(height: 12),
                             Text(
                               'Saturday, 3 May 2025, 14:00',
                               style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 9,
+                                fontSize: 11,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),

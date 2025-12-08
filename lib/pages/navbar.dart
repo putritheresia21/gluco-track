@@ -1,15 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:glucotrack_app/pages/calculator_page.dart';
-import 'package:glucotrack_app/pages/glucose_chart.dart';
 import 'package:glucotrack_app/pages/home_page.dart';
-import 'package:glucotrack_app/pages/login_page.dart';
-//import 'package:glucotrack_app/pages/notification_page.dart';
+import 'package:glucotrack_app/pages/glucose_chart.dart';
+import 'package:glucotrack_app/pages/glucose_measuring.dart';
+import 'package:glucotrack_app/pages/social_page.dart';
 import 'package:glucotrack_app/pages/profile.dart';
-import 'SocialMedia/feeds.dart';
-import 'package:glucotrack_app/pages/GlucosePrediction.dart';
-import 'package:glucotrack_app/pages/register_page.dart';
-
-import 'glucose_measuring.dart';
 
 class CustomBottomNav extends StatefulWidget {
   final String userId;
@@ -27,12 +21,14 @@ class CustomBottomNavState extends State<CustomBottomNav> {
   int selectedIndex = 0;
   late final List<Widget> pages;
 
-  List<String> labels = ["Home", "Chart", "News", "Profile"];
-  List<String> iconPaths = [
-    'assets/navbar/newhome.png',
-    'assets/navbar/newchart.png',
-    'assets/navbar/article.png',
-    'assets/navbar/newprofile.png',
+  List<String> labels = ["Home", "Chart", "Measure", "Social", "Profile"];
+
+  List<IconData> icons = [
+    Icons.home_rounded,
+    Icons.bar_chart_rounded,
+    Icons.favorite_rounded,
+    Icons.group_rounded,
+    Icons.person_rounded,
   ];
 
   @override
@@ -41,8 +37,9 @@ class CustomBottomNavState extends State<CustomBottomNav> {
     pages = [
       HomePage(),
       GlucoseChart(),
-      PublicFeedPage(),
-      Glucoseprediction(),
+      GlucoseMeasuring(),
+      SocialPage(),
+      Profile(),
     ];
   }
 
@@ -56,50 +53,13 @@ class CustomBottomNavState extends State<CustomBottomNav> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: pages[selectedIndex],
-      floatingActionButton: Container(
-        width: 48,
-        height: 48,
-        decoration: const BoxDecoration(
-          shape: BoxShape.circle,
-          gradient: LinearGradient(
-            colors: [Colors.black, Color(0xFF2C7796)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-        ),
-        child: RawMaterialButton(
-          shape: const CircleBorder(),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const GlucoseMeasuring()),
-            );
-          },
-          child: Image.asset(
-            'assets/navbar/calc2.png',
-            width: 28,
-            height: 38,
-            color: Colors.white,
-          ),
-        ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomAppBar(
-        shape: CircularNotchedRectangle(),
-        notchMargin: 8,
         child: Container(
           height: 70,
-          padding: EdgeInsets.symmetric(horizontal: 16),
+          padding: EdgeInsets.symmetric(horizontal: 8),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: List.generate(2, (index) => buildNavItem(index)),
-              ),
-              Row(
-                children: List.generate(2, (index) => buildNavItem(index + 2)),
-              ),
-            ],
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: List.generate(5, (index) => buildNavItem(index)),
           ),
         ),
       ),
@@ -114,18 +74,20 @@ class CustomBottomNavState extends State<CustomBottomNav> {
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Column(
           mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset(
-              iconPaths[index],
-              width: 24,
-              height: 24,
+            Icon(
+              icons[index],
+              size: 24,
               color: isActive ? Color(0xFF2C7796) : Colors.grey,
             ),
+            SizedBox(height: 4),
             Text(
               labels[index],
               style: TextStyle(
                 fontSize: 12,
                 color: isActive ? Color(0xFF2C7796) : Colors.grey,
+                fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
               ),
             ),
           ],

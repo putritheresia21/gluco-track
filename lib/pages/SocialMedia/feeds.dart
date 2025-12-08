@@ -4,11 +4,11 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:glucotrack_app/services/social_services/PostServices.dart';
 import 'package:glucotrack_app/Widget/post_composser.dart';
 import 'package:glucotrack_app/services/social_services/post_media_service.dart';
-import 'package:glucotrack_app/Widget/social_header.dart'; // Import widget header
 import 'package:glucotrack_app/Widget/status_bar_helper.dart';
 
 class PublicFeedPage extends StatefulWidget {
-  const PublicFeedPage({super.key});
+  final bool isInsideSocialPage;
+  const PublicFeedPage({super.key, this.isInsideSocialPage = false});
 
   @override
   State<PublicFeedPage> createState() => _PublicFeedPageState();
@@ -156,25 +156,6 @@ class _PublicFeedPageState extends State<PublicFeedPage> {
       backgroundColor: const Color(0xFFF5F5F5),
       body: Column(
         children: [
-          // Custom Header menggunakan SocialHeader widget
-          SocialHeader(
-            currentPage: 'feed',
-            profiles: _profiles,
-            onSearchChanged: _filterPosts,
-            onFeedPressed: () {
-              // Already on feed page
-            },
-            onNewsPressed: () {
-              // Navigate to News page
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('News page coming soon!'),
-                  duration: Duration(seconds: 1),
-                ),
-              );
-            },
-          ),
-          // Divider line
           Container(
             height: 1,
             color: Colors.grey.shade300,
