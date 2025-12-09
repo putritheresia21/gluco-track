@@ -4,7 +4,6 @@ import 'dart:async';
 class SupabaseService {
   final supabase = Supabase.instance.client;
   
-  // Kirim trigger ke ESP32
   Future<bool> sendMeasurementTrigger(String userId) async {
     try {
       print('🚀 Sending trigger to Supabase...');
@@ -22,7 +21,6 @@ class SupabaseService {
     }
   }
   
-  // Ambil hasil terbaru - SIMPLE, tanpa filter waktu
   Future<Map<String, dynamic>?> getLatestMeasurement(String userId) async {
     try {
       final response = await supabase
@@ -44,7 +42,6 @@ class SupabaseService {
     }
   }
   
-  // Polling - langsung ambil data terbaru saja
   Stream<Map<String, dynamic>?> pollForMeasurement(
     String userId,
     {int maxAttempts = 30}
@@ -54,7 +51,6 @@ class SupabaseService {
     
     print('🔄 Starting polling...');
     
-    // Ambil data terakhir SEBELUM trigger (untuk perbandingan)
     lastData = await getLatestMeasurement(userId);
     final lastId = lastData?['id'];
     print('📌 Last data ID: $lastId');
@@ -67,7 +63,6 @@ class SupabaseService {
       
       final currentData = await getLatestMeasurement(userId);
       
-      // Jika ada data baru (ID berbeda dari sebelumnya)
       if (currentData != null && currentData['id'] != lastId) {
         print('✅ NEW DATA FOUND!');
         yield currentData;

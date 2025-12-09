@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:glucotrack_app/Widget/custom_button.dart';
 import 'package:glucotrack_app/models/GlucoseRecord.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:convert';
+import 'package:glucotrack_app/services/GlucoseRepository.dart';
+import 'package:glucotrack_app/services/SupabaseService.dart';
 import 'package:glucotrack_app/pages/GlucosePrediction.dart';
 import 'package:glucotrack_app/pages/glucose_share_template.dart';
 
@@ -16,11 +16,14 @@ class GlucoseMeasuring extends StatefulWidget {
 class GlucoseMeasuringState extends State<GlucoseMeasuring> {
   final formKey = GlobalKey<FormState>();
   final TextEditingController glucoseController = TextEditingController();
+  final Glucoserepository _repository = Glucoserepository();
+  
   double? glucoseLevel;
   GlucoseCondition selectedCondition = GlucoseCondition.beforeMeal;
   bool useCurrentTime = true;
   DateTime? selectedDateTime;
   bool isFromIoT = false;
+  bool isLoading = false;
 
   @override
   void dispose() {
@@ -163,46 +166,69 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
       return;
     }
 
-    final prefs = await SharedPreferences.getInstance();
-
-    String userId = prefs.getString('userId') ?? 'default_user';
-
-    final record = Glucoserecord(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      userId: userId,
-      glucoseLevel: glucoseLevel!,
-      timeStamp: useCurrentTime ? DateTime.now() : selectedDateTime!,
-      condition: selectedCondition,
-    );
+    setState(() {
+      isLoading = true;
+    });
 
     try {
-      final String? recordsJson = prefs.getString('glucose_records');
-      List<Map<String, dynamic>> records = [];
+      // Get user ID from Supabase Auth
+      final userId = SupabaseService.client.auth.currentUser?.id ?? 'default_user';
 
-      if (recordsJson != null) {
-        records = List<Map<String, dynamic>>.from(json.decode(recordsJson));
-      }
-
-      records.add(record.toMap());
-
-      await prefs.setString('glucose_records', json.encode(records));
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Data glukosa berhasil disimpan.")),
+      final record = Glucoserecord(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        userId: userId,
+        glucoseLevel: glucoseLevel!,
+        timeStamp: useCurrentTime ? DateTime.now() : selectedDateTime!,
+        condition: selectedCondition,
+        isFromIoT: isFromIoT,
       );
 
-      // Show share dialog after successful save
-      await showShareDialog();
+      // Save to Supabase
+      final success = await _repository.insertGlucoseRecord(record);
 
-      // Pop back to previous screen after share dialog completes
-      if (mounted) {
-        Navigator.pop(context);
+      if (success) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Data glukosa berhasil disimpan."),
+              backgroundColor: Colors.green,
+            ),
+          );
+
+          // Show share dialog after successful save
+          await showShareDialog();
+
+          // Pop back to previous screen after share dialog completes
+          if (mounted) {
+            Navigator.pop(context, true); // Return true to indicate success
+          }
+        }
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Gagal menyimpan data ke database."),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
       }
     } catch (e) {
       print('Error: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Gagal menyimpan data: $e")),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Gagal menyimpan data: $e"),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
     }
   }
 
@@ -469,15 +495,16 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
                 ),
               const SizedBox(height: 260),
               CustomButton(
-                  text: "Save",
-                  backgroundColor: const Color(0xFF2C7796),
-                  textColor: Colors.white,
-                  fontSize: 18,
-                  width: double.infinity,
-                  height: 60,
-                  borderRadius: 25,
-                  isLoading: false,
-                  onPressed: submit),
+                text: "Save",
+                backgroundColor: const Color(0xFF2C7796),
+                textColor: Colors.white,
+                fontSize: 18,
+                width: double.infinity,
+                height: 60,
+                borderRadius: 25,
+                isLoading: isLoading,
+                onPressed: isLoading ? () {} : submit,
+              ),
             ],
           ),
         ),
