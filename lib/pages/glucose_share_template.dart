@@ -134,7 +134,7 @@ class _GlucoseShareTemplateState extends State<GlucoseShareTemplate> {
           centerTitle: true,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back, color: Colors.white),
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(context, 'back'),
           ),
         ),
         body: const Center(
@@ -164,7 +164,7 @@ class _GlucoseShareTemplateState extends State<GlucoseShareTemplate> {
         centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => Navigator.pop(context, 'back'),
         ),
       ),
       body: Center(

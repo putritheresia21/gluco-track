@@ -17,7 +17,7 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
   final formKey = GlobalKey<FormState>();
   final TextEditingController glucoseController = TextEditingController();
   final Glucoserepository _repository = Glucoserepository();
-  
+
   double? glucoseLevel;
   GlucoseCondition selectedCondition = GlucoseCondition.beforeMeal;
   bool useCurrentTime = true;
@@ -29,6 +29,18 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
   void dispose() {
     glucoseController.dispose();
     super.dispose();
+  }
+
+  // Method untuk clear form
+  void clearForm() {
+    setState(() {
+      glucoseController.clear();
+      glucoseLevel = null;
+      selectedCondition = GlucoseCondition.beforeMeal;
+      useCurrentTime = true;
+      selectedDateTime = null;
+      isFromIoT = false;
+    });
   }
 
   Future<void> pickDateTime() async {
@@ -58,8 +70,9 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
   }
 
   Future<void> showShareDialog() async {
-    final bool? shouldShare = await showDialog<bool>(
+    final result = await showDialog<String>(
       context: context,
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
           shape: RoundedRectangleBorder(
@@ -97,7 +110,7 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
+              onPressed: () => Navigator.of(context).pop('no'),
               style: TextButton.styleFrom(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 20,
@@ -114,7 +127,7 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
               ),
             ),
             ElevatedButton(
-              onPressed: () => Navigator.of(context).pop(true),
+              onPressed: () => Navigator.of(context).pop('yes'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF2C7796),
                 padding: const EdgeInsets.symmetric(
@@ -139,8 +152,8 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
       },
     );
 
-    if (shouldShare == true) {
-      await Navigator.push(
+    if (result == 'yes') {
+      final shareResult = await Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => GlucoseShareTemplate(
@@ -151,6 +164,14 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
           ),
         ),
       );
+
+      // Jika kembali dari share page, clear form
+      if (shareResult == 'back' || shareResult == null) {
+        clearForm();
+      }
+    } else if (result == 'no') {
+      // User memilih "Tidak", clear form
+      clearForm();
     }
   }
 
@@ -172,7 +193,8 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
 
     try {
       // Get user ID from Supabase Auth
-      final userId = SupabaseService.client.auth.currentUser?.id ?? 'default_user';
+      final userId =
+          SupabaseService.client.auth.currentUser?.id ?? 'default_user';
 
       final record = Glucoserecord(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
@@ -197,11 +219,6 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
 
           // Show share dialog after successful save
           await showShareDialog();
-
-          // Pop back to previous screen after share dialog completes
-          if (mounted) {
-            Navigator.pop(context, true); // Return true to indicate success
-          }
         }
       } else {
         if (mounted) {
@@ -257,14 +274,7 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
               ),
             ),
             centerTitle: true,
-            // leading: Padding(
-            //   padding: const EdgeInsets.only(top: 15),
-            //   child: IconButton(
-            //     icon: const Icon(Icons.arrow_back, color: Colors.white),
-            //     iconSize: 30,
-            //     onPressed: () => Navigator.pop(context),
-            //   ),
-            // ),
+            automaticallyImplyLeading: false,
           ),
         ),
       ),
