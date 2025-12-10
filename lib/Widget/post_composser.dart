@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:glucotrack_app/services/social_services/PostServices.dart';
+import 'package:glucotrack_app/services/gamification_service/gamification_service.dart';
 
 class PostComposer extends StatefulWidget {
   const PostComposer({super.key, this.onPosted});
@@ -15,6 +16,7 @@ class _PostComposerState extends State<PostComposer> {
   final _controller = TextEditingController();
   final _picker = ImagePicker();
   final _svc = PostService();
+  final _gamification = GamificationService.instance;
   final List<File> _images = [];
   bool _loading = false;
 
@@ -38,6 +40,10 @@ class _PostComposerState extends State<PostComposer> {
       } else {
         await _svc.createPostWithImages(body: text, files: _images);
       }
+
+      // Update gamification task
+      await _gamification.incrementTask(TaskType.socialPost);
+
       _controller.clear();
       _images.clear();
       widget.onPosted?.call();

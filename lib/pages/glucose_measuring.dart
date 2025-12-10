@@ -5,6 +5,7 @@ import 'package:glucotrack_app/services/GlucoseRepository.dart';
 import 'package:glucotrack_app/services/SupabaseService.dart';
 import 'package:glucotrack_app/pages/GlucosePrediction.dart';
 import 'package:glucotrack_app/pages/glucose_share_template.dart';
+import 'package:glucotrack_app/services/gamification_service/gamification_service.dart';
 
 class GlucoseMeasuring extends StatefulWidget {
   const GlucoseMeasuring({super.key});
@@ -17,6 +18,7 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
   final formKey = GlobalKey<FormState>();
   final TextEditingController glucoseController = TextEditingController();
   final Glucoserepository _repository = Glucoserepository();
+  final _gamification = GamificationService.instance;
 
   double? glucoseLevel;
   GlucoseCondition selectedCondition = GlucoseCondition.beforeMeal;
@@ -31,7 +33,6 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
     super.dispose();
   }
 
-  // Method untuk clear form
   void clearForm() {
     setState(() {
       glucoseController.clear();
@@ -165,12 +166,10 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
         ),
       );
 
-      // Jika kembali dari share page, clear form
       if (shareResult == 'back' || shareResult == null) {
         clearForm();
       }
     } else if (result == 'no') {
-      // User memilih "Tidak", clear form
       clearForm();
     }
   }
@@ -209,6 +208,13 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
       final success = await _repository.insertGlucoseRecord(record);
 
       if (success) {
+        // Update gamification task
+        if (isFromIoT) {
+          await _gamification.incrementTask(TaskType.iotGlucose);
+        } else {
+          await _gamification.incrementTask(TaskType.manualGlucose);
+        }
+
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:glucotrack_app/services/auth_service.dart';
+import 'package:glucotrack_app/services/gamification_service/gamification_service.dart';
 
 class SocialHeader extends StatefulWidget {
   final String currentPage; // 'feed' atau 'news'
@@ -23,14 +24,26 @@ class _SocialHeaderState extends State<SocialHeader> {
   bool _isSearching = false;
   final TextEditingController _searchController = TextEditingController();
   final AuthService _authService = AuthService();
+  final _gamification = GamificationService.instance;
 
   Map<String, dynamic>? _currentUserProfile;
   bool _isLoadingProfile = true;
+  bool _isLoadingGamification = true;
 
   @override
   void initState() {
     super.initState();
     _loadUserProfile();
+    _initializeGamification();
+  }
+
+  Future<void> _initializeGamification() async {
+    await _gamification.initialize();
+    if (mounted) {
+      setState(() {
+        _isLoadingGamification = false;
+      });
+    }
   }
 
   Future<void> _loadUserProfile() async {
@@ -59,12 +72,46 @@ class _SocialHeaderState extends State<SocialHeader> {
     return words.first;
   }
 
+  Color _getBadgeColor(BadgeLevel level) {
+    switch (level) {
+      case BadgeLevel.bronze:
+        return const Color(0xFFCD7F32);
+      case BadgeLevel.silver:
+        return const Color(0xFFC0C0C0);
+      case BadgeLevel.gold:
+        return const Color(0xFFFFD700);
+      case BadgeLevel.platinum:
+        return const Color(0xFFE5E4E2);
+      case BadgeLevel.diamond:
+        return const Color(0xFFB9F2FF);
+    }
+  }
+
+  IconData _getBadgeIcon(BadgeLevel level) {
+    switch (level) {
+      case BadgeLevel.bronze:
+        return Icons.workspace_premium;
+      case BadgeLevel.silver:
+        return Icons.military_tech;
+      case BadgeLevel.gold:
+        return Icons.emoji_events;
+      case BadgeLevel.platinum:
+        return Icons.stars;
+      case BadgeLevel.diamond:
+        return Icons.diamond;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final currentUsername =
         _currentUserProfile?['username'] as String? ?? 'User';
     final currentAvatarUrl = _currentUserProfile?['avatar_url'] as String?;
     final firstName = _getFirstName(currentUsername);
+
+    final currentBadge = _isLoadingGamification
+        ? BadgeLevel.bronze
+        : _gamification.getCurrentBadge();
 
     return Container(
       color: const Color(0xFFF5F5F5),
@@ -126,11 +173,11 @@ class _SocialHeaderState extends State<SocialHeader> {
                   ],
                 ),
               ),
-              // Gold Badge
+              // Badge
               Container(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
+                  horizontal: 12,
+                  vertical: 6,
                 ),
                 decoration: BoxDecoration(
                   color: Colors.white,
@@ -140,13 +187,36 @@ class _SocialHeaderState extends State<SocialHeader> {
                     width: 1,
                   ),
                 ),
-                child: const Text(
-                  'Gold',
-                  style: TextStyle(
-                    color: Color(0xFFD4A017),
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                  ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      _isLoadingGamification
+                          ? Icons.workspace_premium
+                          : _getBadgeIcon(currentBadge),
+                      color: _isLoadingGamification
+                          ? Colors.grey
+                          : _getBadgeColor(currentBadge),
+                      size: 18,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      _isLoadingGamification
+                          ? '...'
+                          : currentBadge
+                              .toString()
+                              .split('.')
+                              .last
+                              .toUpperCase(),
+                      style: TextStyle(
+                        color: _isLoadingGamification
+                            ? Colors.grey
+                            : _getBadgeColor(currentBadge),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(width: 12),

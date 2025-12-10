@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:path/path.dart';
-import 'package:shared_preferences/shared_preferences.dart'; //nanti boleh dipindah ngikut ke button logout
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:glucotrack_app/pages/login_page.dart';
 import 'package:glucotrack_app/services/auth_service.dart';
 import 'package:glucotrack_app/Widget/status_bar_helper.dart';
-import 'profile_page.dart'; //ini juga. sementara aku taruh sini dlu buat testing
+import 'package:glucotrack_app/pages/profile_page.dart';
+import 'package:glucotrack_app/services/gamification_service/gamification_service.dart';
+import 'package:glucotrack_app/Widget/gamification_widget/task_card_widget.dart';
+import 'package:glucotrack_app/pages/Gamification/task_detail_page.dart';
+import 'package:glucotrack_app/pages/Gamification/gamification_main_page.dart';
+
 //Semangat cukurukuuukkkk
 
 class Profile extends StatefulWidget {
@@ -16,14 +20,26 @@ class Profile extends StatefulWidget {
 
 class _ProfileState extends State<Profile> {
   final AuthService authService = AuthService();
+  final _gamification = GamificationService.instance;
   String username = 'Loading...';
   bool loadingUsername = true;
+  bool loadingGamification = true;
 
   @override
   void initState() {
     super.initState();
     StatusBarHelper.setDarkStatusBar();
     loadUsername();
+    _initializeGamification();
+  }
+
+  Future<void> _initializeGamification() async {
+    await _gamification.initialize();
+    if (mounted) {
+      setState(() {
+        loadingGamification = false;
+      });
+    }
   }
 
   Future<void> loadUsername() async {
@@ -43,6 +59,36 @@ class _ProfileState extends State<Profile> {
     }
   }
 
+  Color _getBadgeColor(BadgeLevel level) {
+    switch (level) {
+      case BadgeLevel.bronze:
+        return const Color(0xFFCD7F32);
+      case BadgeLevel.silver:
+        return const Color(0xFFC0C0C0);
+      case BadgeLevel.gold:
+        return const Color(0xFFFFD700);
+      case BadgeLevel.platinum:
+        return const Color(0xFFE5E4E2);
+      case BadgeLevel.diamond:
+        return const Color(0xFFB9F2FF);
+    }
+  }
+
+  IconData _getBadgeIcon(BadgeLevel level) {
+    switch (level) {
+      case BadgeLevel.bronze:
+        return Icons.workspace_premium;
+      case BadgeLevel.silver:
+        return Icons.military_tech;
+      case BadgeLevel.gold:
+        return Icons.emoji_events;
+      case BadgeLevel.platinum:
+        return Icons.stars;
+      case BadgeLevel.diamond:
+        return Icons.diamond;
+    }
+  }
+
   void logout(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();
@@ -59,20 +105,20 @@ class _ProfileState extends State<Profile> {
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
-          title: Text("Konfirmasi Logout"),
-          content: Text("Apakah Anda yakin ingin logout?"),
+          title: const Text("Konfirmasi Logout"),
+          content: const Text("Apakah Anda yakin ingin logout?"),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(dialogContext).pop();
               },
-              child: Text("Batal"),
+              child: const Text("Batal"),
             ),
             ElevatedButton(
               onPressed: () {
                 logout(context);
               },
-              child: Text("Logout"),
+              child: const Text("Logout"),
             ),
           ],
         );
@@ -82,6 +128,16 @@ class _ProfileState extends State<Profile> {
 
   @override
   Widget build(BuildContext context) {
+    // Get gamification data
+    final currentBadge = loadingGamification
+        ? BadgeLevel.bronze
+        : _gamification.getCurrentBadge();
+    final totalPoints =
+        loadingGamification ? 0 : _gamification.getTotalPoints();
+    final tasks = loadingGamification ? <MainTask>[] : _gamification.getTasks();
+    final completedTasks =
+        tasks.fold(0, (sum, task) => sum + task.completedSubTasks);
+
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
       body: SafeArea(
@@ -96,19 +152,19 @@ class _ProfileState extends State<Profile> {
                     Container(
                       height: 180,
                       width: double.infinity,
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         color: Color(0xFF2C7796),
                         borderRadius: BorderRadius.only(
                           bottomRight: Radius.circular(20),
                           bottomLeft: Radius.circular(20),
                         ),
                       ),
-                      padding: EdgeInsets.all(20),
+                      padding: const EdgeInsets.all(20),
                       child: Column(
                         children: [
                           Row(
                             children: [
-                              CircleAvatar(
+                              const CircleAvatar(
                                 radius: 43,
                                 backgroundImage:
                                     AssetImage('assets/profile/image.png'),
@@ -119,34 +175,63 @@ class _ProfileState extends State<Profile> {
                                 children: [
                                   Text(
                                     loadingUsername ? '...' : username,
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       color: Colors.white,
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                  Text(
+                                  const Text(
                                     "26 years old",
                                     style: TextStyle(
                                       color: Colors.white,
                                     ),
                                   ),
-                                  SizedBox(height: 5),
+                                  const SizedBox(height: 5),
+                                  // New Badge
                                   Container(
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 10, vertical: 5),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 12, vertical: 6),
                                     decoration: BoxDecoration(
                                       color: Colors.white,
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    child: Text(
-                                      "Gold",
-                                      style: TextStyle(
-                                        color: Color(0xFFF8B84E),
-                                        fontWeight: FontWeight.bold,
+                                      borderRadius: BorderRadius.circular(20),
+                                      border: Border.all(
+                                        color: Colors.grey.shade300,
+                                        width: 1,
                                       ),
                                     ),
-                                  )
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(
+                                          loadingGamification
+                                              ? Icons.workspace_premium
+                                              : _getBadgeIcon(currentBadge),
+                                          color: loadingGamification
+                                              ? Colors.grey
+                                              : _getBadgeColor(currentBadge),
+                                          size: 18,
+                                        ),
+                                        const SizedBox(width: 6),
+                                        Text(
+                                          loadingGamification
+                                              ? '...'
+                                              : currentBadge
+                                                  .toString()
+                                                  .split('.')
+                                                  .last
+                                                  .toUpperCase(),
+                                          style: TextStyle(
+                                            color: loadingGamification
+                                                ? Colors.grey
+                                                : _getBadgeColor(currentBadge),
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 ],
                               ),
                             ],
@@ -175,13 +260,21 @@ class _ProfileState extends State<Profile> {
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: const [
-                            _InfoColumn(value: "500", label: "Points"),
+                          children: [
+                            // Dynamic data from gamification
+                            _InfoColumn(
+                                value: loadingGamification
+                                    ? '...'
+                                    : totalPoints.toString(),
+                                label: "Points"),
                             _DividerLine(),
                             _InfoColumn(value: "4", label: "Days Streak"),
                             _DividerLine(),
                             _InfoColumn(
-                                value: "7", label: "Missions Completed"),
+                                value: loadingGamification
+                                    ? '...'
+                                    : completedTasks.toString(),
+                                label: "Missions Completed"),
                           ],
                         ),
                       ),
@@ -356,19 +449,34 @@ class _ProfileState extends State<Profile> {
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: const [
-                      Text(
+                    children: [
+                      const Text(
                         'Your Next Mission',
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      Text(
-                        'view all',
-                        style: TextStyle(
-                          color: Colors.blue,
-                          fontSize: 15,
+                      GestureDetector(
+                        onTap: () async {
+                          await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  const GamificationMainPage(),
+                            ),
+                          );
+                          setState(() {});
+                        },
+                        child: const Text(
+                          'view all',
+                          style: TextStyle(
+                            color: Colors.blue,
+                            fontSize: 15,
+                            decoration: TextDecoration.underline,
+                            decorationThickness: 2,
+                            decorationColor: Colors.blue,
+                          ),
                         ),
                       ),
                     ],
@@ -377,100 +485,44 @@ class _ProfileState extends State<Profile> {
 
                 const SizedBox(height: 3),
 
-                // Mission Card
+                // Mission Card dengan TaskCardWidget
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 15, vertical: 30),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF2C7796),
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.3),
-                          blurRadius: 6,
-                          offset: const Offset(0, 3),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              '7 Days Streak',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.star,
-                                  color: Colors.yellow,
-                                  size: 22,
+                  child: loadingGamification
+                      ? Container(
+                          height: 200,
+                          alignment: Alignment.center,
+                          child: const CircularProgressIndicator(),
+                        )
+                      : () {
+                          if (tasks.isEmpty) {
+                            return Container(
+                              height: 150,
+                              alignment: Alignment.center,
+                              child: const Text('No missions available'),
+                            );
+                          }
+
+                          final sortedTasks = List<MainTask>.from(tasks)
+                            ..sort((a, b) => b.progress.compareTo(a.progress));
+                          final displayTask = sortedTasks.first;
+
+                          return TaskCardWidget(
+                            task: displayTask,
+                            onSeeDetail: () async {
+                              await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      TaskDetailPage(task: displayTask),
                                 ),
-                                SizedBox(width: 4),
-                                Text(
-                                  '+100 Points',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 20),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text(
-                              '4/7 Days',
-                              style: TextStyle(
-                                color: Color(0xFFC9EEFF),
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            SizedBox(
-                              width: 120,
-                              height: 45,
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  print('Claim button pressed!');
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.white,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  elevation: 3,
-                                ),
-                                child: const Text(
-                                  'Claim',
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
+                              );
+                              setState(() {});
+                            },
+                          );
+                        }(),
                 ),
+
                 const SizedBox(height: 20),
 
                 Padding(
@@ -494,12 +546,11 @@ class _ProfileState extends State<Profile> {
                           ),
                         );
                       },
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16), // ⬅️ kasih jarak dalam
+                      child: const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: const [
+                          children: [
                             Text(
                               'Edit Profile',
                               style: TextStyle(
@@ -515,7 +566,7 @@ class _ProfileState extends State<Profile> {
                     ),
                   ),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: SizedBox(
@@ -532,12 +583,11 @@ class _ProfileState extends State<Profile> {
                       onPressed: () {
                         confirmLogout(context);
                       },
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16), // ⬅️ kasih jarak dalam
+                      child: const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: const [
+                          children: [
                             Text(
                               'Logout',
                               style: TextStyle(
@@ -553,6 +603,7 @@ class _ProfileState extends State<Profile> {
                     ),
                   ),
                 ),
+                const SizedBox(height: 30),
               ],
             ),
           ],

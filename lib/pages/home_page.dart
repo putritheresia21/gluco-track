@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:glucotrack_app/pages/Gamification/gamification_main_page.dart';
 import 'package:glucotrack_app/services/auth_service.dart';
 import 'package:glucotrack_app/Widget/status_bar_helper.dart';
+import 'package:glucotrack_app/services/gamification_service/gamification_service.dart';
+import 'package:glucotrack_app/Widget/gamification_widget/task_card_widget.dart';
+import 'package:glucotrack_app/pages/Gamification/task_detail_page.dart';
 
 //Semangat cukurukuuukkkk
-
 class HomePage extends StatefulWidget {
   @override
   State<HomePage> createState() => HomePageState();
@@ -11,14 +14,26 @@ class HomePage extends StatefulWidget {
 
 class HomePageState extends State<HomePage> {
   final AuthService authService = AuthService();
+  final _gamification = GamificationService.instance;
   Map<String, dynamic>? userProfile;
   bool loadingProfile = true;
+  bool loadingGamification = true;
 
   @override
   void initState() {
     super.initState();
     StatusBarHelper.setLightStatusBar();
     loadProfile();
+    _initializeGamification();
+  }
+
+  Future<void> _initializeGamification() async {
+    await _gamification.initialize();
+    if (mounted) {
+      setState(() {
+        loadingGamification = false;
+      });
+    }
   }
 
   Future<void> loadProfile() async {
@@ -308,7 +323,7 @@ class HomePageState extends State<HomePage> {
                   ],
                 ),
 
-                const SizedBox(height: 20),
+                const SizedBox(height: 25),
 
                 // Your Mission Header
                 Padding(
@@ -316,133 +331,75 @@ class HomePageState extends State<HomePage> {
                       const EdgeInsets.symmetric(horizontal: 1, vertical: 3),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: const [
-                      Text(
+                    children: [
+                      const Text(
                         'Your Mission',
                         style: TextStyle(
                           fontSize: 25,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      Text(
-                        'view all',
-                        style: TextStyle(
-                          color: Colors.blue,
-                          fontSize: 17,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 3),
-
-                // Mission Card
-                Container(
-                  width: double.infinity,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF2C7796),
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.3),
-                        blurRadius: 6,
-                        offset: const Offset(0, 3),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            '7 Days Streak',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
+                      GestureDetector(
+                        onTap: () async {
+                          await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  const GamificationMainPage(),
                             ),
-                          ),
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.star,
-                                color: Colors.yellow,
-                                size: 22,
-                              ),
-                              SizedBox(width: 4),
-                              Text(
-                                '+100 Points',
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(
-                            '4/7 Days',
-                            style: TextStyle(
-                              color: Color(0xFFC9EEFF),
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            // biar progress bar ngisi ruang sisa
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(20),
-                              child: const LinearProgressIndicator(
-                                value: 4 / 7,
-                                backgroundColor: Color(0xFFC7C6C6),
-                                valueColor:
-                                    AlwaysStoppedAnimation<Color>(Colors.white),
-                                minHeight: 14,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 18),
-
-                      //Tombol Claim
-                      ElevatedButton(
-                        onPressed: () {
-                          print('Claim button pressed!');
+                          );
+                          // Refresh state setelah kembali dari halaman gamification
+                          setState(() {});
                         },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          minimumSize: const Size(double.infinity, 45),
-                          elevation: 3,
-                        ),
                         child: const Text(
-                          'Claim',
+                          'view all',
                           style: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
+                            color: Colors.blue,
+                            fontSize: 17,
+                            decoration: TextDecoration.underline,
+                            decorationThickness: 2,
+                            decorationColor: Colors.blue,
                           ),
                         ),
                       ),
                     ],
                   ),
                 ),
-                SizedBox(height: 20),
+
+                const SizedBox(height: 7),
+
+                // Mission Card dengan TaskCardWidget
+                loadingGamification
+                    ? Container(
+                        height: 200,
+                        alignment: Alignment.center,
+                        child: const CircularProgressIndicator(),
+                      )
+                    : () {
+                        final tasks = _gamification.getTasks();
+                        // Tampilkan task pertama dengan progress paling banyak
+                        final sortedTasks = List<MainTask>.from(tasks)
+                          ..sort((a, b) => b.progress.compareTo(a.progress));
+                        final displayTask = sortedTasks.first;
+
+                        return TaskCardWidget(
+                          task: displayTask,
+                          onSeeDetail: () async {
+                            await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    TaskDetailPage(task: displayTask),
+                              ),
+                            );
+                            // Refresh state setelah kembali dari detail page
+                            setState(() {});
+                          },
+                        );
+                      }(),
+
+                const SizedBox(height: 20),
+
                 Padding(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 1, vertical: 3),
@@ -455,7 +412,7 @@ class HomePageState extends State<HomePage> {
                   ),
                 ),
 
-                SizedBox(height: 7),
+                SizedBox(height: 15),
                 Container(
                   width: double.infinity,
                   padding:
@@ -482,7 +439,7 @@ class HomePageState extends State<HomePage> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const SizedBox(height: 14),
+                      const SizedBox(height: 5),
 
                       //  Notifikasi 1
                       Row(
@@ -563,66 +520,3 @@ class HomePageState extends State<HomePage> {
     );
   }
 }
-
-                /* Mission Card 
-               Container(
-                  width: double.infinity,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF2C7796),
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.3),
-                        blurRadius: 6,
-                        offset: const Offset(0, 3),
-                      ),
-                    ],
-                  ),
-                  child: const Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '7 Days Streak',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 23,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height: 1),
-                      Text(
-                        '0/7 Days',
-                        style: TextStyle(
-                          color: Color(0xFFC9EEFF),
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height: 16),
-                    ],
-                  ),
-                )*/
-
-                   /*Tombol Claim
-                      Container(
-                        width: double.infinity,
-                        height: 45,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.7),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Center(
-                          child: Text(
-                            'Claim',
-                            style: TextStyle(
-                                color: Color(0xFF2C7796),
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),*/
