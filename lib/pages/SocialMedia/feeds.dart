@@ -8,7 +8,13 @@ import 'package:glucotrack_app/Widget/status_bar_helper.dart';
 
 class PublicFeedPage extends StatefulWidget {
   final bool isInsideSocialPage;
-  const PublicFeedPage({super.key, this.isInsideSocialPage = false});
+  final String searchQuery;
+
+  const PublicFeedPage({
+    super.key,
+    this.isInsideSocialPage = false,
+    this.searchQuery = '',
+  });
 
   @override
   State<PublicFeedPage> createState() => _PublicFeedPageState();
@@ -25,13 +31,20 @@ class _PublicFeedPageState extends State<PublicFeedPage> {
   bool _end = false;
   int _page = 0;
   final int _pageSize = 20;
-  String _searchQuery = '';
 
   @override
   void initState() {
     super.initState();
     StatusBarHelper.setLightStatusBar();
     _load(reset: true);
+  }
+
+  @override
+  void didUpdateWidget(PublicFeedPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.searchQuery != widget.searchQuery) {
+      _filterPosts(widget.searchQuery);
+    }
   }
 
   Future<void> _load({bool reset = false}) async {
@@ -93,7 +106,7 @@ class _PublicFeedPageState extends State<PublicFeedPage> {
       _mediaMap.addAll(mapped);
 
       _posts.addAll(rows);
-      _filteredPosts.addAll(rows);
+      _filterPosts(widget.searchQuery);
       if (rows.length < _pageSize) _end = true;
       _page++;
     } catch (e) {
@@ -106,14 +119,13 @@ class _PublicFeedPageState extends State<PublicFeedPage> {
   }
 
   Future<void> _refresh() {
-    _searchQuery = '';
     return _load(reset: true);
   }
 
   void _filterPosts(String query) {
     setState(() {
-      _searchQuery = query.toLowerCase();
-      if (_searchQuery.isEmpty) {
+      final searchQuery = query.toLowerCase();
+      if (searchQuery.isEmpty) {
         _filteredPosts.clear();
         _filteredPosts.addAll(_posts);
       } else {
@@ -124,7 +136,7 @@ class _PublicFeedPageState extends State<PublicFeedPage> {
           final profile = _profiles[authorId];
           final username =
               (profile?['username'] as String? ?? '').toLowerCase();
-          return body.contains(_searchQuery) || username.contains(_searchQuery);
+          return body.contains(searchQuery) || username.contains(searchQuery);
         }));
       }
     });
@@ -174,7 +186,7 @@ class _PublicFeedPageState extends State<PublicFeedPage> {
 
                   final i = index - 1;
                   if (i >= _filteredPosts.length) {
-                    if (!_end && _searchQuery.isEmpty) _load();
+                    if (!_end && widget.searchQuery.isEmpty) _load();
                     return _loading
                         ? const Padding(
                             padding: EdgeInsets.all(16),

@@ -4,15 +4,19 @@ import 'package:glucotrack_app/Pages/detail_article_page.dart';
 
 class NewsPage extends StatefulWidget {
   final bool isInsideSocialPage;
-  const NewsPage({super.key, this.isInsideSocialPage = false});
+  final String searchQuery;
+
+  const NewsPage({
+    super.key,
+    this.isInsideSocialPage = false,
+    this.searchQuery = '',
+  });
 
   @override
   State<NewsPage> createState() => _NewsPageState();
 }
 
 class _NewsPageState extends State<NewsPage> {
-  String _searchQuery = '';
-
   // Hardcoded articles data with full content
   final List<Map<String, dynamic>> _articles = [
     {
@@ -131,13 +135,13 @@ Make exercise something you look forward to, not a chore. Choose activities you 
   ];
 
   List<Map<String, dynamic>> get _filteredArticles {
-    if (_searchQuery.isEmpty) {
+    if (widget.searchQuery.isEmpty) {
       return _articles;
     }
     return _articles.where((article) {
       final title = article['title'].toString().toLowerCase();
       final preview = article['preview'].toString().toLowerCase();
-      final query = _searchQuery.toLowerCase();
+      final query = widget.searchQuery.toLowerCase();
       return title.contains(query) || preview.contains(query);
     }).toList();
   }
