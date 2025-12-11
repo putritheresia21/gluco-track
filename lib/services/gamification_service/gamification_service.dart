@@ -19,26 +19,19 @@ class SubTask {
   final int id;
   final int requiredCount;
   final int points;
-  int currentCount;
   bool claimed;
 
   SubTask({
     required this.id,
     required this.requiredCount,
     required this.points,
-    this.currentCount = 0,
     this.claimed = false,
   });
-
-  bool get isCompleted => currentCount >= requiredCount;
-  bool get canClaim => isCompleted && !claimed;
-  double get progress => currentCount / requiredCount;
 
   Map<String, dynamic> toJson() => {
         'id': id,
         'requiredCount': requiredCount,
         'points': points,
-        'currentCount': currentCount,
         'claimed': claimed,
       };
 
@@ -46,7 +39,6 @@ class SubTask {
         id: json['id'],
         requiredCount: json['requiredCount'],
         points: json['points'],
-        currentCount: json['currentCount'] ?? 0,
         claimed: json['claimed'] ?? false,
       );
 }
@@ -56,12 +48,14 @@ class MainTask {
   final String title;
   final String description;
   final List<SubTask> subTasks;
+  int currentCount;
 
   MainTask({
     required this.type,
     required this.title,
     required this.description,
     required this.subTasks,
+    this.currentCount = 0,
   });
 
   int get totalPoints =>
@@ -71,11 +65,18 @@ class MainTask {
   int get totalSubTasks => subTasks.length;
   double get progress => completedSubTasks / totalSubTasks;
 
+  List<SubTask> get claimableSubTasks {
+    return subTasks.where((subTask) {
+      return !subTask.claimed && currentCount >= subTask.requiredCount;
+    }).toList();
+  }
+
   Map<String, dynamic> toJson() => {
         'type': type.index,
         'title': title,
         'description': description,
         'subTasks': subTasks.map((t) => t.toJson()).toList(),
+        'currentCount': currentCount,
       };
 
   factory MainTask.fromJson(Map<String, dynamic> json) => MainTask(
@@ -84,6 +85,7 @@ class MainTask {
         description: json['description'],
         subTasks:
             (json['subTasks'] as List).map((t) => SubTask.fromJson(t)).toList(),
+        currentCount: json['currentCount'] ?? 0,
       );
 }
 
@@ -136,6 +138,26 @@ class GamificationService {
     if (tasksJson != null) {
       final List<dynamic> decoded = jsonDecode(tasksJson);
       _tasks = decoded.map((t) => MainTask.fromJson(t)).toList();
+
+      // Set currentCount berdasarkan subtask tertinggi yang sudah diclaim
+      bool needsSave = false;
+      for (var task in _tasks) {
+        if (task.currentCount == 0 && task.subTasks.any((st) => st.claimed)) {
+          // Cari requiredCount tertinggi dari subtask yang sudah diclaim
+          final claimedSubTasks =
+              task.subTasks.where((st) => st.claimed).toList();
+          if (claimedSubTasks.isNotEmpty) {
+            task.currentCount = claimedSubTasks
+                .map((st) => st.requiredCount)
+                .reduce((a, b) => a > b ? a : b);
+            needsSave = true;
+          }
+        }
+      }
+
+      if (needsSave) {
+        await _saveTasks();
+      }
     } else {
       _tasks = _createDefaultTasks();
       await _saveTasks();
@@ -207,21 +229,19 @@ class GamificationService {
   Future<void> incrementTask(TaskType type) async {
     final task = _tasks.firstWhere((t) => t.type == type);
 
-    for (var subTask in task.subTasks) {
-      if (!subTask.claimed && subTask.currentCount < subTask.requiredCount) {
-        subTask.currentCount++;
-        break;
-      }
+    if (task.currentCount < 10) {
+      task.currentCount++;
+      await _saveTasks();
     }
-
-    await _saveTasks();
   }
 
   Future<bool> claimSubTask(TaskType type, int subTaskId) async {
     final task = _tasks.firstWhere((t) => t.type == type);
     final subTask = task.subTasks.firstWhere((st) => st.id == subTaskId);
 
-    if (!subTask.canClaim) return false;
+    if (subTask.claimed || task.currentCount < subTask.requiredCount) {
+      return false;
+    }
 
     subTask.claimed = true;
     _totalPoints += subTask.points;

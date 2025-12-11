@@ -150,6 +150,7 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
                   ...uncompletedTasks.map((subTask) => _SubTaskCard(
                         subTask: subTask,
                         title: _getSubTaskTitle(subTask.requiredCount),
+                        currentCount: widget.task.currentCount,
                         onClaim: () => _claimSubTask(subTask),
                         claiming: _claiming,
                       )),
@@ -167,6 +168,7 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
                     ...completedTasks.map((subTask) => _SubTaskCard(
                           subTask: subTask,
                           title: _getSubTaskTitle(subTask.requiredCount),
+                          currentCount: widget.task.currentCount,
                           onClaim: () {},
                           claiming: false,
                         )),
@@ -185,15 +187,20 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
 class _SubTaskCard extends StatelessWidget {
   final SubTask subTask;
   final String title;
+  final int currentCount;
   final VoidCallback onClaim;
   final bool claiming;
 
   const _SubTaskCard({
     required this.subTask,
     required this.title,
+    required this.currentCount,
     required this.onClaim,
     required this.claiming,
   });
+
+  bool get canClaim =>
+      !subTask.claimed && currentCount >= subTask.requiredCount;
 
   @override
   Widget build(BuildContext context) {
@@ -284,7 +291,7 @@ class _SubTaskCard extends StatelessWidget {
                 size: 24,
               ),
             )
-          else if (subTask.canClaim)
+          else if (canClaim)
             ElevatedButton(
               onPressed: claiming ? null : onClaim,
               style: ElevatedButton.styleFrom(
@@ -326,7 +333,7 @@ class _SubTaskCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
-                '${subTask.currentCount}/${subTask.requiredCount}',
+                '$currentCount/${subTask.requiredCount}',
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
