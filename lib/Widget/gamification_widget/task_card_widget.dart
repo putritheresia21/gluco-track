@@ -38,132 +38,136 @@ class TaskCardWidget extends StatelessWidget {
           ),
         ],
       ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onSeeDetail,
-          borderRadius: BorderRadius.circular(20),
-          child: Stack(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+      child: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
                   children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            task.title,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            '+${task.maxPoints} Points',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        Text(
-                          '${task.completedSubTasks}/${task.totalSubTasks} Tasks',
-                          style: TextStyle(
-                            color: Colors.white.withOpacity(0.9),
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const Spacer(),
-                        Text(
-                          '${task.totalPoints}/${task.maxPoints} pts',
-                          style: TextStyle(
-                            color: Colors.white.withOpacity(0.9),
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: LinearProgressIndicator(
-                        value: task.progress,
-                        minHeight: 10,
-                        backgroundColor: Colors.white.withOpacity(0.3),
-                        valueColor: const AlwaysStoppedAnimation<Color>(
-                          Color(0xFF7CB342),
+                    Expanded(
+                      child: Text(
+                        task.title,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
-                    const SizedBox(height: 16),
                     Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Colors.white.withOpacity(0.2),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: const Text(
-                        'See Detail',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Color(0xFF2C7796),
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+                      child: Text(
+                        '+${task.maxPoints} Points',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),
                   ],
                 ),
-              ),
-              if (hasClaimableSubtask)
-                Positioned(
-                  top: 12,
-                  right: 12,
-                  child: Container(
-                    width: 16,
-                    height: 16,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF7CB342),
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: Colors.white,
-                        width: 2,
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Text(
+                      '${task.completedSubTasks}/${task.totalSubTasks} Tasks',
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.9),
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
                       ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFF7CB342).withOpacity(0.5),
-                          blurRadius: 4,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
+                    ),
+                    const Spacer(),
+                    Text(
+                      '${task.totalPoints}/${task.maxPoints} pts',
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.9),
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: LinearProgressIndicator(
+                    value: task.progress,
+                    minHeight: 10,
+                    backgroundColor: Colors.white.withOpacity(0.3),
+                    valueColor: const AlwaysStoppedAnimation<Color>(
+                      Colors.white,
                     ),
                   ),
                 ),
-            ],
+                const SizedBox(height: 16),
+                Material(
+                  color: Colors.transparent,
+                  child: Ink(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: InkWell(
+                      onTap: onSeeDetail,
+                      borderRadius: BorderRadius.circular(12),
+                      splashColor: const Color(0xFF2C7796).withOpacity(0.2),
+                      highlightColor: const Color(0xFF2C7796).withOpacity(0.1),
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        child: const Text(
+                          'See Detail',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Color(0xFF2C7796),
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
+          if (hasClaimableSubtask)
+            Positioned(
+              top: 12,
+              right: 12,
+              child: Container(
+                width: 16,
+                height: 16,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF7CB342),
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: Colors.white,
+                    width: 2,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF7CB342).withOpacity(0.5),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }

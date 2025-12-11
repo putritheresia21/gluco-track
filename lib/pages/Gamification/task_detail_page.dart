@@ -134,7 +134,7 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
                       minHeight: 12,
                       backgroundColor: Colors.white.withOpacity(0.3),
                       valueColor: const AlwaysStoppedAnimation<Color>(
-                        Color(0xFF7CB342),
+                        Color(0xFFFFFFFF),
                       ),
                     ),
                   ),

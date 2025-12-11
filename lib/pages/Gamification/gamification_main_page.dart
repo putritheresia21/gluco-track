@@ -53,6 +53,13 @@ class _GamificationMainPageState extends State<GamificationMainPage> {
           ),
           child: AppBar(
             backgroundColor: const Color(0xFF2C7796),
+            leading: Padding(
+              padding: const EdgeInsets.only(top: 20),
+              child: IconButton(
+                icon: const Icon(Icons.arrow_back, color: Colors.white),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ),
             title: const Padding(
               padding: EdgeInsets.only(top: 20),
               child: Text(

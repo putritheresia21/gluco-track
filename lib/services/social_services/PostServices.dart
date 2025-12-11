@@ -17,8 +17,8 @@ class PostService {
     final row = await sb
         .from('posts')
         .insert({
-          'author_id': user.id,   // pastikan kolom DB sudah author_id
-          'body': body,           // dan kolom 'body'
+          'author_id': user.id, // pastikan kolom DB sudah author_id
+          'body': body, // dan kolom 'body'
           'visibility': 'public', // default public
         })
         .select('id')
@@ -104,6 +104,8 @@ class PostService {
     return {for (final r in list) r['id'] as String: r};
   }
 
+  String? getCurrentUserId() => sb.auth.currentUser?.id;
+
   /// ====== READ (public feed lengkap: posts + images + profile) ======
   ///
   /// return: List<Map> dengan shape:
@@ -119,16 +121,16 @@ class PostService {
     final posts = await _fetchPostsRange(from, to);
     if (posts.isEmpty) return posts;
 
-    final filtered = posts
-        .where((p) => (p['visibility'] ?? 'public') == 'public')
-        .toList();
+    final filtered =
+        posts.where((p) => (p['visibility'] ?? 'public') == 'public').toList();
 
     if (filtered.isEmpty) return [];
 
     final postIds = filtered.map((p) => p['id'] as String).toList();
     final mediaMap = await fetchMediaForPosts(postIds);
 
-    final authorIds = filtered.map((p) => p['author_id'] as String).toSet().toList();
+    final authorIds =
+        filtered.map((p) => p['author_id'] as String).toSet().toList();
     final profiles = await fetchProfilesByIds(authorIds);
 
     for (final p in filtered) {
@@ -138,7 +140,7 @@ class PostService {
       p['images'] = items.map((m) {
         final path = m['storage_path'] as String;
         return {
-          'url': mediaSvc.publicUrl(path),        
+          'url': mediaSvc.publicUrl(path),
           'order': m['order_index'],
         };
       }).toList();

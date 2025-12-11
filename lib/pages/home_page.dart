@@ -5,6 +5,12 @@ import 'package:glucotrack_app/Widget/status_bar_helper.dart';
 import 'package:glucotrack_app/services/gamification_service/gamification_service.dart';
 import 'package:glucotrack_app/Widget/gamification_widget/task_card_widget.dart';
 import 'package:glucotrack_app/pages/Gamification/task_detail_page.dart';
+import 'package:glucotrack_app/Widget/glucose_stats_card.dart';
+import 'package:glucotrack_app/services/GlucoseRepository.dart';
+import 'package:glucotrack_app/services/SupabaseService.dart';
+import 'package:glucotrack_app/models/GlucoseRecord.dart';
+import 'package:glucotrack_app/Widget/weekly_summary_card.dart';
+import 'package:glucotrack_app/pages/navbar.dart';
 
 //Semangat cukurukuuukkkk
 class HomePage extends StatefulWidget {
@@ -15,9 +21,13 @@ class HomePage extends StatefulWidget {
 class HomePageState extends State<HomePage> {
   final AuthService authService = AuthService();
   final _gamification = GamificationService.instance;
+  final _glucoseRepository = Glucoserepository();
   Map<String, dynamic>? userProfile;
   bool loadingProfile = true;
   bool loadingGamification = true;
+  bool loadingGlucoseStats = true;
+  Glucoserecord? lowestRecord;
+  Glucoserecord? highestRecord;
 
   @override
   void initState() {
@@ -25,6 +35,31 @@ class HomePageState extends State<HomePage> {
     StatusBarHelper.setLightStatusBar();
     loadProfile();
     _initializeGamification();
+    _loadGlucoseStats();
+  }
+
+  Future<void> _loadGlucoseStats() async {
+    try {
+      final userId =
+          SupabaseService.client.auth.currentUser?.id ?? 'default_user';
+      final lowest = await _glucoseRepository.getLowestGlucoseRecord(userId);
+      final highest = await _glucoseRepository.getHighestGlucoseRecord(userId);
+
+      if (mounted) {
+        setState(() {
+          lowestRecord = lowest;
+          highestRecord = highest;
+          loadingGlucoseStats = false;
+        });
+      }
+    } catch (e) {
+      print('Error loading glucose stats: $e');
+      if (mounted) {
+        setState(() {
+          loadingGlucoseStats = false;
+        });
+      }
+    }
   }
 
   Future<void> _initializeGamification() async {
@@ -71,7 +106,7 @@ class HomePageState extends State<HomePage> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        const Text(
                           'Hello,',
                           style: TextStyle(
                             color: Colors.black,
@@ -79,6 +114,7 @@ class HomePageState extends State<HomePage> {
                             height: 1.0,
                           ),
                         ),
+                        const SizedBox(height: 5),
                         Text(
                           loadingProfile
                               ? '...'
@@ -102,52 +138,22 @@ class HomePageState extends State<HomePage> {
                 const SizedBox(height: 30),
 
                 // Card Weekly Summary
-                Container(
-                  width: double.infinity,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFD6E5EA),
-                    borderRadius: BorderRadius.circular(25),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.3),
-                        blurRadius: 6,
-                        offset: const Offset(0, 3),
-                      ),
-                    ],
-                  ),
-                  child: const Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Saturday, 3 May 2025',
-                        style: TextStyle(
-                          color: Colors.black87,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
+                WeeklySummaryCard(
+                  isCompactView: true,
+                  onTap: () {
+                    final userId =
+                        SupabaseService.client.auth.currentUser?.id ?? '';
+                    final username = userProfile?['username'] ?? 'User';
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(
+                        builder: (context) => CustomBottomNav(
+                          userId: userId,
+                          username: username,
+                          initialSelectedIndex: 1,
                         ),
                       ),
-                      SizedBox(height: 1),
-                      Text(
-                        'Weekly Summary',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 26,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height: 16),
-                      Text(
-                        '155 mg/dL',
-                        style: TextStyle(
-                          color: Colors.redAccent,
-                          fontSize: 50,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ],
-                  ),
+                    );
+                  },
                 ),
 
                 const SizedBox(height: 25),
@@ -155,170 +161,18 @@ class HomePageState extends State<HomePage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    //  Lowest Card
-                    Expanded(
-                      child: Container(
-                        height: 149,
-                        margin: const EdgeInsets.only(right: 7),
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: const Color.fromRGBO(98, 206, 84, 1),
-                          borderRadius: BorderRadius.circular(25),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.5),
-                              blurRadius: 6,
-                              offset: const Offset(0, 3),
-                            ),
-                          ],
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                const Text(
-                                  'Lowest',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                Container(
-                                  width: 34,
-                                  height: 27,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.25),
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: const Icon(
-                                    Icons.trending_down,
-                                    color: Colors.white,
-                                    size: 20,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              'Thursday, 1 May 2025, 19:07',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 11,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            const SizedBox(height: 5),
-                            const Row(
-                              crossAxisAlignment: CrossAxisAlignment.baseline,
-                              textBaseline: TextBaseline.alphabetic,
-                              children: [
-                                Text(
-                                  '100',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 36,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                SizedBox(width: 10),
-                                Text(
-                                  'mg/dl',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
+                    GlucoseStatsCard(
+                      title: 'Lowest',
+                      glucoseRecord: lowestRecord,
+                      isLowest: true,
+                      isLoading: loadingGlucoseStats,
                     ),
-
-                    // Highest Card
-                    Expanded(
-                      child: Container(
-                        height: 149,
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFD9534F),
-                          borderRadius: BorderRadius.circular(25),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.5),
-                              blurRadius: 6,
-                              offset: const Offset(0, 3),
-                            ),
-                          ],
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                const Text(
-                                  'Highest',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                Container(
-                                  width: 34,
-                                  height: 27,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: const Icon(
-                                    Icons.trending_up,
-                                    color: Color(0xFFD9534F),
-                                    size: 20,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              'Saturday, 3 May 2025, 14:00',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 11,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            const Row(
-                              crossAxisAlignment: CrossAxisAlignment.baseline,
-                              textBaseline: TextBaseline.alphabetic,
-                              children: [
-                                Text(
-                                  '170',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 36,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                SizedBox(width: 10),
-                                Text(
-                                  'mg/dl',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
+                    const SizedBox(width: 14),
+                    GlucoseStatsCard(
+                      title: 'Highest',
+                      glucoseRecord: highestRecord,
+                      isLowest: false,
+                      isLoading: loadingGlucoseStats,
                     ),
                   ],
                 ),
@@ -512,6 +366,7 @@ class HomePageState extends State<HomePage> {
                     ],
                   ),
                 ),
+                const SizedBox(height: 20),
               ],
             ),
           ),

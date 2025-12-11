@@ -8,6 +8,10 @@ import 'package:glucotrack_app/services/gamification_service/gamification_servic
 import 'package:glucotrack_app/Widget/gamification_widget/task_card_widget.dart';
 import 'package:glucotrack_app/pages/Gamification/task_detail_page.dart';
 import 'package:glucotrack_app/pages/Gamification/gamification_main_page.dart';
+import 'package:glucotrack_app/Widget/glucose_stats_card.dart';
+import 'package:glucotrack_app/services/GlucoseRepository.dart';
+import 'package:glucotrack_app/services/SupabaseService.dart';
+import 'package:glucotrack_app/models/GlucoseRecord.dart';
 
 //Semangat cukurukuuukkkk
 
@@ -21,9 +25,13 @@ class Profile extends StatefulWidget {
 class _ProfileState extends State<Profile> {
   final AuthService authService = AuthService();
   final _gamification = GamificationService.instance;
+  final _glucoseRepository = Glucoserepository();
   String username = 'Loading...';
   bool loadingUsername = true;
   bool loadingGamification = true;
+  bool loadingGlucoseStats = true;
+  Glucoserecord? lowestRecord;
+  Glucoserecord? highestRecord;
 
   @override
   void initState() {
@@ -31,6 +39,31 @@ class _ProfileState extends State<Profile> {
     StatusBarHelper.setDarkStatusBar();
     loadUsername();
     _initializeGamification();
+    _loadGlucoseStats();
+  }
+
+  Future<void> _loadGlucoseStats() async {
+    try {
+      final userId =
+          SupabaseService.client.auth.currentUser?.id ?? 'default_user';
+      final lowest = await _glucoseRepository.getLowestGlucoseRecord(userId);
+      final highest = await _glucoseRepository.getHighestGlucoseRecord(userId);
+
+      if (mounted) {
+        setState(() {
+          lowestRecord = lowest;
+          highestRecord = highest;
+          loadingGlucoseStats = false;
+        });
+      }
+    } catch (e) {
+      print('Error loading glucose stats: $e');
+      if (mounted) {
+        setState(() {
+          loadingGlucoseStats = false;
+        });
+      }
+    }
   }
 
   Future<void> _initializeGamification() async {
@@ -289,155 +322,18 @@ class _ProfileState extends State<Profile> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      // Lowest Card
-                      Expanded(
-                        child: Container(
-                          height: 149,
-                          margin: const EdgeInsets.only(right: 7),
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: const Color.fromRGBO(98, 206, 84, 1),
-                            borderRadius: BorderRadius.circular(20),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.5),
-                                blurRadius: 6,
-                                offset: const Offset(0, 3),
-                              ),
-                            ],
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  const Text(
-                                    'Lowest',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  Container(
-                                    width: 34,
-                                    height: 27,
-                                    decoration: BoxDecoration(
-                                      color: Colors.white.withOpacity(0.25),
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    child: const Icon(
-                                      Icons.trending_down,
-                                      color: Colors.white,
-                                      size: 20,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 8),
-                              const Row(
-                                crossAxisAlignment: CrossAxisAlignment.baseline,
-                                textBaseline: TextBaseline.alphabetic,
-                                children: [
-                                  Text(
-                                    '100',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 36,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  SizedBox(width: 10),
-                                  Text(
-                                    'mg/dl',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
+                      GlucoseStatsCard(
+                        title: 'Lowest',
+                        glucoseRecord: lowestRecord,
+                        isLowest: true,
+                        isLoading: loadingGlucoseStats,
                       ),
-
-                      // Highest Card
-                      Expanded(
-                        child: Container(
-                          height: 149,
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFD9534F),
-                            borderRadius: BorderRadius.circular(20),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.5),
-                                blurRadius: 6,
-                                offset: const Offset(0, 3),
-                              ),
-                            ],
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  const Text(
-                                    'Highest',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  Container(
-                                    width: 34,
-                                    height: 27,
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    child: const Icon(
-                                      Icons.trending_up,
-                                      color: Color(0xFFD9534F),
-                                      size: 20,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 10),
-                              const Row(
-                                crossAxisAlignment: CrossAxisAlignment.baseline,
-                                textBaseline: TextBaseline.alphabetic,
-                                children: [
-                                  Text(
-                                    '170',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 36,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  SizedBox(width: 10),
-                                  Text(
-                                    'mg/dl',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
+                      const SizedBox(width: 14),
+                      GlucoseStatsCard(
+                        title: 'Highest',
+                        glucoseRecord: highestRecord,
+                        isLowest: false,
+                        isLoading: loadingGlucoseStats,
                       ),
                     ],
                   ),

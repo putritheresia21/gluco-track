@@ -8,17 +8,21 @@ import 'package:glucotrack_app/pages/profile.dart';
 class CustomBottomNav extends StatefulWidget {
   final String userId;
   final String username;
+  final int? initialSelectedIndex;
 
-  const CustomBottomNav(
-      {Key? key, required this.userId, required this.username})
-      : super(key: key);
+  const CustomBottomNav({
+    Key? key,
+    required this.userId,
+    required this.username,
+    this.initialSelectedIndex,
+  }) : super(key: key);
 
   @override
   CustomBottomNavState createState() => CustomBottomNavState();
 }
 
 class CustomBottomNavState extends State<CustomBottomNav> {
-  int selectedIndex = 0;
+  late int selectedIndex;
   late final List<Widget> pages;
 
   List<String> labels = ["Home", "Chart", "Measure", "Social", "Profile"];
@@ -34,6 +38,7 @@ class CustomBottomNavState extends State<CustomBottomNav> {
   @override
   void initState() {
     super.initState();
+    selectedIndex = widget.initialSelectedIndex ?? 0;
     pages = [
       HomePage(),
       GlucoseChart(),

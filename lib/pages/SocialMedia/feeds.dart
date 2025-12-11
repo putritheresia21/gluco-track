@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:glucotrack_app/services/social_services/PostServices.dart';
 import 'package:glucotrack_app/Widget/post_composser.dart';
 import 'package:glucotrack_app/services/social_services/post_media_service.dart';
@@ -27,6 +26,7 @@ class _PublicFeedPageState extends State<PublicFeedPage> {
   Map<String, List<Map<String, dynamic>>> _mediaMap = {};
   Map<String, Map<String, dynamic>> _profiles = {};
   final Set<String> _following = <String>{};
+  String? _currentUserId;
   bool _loading = false;
   bool _end = false;
   int _page = 0;
@@ -36,6 +36,7 @@ class _PublicFeedPageState extends State<PublicFeedPage> {
   void initState() {
     super.initState();
     StatusBarHelper.setLightStatusBar();
+    _currentUserId = _svc.getCurrentUserId();
     _load(reset: true);
   }
 
@@ -161,9 +162,6 @@ class _PublicFeedPageState extends State<PublicFeedPage> {
 
   @override
   Widget build(BuildContext context) {
-    final currentUser = Supabase.instance.client.auth.currentUser;
-    final currentUserId = currentUser?.id;
-
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
       body: Column(
@@ -187,12 +185,7 @@ class _PublicFeedPageState extends State<PublicFeedPage> {
                   final i = index - 1;
                   if (i >= _filteredPosts.length) {
                     if (!_end && widget.searchQuery.isEmpty) _load();
-                    return _loading
-                        ? const Padding(
-                            padding: EdgeInsets.all(16),
-                            child: Center(child: CircularProgressIndicator()),
-                          )
-                        : const SizedBox.shrink();
+                    return const SizedBox.shrink();
                   }
 
                   final p = _filteredPosts[i];
@@ -208,7 +201,7 @@ class _PublicFeedPageState extends State<PublicFeedPage> {
                           DateTime.now();
 
                   final isOwnPost =
-                      currentUserId != null && currentUserId == authorId;
+                      _currentUserId != null && _currentUserId == authorId;
 
                   print(
                       'DEBUG: Rendering post $postId with ${medias.length} media items');

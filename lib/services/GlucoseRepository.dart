@@ -52,14 +52,11 @@ class Glucoserepository {
       return [];
     }
   }
-  
+
   Future<Glucoserecord?> getGlucoseRecordById(String id) async {
     try {
-      final response = await supabase
-          .from('glucose_records')
-          .select()
-          .eq('id', id)
-          .single();
+      final response =
+          await supabase.from('glucose_records').select().eq('id', id).single();
       return Glucoserecord.fromMap(response);
     } catch (e) {
       print('Error fetching glucose record by ID: $e');
@@ -88,9 +85,8 @@ class Glucoserepository {
     GlucoseCondition condition,
   ) async {
     try {
-      final conditionStr = condition == GlucoseCondition.beforeMeal
-       ? 'beforeMeal' 
-       : 'afterMeal';
+      final conditionStr =
+          condition == GlucoseCondition.beforeMeal ? 'beforeMeal' : 'afterMeal';
 
       final response = await supabase
           .from('glucose_records')
@@ -158,7 +154,7 @@ class Glucoserepository {
     }
   }
 
-   Future<double?> getAverageGlucoseLevel(String userId) async {
+  Future<double?> getAverageGlucoseLevel(String userId) async {
     try {
       final records = await getAllGlucoseRecords(userId);
       if (records.isEmpty) return null;
@@ -195,6 +191,33 @@ class Glucoserepository {
         .stream(primaryKey: ['id'])
         .eq('user_id', userId)
         .order('timestamp', ascending: false)
-        .map((data) => data.map((record) => Glucoserecord.fromMap(record)).toList());
+        .map((data) =>
+            data.map((record) => Glucoserecord.fromMap(record)).toList());
+  }
+
+  Future<Glucoserecord?> getLowestGlucoseRecord(String userId) async {
+    try {
+      final records = await getAllGlucoseRecords(userId);
+      if (records.isEmpty) return null;
+
+      records.sort((a, b) => a.glucoseLevel.compareTo(b.glucoseLevel));
+      return records.first;
+    } catch (e) {
+      print('Error fetching lowest glucose record: $e');
+      return null;
+    }
+  }
+
+  Future<Glucoserecord?> getHighestGlucoseRecord(String userId) async {
+    try {
+      final records = await getAllGlucoseRecords(userId);
+      if (records.isEmpty) return null;
+
+      records.sort((a, b) => b.glucoseLevel.compareTo(a.glucoseLevel));
+      return records.first;
+    } catch (e) {
+      print('Error fetching highest glucose record: $e');
+      return null;
+    }
   }
 }

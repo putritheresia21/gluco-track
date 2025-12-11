@@ -109,7 +109,7 @@ class profilePageState extends State<ProfilePage> {
             title: const Padding(
               padding: EdgeInsets.only(top: 20),
               child: Text(
-                "Catatan Glukosa",
+                "Update Your Profile",
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
