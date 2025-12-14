@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:glucotrack_app/Widget/article_card.dart';
-import 'package:glucotrack_app/Pages/detail_article_page.dart';
+import 'package:glucotrack_app/Widget/ContentCard.dart';
+import 'package:glucotrack_app/Widget/ContentList.dart';
+import 'package:glucotrack_app/pages/detail_article_page.dart';
 
 class NewsPage extends StatefulWidget {
   final bool isInsideSocialPage;
@@ -12,7 +13,7 @@ class NewsPage extends StatefulWidget {
     this.searchQuery = '',
   });
 
-  @override
+@override
   State<NewsPage> createState() => _NewsPageState();
 }
 
@@ -158,53 +159,57 @@ Make exercise something you look forward to, not a chore. Choose activities you 
           ),
           // Articles List
           Expanded(
-            child: _filteredArticles.isEmpty
-                ? const Center(
-                    child: Text(
-                      'No articles found',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.black54,
-                      ),
-                    ),
-                  )
-                : ListView.builder(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 20,
-                    ),
-                    itemCount: _filteredArticles.length,
-                    itemBuilder: (context, index) {
-                      final article = _filteredArticles[index];
-                      return ArticleCard(
-                        publisherName: article['publisherName'],
-                        publisherAvatar: article['publisherAvatar'],
-                        publishedTime: article['publishedTime'],
-                        title: article['title'],
-                        preview: article['preview'],
-                        imageUrl: article['imageUrl'],
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ArticleDetailPage(
-                                articleId: article['id'],
-                                title: article['title'],
-                                publisherName: article['publisherName'],
-                                publishedDate: article['publishedDate'],
-                                imageUrl: article['imageUrl'],
-                                caption: article['caption'],
-                                content: article['content'],
-                              ),
-                            ),
-                          );
-                        },
-                        onMorePressed: () {
-                          // Show options menu (nnti ajh lh)
-                        },
-                      );
-                    },
+            child: ContentList<Map<String, dynamic>>(
+              items: _filteredArticles,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+              emptyWidget: const Center(
+                child: Text(
+                  'No articles found',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.black54,
                   ),
+                ),
+              ),
+              itemBuilder: (context, article, index) {
+                return ContentCard(
+                  headerAvatar: CircleAvatar(
+                    radius: 20,
+                    backgroundImage: AssetImage(article['publisherAvatar']),
+                  ),
+                  headerTitle: article['publisherName'],
+                  headerSubtitle: article['publishedTime'],
+                  headerTrailing: IconButton(
+                    onPressed: () {
+                      // Show options menu (nnti ajh lh)
+                    },
+                    icon: const Icon(Icons.more_vert, color: Colors.black54),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+                  title: article['title'],
+                  body: article['preview'],
+                  imageUrls: [article['imageUrl']],
+                  imageInline: true,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ArticleDetailPage(
+                          articleId: article['id'],
+                          title: article['title'],
+                          publisherName: article['publisherName'],
+                          publishedDate: article['publishedDate'],
+                          imageUrl: article['imageUrl'],
+                          caption: article['caption'],
+                          content: article['content'],
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
           ),
         ],
       ),

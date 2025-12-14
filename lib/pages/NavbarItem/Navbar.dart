@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:glucotrack_app/pages/home_page.dart';
-import 'package:glucotrack_app/pages/glucose_chart.dart';
+import 'package:glucotrack_app/pages/HomePage.dart';
+import 'package:glucotrack_app/pages/NavbarItem/GlucoseChartPage.dart';
 import 'package:glucotrack_app/pages/glucose_measuring.dart';
-import 'package:glucotrack_app/pages/social_page.dart';
+import 'package:glucotrack_app/pages/SocialPage.dart';
 import 'package:glucotrack_app/pages/profile.dart';
 
 class CustomBottomNav extends StatefulWidget {
   final String userId;
   final String username;
   final int? initialSelectedIndex;
+  final double? navbarHeight;
 
   const CustomBottomNav({
     Key? key,
     required this.userId,
     required this.username,
     this.initialSelectedIndex,
+    this.navbarHeight,
   }) : super(key: key);
 
   @override
@@ -56,15 +58,21 @@ class CustomBottomNavState extends State<CustomBottomNav> {
 
   @override
   Widget build(BuildContext context) {
+    final navHeight = widget.navbarHeight ?? 52;
+    
     return Scaffold(
       body: pages[selectedIndex],
-      bottomNavigationBar: BottomAppBar(
-        child: Container(
-          height: 70,
-          padding: EdgeInsets.symmetric(horizontal: 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: List.generate(5, (index) => buildNavItem(index)),
+      bottomNavigationBar: SizedBox(
+        height: navHeight,
+        child: BottomAppBar(
+          padding: EdgeInsets.zero,
+          child: Container(
+            height: navHeight,
+            padding: EdgeInsets.symmetric(horizontal: 6),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: List.generate(5, (index) => buildNavItem(index)),
+            ),
           ),
         ),
       ),
@@ -76,7 +84,7 @@ class CustomBottomNavState extends State<CustomBottomNav> {
     return GestureDetector(
       onTap: () => onItemTapped(index),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 14),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
@@ -86,15 +94,15 @@ class CustomBottomNavState extends State<CustomBottomNav> {
               size: 24,
               color: isActive ? Color(0xFF2C7796) : Colors.grey,
             ),
-            SizedBox(height: 4),
-            Text(
-              labels[index],
-              style: TextStyle(
-                fontSize: 12,
-                color: isActive ? Color(0xFF2C7796) : Colors.grey,
-                fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
-              ),
-            ),
+            // SizedBox(height: 4),
+            // Text(
+            //   labels[index],
+            //   style: TextStyle(
+            //     fontSize: 12,
+            //     color: isActive ? Color(0xFF2C7796) : Colors.grey,
+            //     fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
+            //   ),
+            // ),
           ],
         ),
       ),

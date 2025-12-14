@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:glucotrack_app/pages/navbar.dart ';
+import 'package:glucotrack_app/pages/NavbarItem/Navbar.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Widget/custom_button.dart';
-import '../Widget/custom_input_field.dart';
+import '../Widget/InputField.dart';
 import 'register_page.dart';
 
 class LoginPage extends StatefulWidget {

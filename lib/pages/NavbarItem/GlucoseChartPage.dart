@@ -4,7 +4,7 @@ import 'package:glucotrack_app/services/GlucoseRepository.dart';
 import 'package:glucotrack_app/services/SupabaseService.dart';
 import 'package:intl/intl.dart';
 import 'package:glucotrack_app/Widget/status_bar_helper.dart';
-import 'package:glucotrack_app/Widget/weekly_summary_card.dart';
+import 'package:glucotrack_app/utils/AppLayout.dart';
 
 class GlucoseChart extends StatefulWidget {
   const GlucoseChart({super.key});
@@ -116,6 +116,44 @@ class _GlucoseChartState extends State<GlucoseChart> {
     }
   }
 
+  List<Glucoserecord> getWeeklyRecords() {
+    DateTime now = DateTime.now();
+    DateTime startOfWeek = now.subtract(Duration(days: now.weekday % 7));
+    startOfWeek =
+        DateTime(startOfWeek.year, startOfWeek.month, startOfWeek.day);
+
+    return allRecords.where((record) {
+      return record.timeStamp
+              .isAfter(startOfWeek.subtract(const Duration(days: 1))) &&
+          record.timeStamp.isBefore(startOfWeek.add(const Duration(days: 7)));
+    }).toList();
+  }
+
+  double getWeeklyAverage() {
+    List<Glucoserecord> weeklyRecords = getWeeklyRecords();
+    if (weeklyRecords.isEmpty) return 0;
+
+    double sum =
+        weeklyRecords.fold(0, (prev, record) => prev + record.glucoseLevel);
+    return sum / weeklyRecords.length;
+  }
+
+  Map<int, List<Glucoserecord>> getWeeklyGroupedRecords() {
+    List<Glucoserecord> weeklyRecords = getWeeklyRecords();
+    Map<int, List<Glucoserecord>> grouped = {};
+
+    for (int i = 0; i < 7; i++) {
+      grouped[i] = [];
+    }
+
+    for (var record in weeklyRecords) {
+      int dayOfWeek = record.timeStamp.weekday % 7;
+      grouped[dayOfWeek]!.add(record);
+    }
+
+    return grouped;
+  }
+
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
@@ -132,72 +170,69 @@ class _GlucoseChartState extends State<GlucoseChart> {
     List<Glucoserecord> selectedDateRecords =
         selectedDate != null ? getRecordsByDate(selectedDate!) : [];
 
-    return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
-      body: SafeArea(
-        child: RefreshIndicator(
-          onRefresh: loadRecords,
-          color: const Color(0xFF2C7796),
-          child: SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Center(
-                    child: Text(
-                      "Glucose Chart",
+    return AppLayout(
+      showBack: false,
+      showHeader: true,
+      headerBottomRadius: BorderRadius.only(
+        bottomLeft: Radius.circular(28),
+        bottomRight: Radius.circular(28),
+      ),
+      headerBackgroundColor: const Color(0xFF2C7796),
+      headerForegroundColor: Colors.white,
+      bodyBackgroundColor: const Color(0xFFF5F5F5),
+      title: 'Glucose Chart',
+      headerHeight: 70,
+      child: RefreshIndicator(
+        onRefresh: loadRecords,
+        color: const Color(0xFF2C7796),
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Weekly Summary Card
+                _buildWeeklySummaryCard(),
+
+                const SizedBox(height: 30),
+
+                // History Section
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      "History",
                       style: TextStyle(
                         fontSize: 32,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black,
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 20),
-
-                  // Weekly Summary Card
-                  const WeeklySummaryCard(isCompactView: false),
-
-                  const SizedBox(height: 30),
-
-                  // History Section
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        "History",
-                        style: TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
+                    ElevatedButton.icon(
+                      onPressed: pickDate,
+                      icon: const Icon(Icons.calendar_today, size: 18),
+                      label: const Text("Pick a Date"),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: Colors.black,
+                        elevation: 2,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      ElevatedButton.icon(
-                        onPressed: pickDate,
-                        icon: const Icon(Icons.calendar_today, size: 18),
-                        label: const Text("Pick a Date"),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          foregroundColor: Colors.black,
-                          elevation: 2,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 12,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 15),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 15),
 
-                  // History Cards
-                  if (selectedDate != null)
-                    selectedDateRecords.isEmpty
-                        ? Container(
+                // History Cards
+                if (selectedDate != null)
+                  selectedDateRecords.isEmpty
+                      ? Container(
                             width: double.infinity,
                             padding: const EdgeInsets.all(30),
                             decoration: BoxDecoration(
@@ -227,8 +262,8 @@ class _GlucoseChartState extends State<GlucoseChart> {
                               ],
                             ),
                           )
-                        : Column(
-                            children: selectedDateRecords.map((record) {
+                      : Column(
+                          children: selectedDateRecords.map((record) {
                               Color statusColor = getGlucoseColor(
                                   record.glucoseLevel, record.condition);
                               String statusLabel = getGlucoseLabel(
@@ -360,24 +395,23 @@ class _GlucoseChartState extends State<GlucoseChart> {
                             }).toList(),
                           ),
 
-                  // Show all records count if no date selected
-                  if (selectedDate == null && allRecords.isNotEmpty)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 10),
-                      child: Center(
-                        child: Text(
-                          'Total ${allRecords.length} records. Pilih tanggal untuk melihat detail.',
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey,
-                          ),
+                // Show all records count if no date selected
+                if (selectedDate == null && allRecords.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: Center(
+                      child: Text(
+                        'Total ${allRecords.length} records. Pilih tanggal untuk melihat detail.',
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey,
                         ),
                       ),
                     ),
+                  ),
 
-                  // Empty state when no records at all
-                  if (allRecords.isEmpty)
-                    Container(
+                if (allRecords.isEmpty)
+                  Container(
                       margin: const EdgeInsets.only(top: 20),
                       padding: const EdgeInsets.all(40),
                       decoration: BoxDecoration(
@@ -414,12 +448,243 @@ class _GlucoseChartState extends State<GlucoseChart> {
                         ),
                       ),
                     ),
-                ],
-              ),
+              ],
             ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildWeeklySummaryCard() {
+    double weeklyAvg = getWeeklyAverage();
+    Map<int, List<Glucoserecord>> weeklyGrouped = getWeeklyGroupedRecords();
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: const Color(0xFFD6E5EA),
+        borderRadius: BorderRadius.circular(25),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.3),
+            blurRadius: 6,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            DateFormat('EEEE, d MMM yyyy').format(DateTime.now()),
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const SizedBox(height: 5),
+          const Text(
+            "Weekly Summary",
+            style: TextStyle(
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                weeklyAvg > 0 ? weeklyAvg.toStringAsFixed(0) : "-",
+                style: const TextStyle(
+                  fontSize: 72,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFFEF5350),
+                  height: 1,
+                ),
+              ),
+              const SizedBox(width: 10),
+              const Padding(
+                padding: EdgeInsets.only(bottom: 12),
+                child: Text(
+                  "mg/dL",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFFEF5350),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          SizedBox(
+            height: 200,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: List.generate(7, (index) {
+                List<Glucoserecord> dayRecords = weeklyGrouped[index] ?? [];
+                List<Glucoserecord> beforeMeal = dayRecords
+                    .where((r) => r.condition == GlucoseCondition.beforeMeal)
+                    .toList();
+                List<Glucoserecord> afterMeal = dayRecords
+                    .where((r) => r.condition == GlucoseCondition.afterMeal)
+                    .toList();
+
+                double beforeAvg = beforeMeal.isEmpty
+                    ? 0
+                    : beforeMeal.fold(0.0, (sum, r) => sum + r.glucoseLevel) /
+                        beforeMeal.length;
+                double afterAvg = afterMeal.isEmpty
+                    ? 0
+                    : afterMeal.fold(0.0, (sum, r) => sum + r.glucoseLevel) /
+                        afterMeal.length;
+
+                return _buildBarPair(
+                  index,
+                  beforeAvg,
+                  afterAvg,
+                  ['S', 'M', 'T', 'W', 'T', 'F', 'S'][index],
+                );
+              }),
+            ),
+          ),
+          const SizedBox(height: 15),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _buildLegendItem(const Color(0xFFFF9800), "Before Meal"),
+              const SizedBox(width: 20),
+              _buildLegendItem(const Color(0xFFEF5350), "After Meal"),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBarPair(
+      int index, double beforeValue, double afterValue, String label) {
+    double maxHeight = 150;
+    double maxValue = 300;
+
+    double beforeHeight =
+        beforeValue > 0 ? (beforeValue / maxValue) * maxHeight : 0;
+    double afterHeight =
+        afterValue > 0 ? (afterValue / maxValue) * maxHeight : 0;
+
+    beforeHeight = beforeHeight.clamp(0, maxHeight);
+    afterHeight = afterHeight.clamp(0, maxHeight);
+
+    return GestureDetector(
+      onTapDown: (_) {
+        setState(() {
+          tappedBarIndex = index;
+        });
+      },
+      onTapUp: (_) {
+        Future.delayed(const Duration(seconds: 2), () {
+          if (mounted) {
+            setState(() {
+              tappedBarIndex = null;
+            });
+          }
+        });
+      },
+      onTapCancel: () {
+        setState(() {
+          tappedBarIndex = null;
+        });
+      },
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          if (tappedBarIndex == index && (beforeValue > 0 || afterValue > 0))
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              margin: const EdgeInsets.only(bottom: 5),
+              decoration: BoxDecoration(
+                color: Colors.black87,
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Text(
+                beforeValue > 0 && afterValue > 0
+                    ? "${beforeValue.toStringAsFixed(0)}/${afterValue.toStringAsFixed(0)}"
+                    : beforeValue > 0
+                        ? beforeValue.toStringAsFixed(0)
+                        : afterValue.toStringAsFixed(0),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          SizedBox(
+            height: maxHeight,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Container(
+                  width: 12,
+                  height: beforeHeight > 5
+                      ? beforeHeight
+                      : (beforeValue > 0 ? 5 : 0),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFF9800),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+                const SizedBox(width: 4),
+                Container(
+                  width: 12,
+                  height:
+                      afterHeight > 5 ? afterHeight : (afterValue > 0 ? 5 : 0),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFEF5350),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: Colors.black54,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLegendItem(Color color, String label) {
+    return Row(
+      children: [
+        Container(
+          width: 16,
+          height: 16,
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(4),
+          ),
+        ),
+        const SizedBox(width: 8),
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
     );
   }
 }

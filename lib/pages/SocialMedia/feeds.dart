@@ -4,6 +4,8 @@ import 'package:glucotrack_app/services/social_services/PostServices.dart';
 import 'package:glucotrack_app/Widget/post_composser.dart';
 import 'package:glucotrack_app/services/social_services/post_media_service.dart';
 import 'package:glucotrack_app/Widget/status_bar_helper.dart';
+import 'package:glucotrack_app/Widget/ContentCard.dart';
+import 'package:glucotrack_app/Widget/ContentList.dart';
 
 class PublicFeedPage extends StatefulWidget {
   final bool isInsideSocialPage;
@@ -172,204 +174,172 @@ class _PublicFeedPageState extends State<PublicFeedPage> {
           ),
           // Posts List
           Expanded(
-            child: RefreshIndicator(
+            child: ContentList<Map<String, dynamic>>(
+              items: [{'isComposer': true}, ..._filteredPosts, if (!_end && widget.searchQuery.isEmpty) {'isLoader': true}],
+              padding: const EdgeInsets.only(bottom: 24, top: 8),
               onRefresh: _refresh,
-              child: ListView.builder(
-                padding: const EdgeInsets.only(bottom: 24, top: 8),
-                itemCount: _filteredPosts.length + 2,
-                itemBuilder: (context, index) {
-                  if (index == 0) {
-                    return PostComposer(onPosted: () => _refresh());
-                  }
+              itemBuilder: (context, item, index) {
+                // Post Composer at first position
+                if (item['isComposer'] == true) {
+                  return PostComposer(onPosted: () => _refresh());
+                }
 
-                  final i = index - 1;
-                  if (i >= _filteredPosts.length) {
-                    if (!_end && widget.searchQuery.isEmpty) _load();
-                    return const SizedBox.shrink();
-                  }
+                // Loader at last position
+                if (item['isLoader'] == true) {
+                  _load();
+                  return const SizedBox.shrink();
+                }
 
-                  final p = _filteredPosts[i];
-                  final authorId = p['author_id'] as String;
-                  final profile = _profiles[authorId];
-                  final username = (profile?['username'] as String?) ?? 'User';
-                  final avatarUrl = profile?['avatar_url'] as String?;
-                  final body = (p['body'] as String?) ?? '';
-                  final postId = p['id'] as String;
-                  final medias = _mediaMap[postId] ?? const [];
-                  final createdAt =
-                      DateTime.tryParse(p['created_at'] as String? ?? '') ??
-                          DateTime.now();
+                final p = item;
+                final authorId = p['author_id'] as String;
+                final profile = _profiles[authorId];
+                final username = (profile?['username'] as String?) ?? 'User';
+                final avatarUrl = profile?['avatar_url'] as String?;
+                final body = (p['body'] as String?) ?? '';
+                final postId = p['id'] as String;
+                final medias = _mediaMap[postId] ?? const [];
+                final createdAt =
+                    DateTime.tryParse(p['created_at'] as String? ?? '') ??
+                        DateTime.now();
 
-                  final isOwnPost =
-                      _currentUserId != null && _currentUserId == authorId;
+                final isOwnPost =
+                    _currentUserId != null && _currentUserId == authorId;
 
+                print(
+                    'DEBUG: Rendering post $postId with ${medias.length} media items');
+                if (medias.isNotEmpty) {
                   print(
-                      'DEBUG: Rendering post $postId with ${medias.length} media items');
-                  if (medias.isNotEmpty) {
-                    print(
-                        'DEBUG: Media URLs: ${medias.map((m) => m['url']).toList()}');
-                  }
+                      'DEBUG: Media URLs: ${medias.map((m) => m['url']).toList()}');
+                }
 
-                  return Padding(
-                    padding: const EdgeInsets.fromLTRB(12, 6, 12, 6),
-                    child: Card(
-                      color: const Color(0xFFFCFCFC),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Header dengan avatar, nama, button follow dan menu
-                            Row(
-                              children: [
-                                _Avatar(
-                                    avatarUrl: avatarUrl, username: username),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        username,
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 18,
-                                        ),
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                      const SizedBox(height: 2),
-                                      Text(
-                                        _formatTimestamp(createdAt),
-                                        style: TextStyle(
-                                          color: Colors.grey.shade600,
-                                          fontSize: 13,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                // Button Follow (hanya tampil jika bukan post sendiri)
-                                if (!isOwnPost) ...[
-                                  InkWell(
-                                    borderRadius: BorderRadius.circular(20),
-                                    onTap: () {
-                                      setState(() {
-                                        if (_following.contains(authorId)) {
-                                          _following.remove(authorId);
-                                        } else {
-                                          _following.add(authorId);
-                                        }
-                                      });
-                                    },
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 20,
-                                        vertical: 8,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: _following.contains(authorId)
-                                            ? const Color(0xFFD9D9D9)
-                                            : const Color(0xFFD4E2EF),
-                                        borderRadius: BorderRadius.circular(20),
-                                      ),
-                                      child: Text(
-                                        _following.contains(authorId)
-                                            ? 'Following'
-                                            : 'Follow',
-                                        style: const TextStyle(
-                                          color: Color(0xFF000000),
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 13,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                ],
-                                // Menu titik tiga
-                                Icon(
-                                  Icons.more_vert,
-                                  color: Colors.grey.shade700,
-                                ),
-                              ],
+                return ContentCard(
+                  margin: const EdgeInsets.fromLTRB(12, 6, 12, 6),
+                  backgroundColor: const Color(0xFFFCFCFC),
+                  headerAvatar: _Avatar(avatarUrl: avatarUrl, username: username),
+                  headerTitle: username,
+                  headerSubtitle: _formatTimestamp(createdAt),
+                  headerTrailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Follow Button (only if not own post)
+                      if (!isOwnPost) ...[
+                        InkWell(
+                          borderRadius: BorderRadius.circular(20),
+                          onTap: () {
+                            setState(() {
+                              if (_following.contains(authorId)) {
+                                _following.remove(authorId);
+                              } else {
+                                _following.add(authorId);
+                              }
+                            });
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 8,
                             ),
-                            const SizedBox(height: 12),
-                            // Body text
-                            if (body.isNotEmpty) ...[
-                              Text(
-                                body,
-                                style: const TextStyle(fontSize: 15),
+                            decoration: BoxDecoration(
+                              color: _following.contains(authorId)
+                                  ? const Color(0xFFD9D9D9)
+                                  : const Color(0xFFD4E2EF),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              _following.contains(authorId)
+                                  ? 'Following'
+                                  : 'Follow',
+                              style: const TextStyle(
+                                color: Color(0xFF000000),
+                                fontWeight: FontWeight.w600,
+                                fontSize: 13,
                               ),
-                              const SizedBox(height: 12),
-                            ],
-                            // Media
-                            if (medias.isNotEmpty) ...[
-                              _MediaGrid(medias: medias),
-                              const SizedBox(height: 12),
-                            ],
-                            // Like dan Comment section
-                            Row(
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                      ],
+                      // Menu
+                      Icon(
+                        Icons.more_vert,
+                        color: Colors.grey.shade700,
+                      ),
+                    ],
+                  ),
+                  customContent: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Body text
+                      if (body.isNotEmpty) ...[
+                        Text(
+                          body,
+                          style: const TextStyle(fontSize: 15),
+                        ),
+                        const SizedBox(height: 12),
+                      ],
+                      // Media Grid
+                      if (medias.isNotEmpty) ...[
+                        _MediaGrid(medias: medias),
+                        const SizedBox(height: 12),
+                      ],
+                      // Like and Comment section
+                      Row(
+                        children: [
+                          // Like button
+                          InkWell(
+                            onTap: () {
+                              // Implement like functionality
+                            },
+                            child: Row(
                               children: [
-                                // Like button
-                                InkWell(
-                                  onTap: () {
-                                    // Implement like functionality
-                                  },
-                                  child: Row(
-                                    children: [
-                                      Icon(
-                                        Icons.favorite_border,
-                                        color: Colors.grey.shade700,
-                                        size: 22,
-                                      ),
-                                      const SizedBox(width: 6),
-                                      Text(
-                                        '44',
-                                        style: TextStyle(
-                                          color: Colors.grey.shade700,
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                                Icon(
+                                  Icons.favorite_border,
+                                  color: Colors.grey.shade700,
+                                  size: 22,
                                 ),
-                                const SizedBox(width: 24),
-                                // Comment button
-                                InkWell(
-                                  onTap: () {
-                                    // Implement comment functionality
-                                  },
-                                  child: Row(
-                                    children: [
-                                      Icon(
-                                        Icons.chat_bubble_outline,
-                                        color: Colors.grey.shade700,
-                                        size: 22,
-                                      ),
-                                      const SizedBox(width: 6),
-                                      Text(
-                                        '19',
-                                        style: TextStyle(
-                                          color: Colors.grey.shade700,
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ],
+                                const SizedBox(width: 6),
+                                Text(
+                                  '44',
+                                  style: TextStyle(
+                                    color: Colors.grey.shade700,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
                                   ),
                                 ),
                               ],
                             ),
-                          ],
-                        ),
+                          ),
+                          const SizedBox(width: 24),
+                          // Comment button
+                          InkWell(
+                            onTap: () {
+                              // Implement comment functionality
+                            },
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.chat_bubble_outline,
+                                  color: Colors.grey.shade700,
+                                  size: 22,
+                                ),
+                                const SizedBox(width: 6),
+                                Text(
+                                  '19',
+                                  style: TextStyle(
+                                    color: Colors.grey.shade700,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                  );
-                },
-              ),
+                    ],
+                  ),
+                );
+              },
             ),
           ),
         ],

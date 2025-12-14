@@ -4,8 +4,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 //import 'firebase_options.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../pages/navbar.dart';
-import '../pages/splash_screen.dart';
+import 'pages/NavbarItem/navbar.dart';
+import 'pages/splash_screen.dart';
 
 // const supabaseUrl = String.fromEnvironment('SUPABASE_URL');
 // const supabaseAnonKey = String.fromEnvironment('SUPABASE_ANON_KEY');

@@ -3,7 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'started_page.dart';
-import 'navbar.dart';
+import 'NavbarItem/navbar.dart';
 import 'login_page.dart';
 
 class SplashScreen extends StatefulWidget {

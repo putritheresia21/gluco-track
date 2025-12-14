@@ -8,10 +8,12 @@ import 'package:glucotrack_app/services/gamification_service/gamification_servic
 import 'package:glucotrack_app/Widget/gamification_widget/task_card_widget.dart';
 import 'package:glucotrack_app/pages/Gamification/task_detail_page.dart';
 import 'package:glucotrack_app/pages/Gamification/gamification_main_page.dart';
-import 'package:glucotrack_app/Widget/glucose_stats_card.dart';
+import 'package:glucotrack_app/Widget/CustomCard.dart';
+import 'package:glucotrack_app/utils/FontUtils.dart';
 import 'package:glucotrack_app/services/GlucoseRepository.dart';
 import 'package:glucotrack_app/services/SupabaseService.dart';
 import 'package:glucotrack_app/models/GlucoseRecord.dart';
+import 'package:intl/intl.dart';
 
 //Semangat cukurukuuukkkk
 
@@ -322,18 +324,24 @@ class _ProfileState extends State<Profile> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      GlucoseStatsCard(
-                        title: 'Lowest',
-                        glucoseRecord: lowestRecord,
-                        isLowest: true,
-                        isLoading: loadingGlucoseStats,
+                      Expanded(
+                        child: _buildGlucoseCard(
+                          title: 'Lowest',
+                          record: lowestRecord,
+                          color: const Color(0xFF62CE54),
+                          icon: Icons.trending_down,
+                          isLoading: loadingGlucoseStats,
+                        ),
                       ),
                       const SizedBox(width: 14),
-                      GlucoseStatsCard(
-                        title: 'Highest',
-                        glucoseRecord: highestRecord,
-                        isLowest: false,
-                        isLoading: loadingGlucoseStats,
+                      Expanded(
+                        child: _buildGlucoseCard(
+                          title: 'Highest',
+                          record: highestRecord,
+                          color: const Color(0xFFD9534F),
+                          icon: Icons.trending_up,
+                          isLoading: loadingGlucoseStats,
+                        ),
                       ),
                     ],
                   ),
@@ -505,6 +513,99 @@ class _ProfileState extends State<Profile> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildGlucoseCard({
+    required String title,
+    required Glucoserecord? record,
+    required Color color,
+    required IconData icon,
+    required bool isLoading,
+  }) {
+    String getConditionLabel(GlucoseCondition condition) {
+      return condition == GlucoseCondition.beforeMeal
+          ? 'Before Meal'
+          : 'After Meal';
+    }
+
+    return CustomCard(
+      height: 140,
+      alignment: Alignment.center,
+      backgroundColor: color,
+      borderRadius: 10,
+      padding: const EdgeInsets.all(16),
+      child: isLoading || record == null
+          ? const Center(
+              child: CircularProgressIndicator(
+                color: Colors.white,
+                strokeWidth: 2,
+              ),
+            )
+          : Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      title,
+                      style: FontUtils.style(
+                        size: FontSize.md,
+                        weight: FontWeightType.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    Icon(icon, color: Colors.white, size: 24),
+                  ],
+                ),
+                Text(
+                  DateFormat('d MMM yyyy').format(record.timeStamp),
+                  style: FontUtils.style(
+                    size: FontSize.xs,
+                    weight: FontWeightType.medium,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      record.glucoseLevel.toStringAsFixed(0),
+                      style: FontUtils.style(
+                        size: FontSize.xl,
+                        weight: FontWeightType.bold,
+                        color: Colors.white,
+                        height: 1,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 6),
+                      child: Text(
+                        'mg/dL',
+                        style: FontUtils.style(
+                          size: FontSize.sm,
+                          weight: FontWeightType.semibold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  getConditionLabel(record.condition),
+                  style: FontUtils.style(
+                    size: FontSize.xs,
+                    weight: FontWeightType.medium,
+                    color: Colors.white70,
+                  ),
+                ),
+              ],
+            ),
     );
   }
 }

@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:glucotrack_app/Widget/custom_input_field.dart';
-import 'package:glucotrack_app/pages/home_page.dart';
+import 'package:glucotrack_app/Widget/InputField.dart';
 import '../Widget/custom_button.dart';
 import '../services/Auth_service.dart';
 import 'profile_page.dart';
 import 'login_page.dart';
-import '../pages/navbar.dart';
+import 'NavbarItem/Navbar.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({Key? key}) : super(key: key);
