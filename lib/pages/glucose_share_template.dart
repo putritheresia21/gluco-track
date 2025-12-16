@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:glucotrack_app/models/GlucoseRecord.dart';
+import 'package:glucotrack_app/pages/SocialMedia/AddPostPage.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'dart:io';
@@ -82,11 +83,7 @@ class _GlucoseShareTemplateState extends State<GlucoseShareTemplate> {
     }
   }
 
-  Future<void> shareGlucoseResult() async {
-    setState(() {
-      isSharing = true;
-    });
-
+  Future<File?> _captureAndSaveImage() async {
     try {
       RenderRepaintBoundary boundary = _globalKey.currentContext!
           .findRenderObject() as RenderRepaintBoundary;
@@ -102,19 +99,240 @@ class _GlucoseShareTemplateState extends State<GlucoseShareTemplate> {
       final imageFile = File(imagePath);
       await imageFile.writeAsBytes(pngBytes);
 
-      await Share.shareXFiles(
-        [XFile(imagePath)],
-        text: 'Hasil Pengukuran Gula Darah - GlucoTrack',
-      );
+      return imageFile;
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Gagal membagikan: $e')),
-      );
-    } finally {
-      setState(() {
-        isSharing = false;
-      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Gagal membuat gambar: $e')),
+        );
+      }
+      return null;
     }
+  }
+
+  Future<void> shareToApp() async {
+    setState(() {
+      isSharing = true;
+    });
+
+    try {
+      final imageFile = await _captureAndSaveImage();
+
+      if (imageFile != null && mounted) {
+        Navigator.pop(context); // Close glucose share template
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => AddPostPage(sharedImage: imageFile),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Gagal membagikan: $e')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          isSharing = false;
+        });
+      }
+    }
+  }
+
+  Future<void> shareExternal() async {
+    setState(() {
+      isSharing = true;
+    });
+
+    try {
+      final imageFile = await _captureAndSaveImage();
+
+      if (imageFile != null) {
+        await Share.shareXFiles(
+          [XFile(imageFile.path)],
+          text: 'Hasil Pengukuran Gula Darah - GlucoTrack',
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Gagal membagikan: $e')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          isSharing = false;
+        });
+      }
+    }
+  }
+
+  void _showShareOptions() {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+            const Text(
+              'Bagikan Hasil',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Pilih cara membagikan hasil pengukuran',
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey,
+              ),
+            ),
+            const SizedBox(height: 24),
+            InkWell(
+              onTap: () {
+                Navigator.pop(context);
+                shareToApp();
+              },
+              borderRadius: BorderRadius.circular(12),
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  border: Border.all(color: const Color(0xFF2C7796)),
+                  borderRadius: BorderRadius.circular(12),
+                  color: const Color(0xFF2C7796).withOpacity(0.05),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF2C7796),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Icon(
+                        Icons.favorite,
+                        color: Colors.white,
+                        size: 24,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    const Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'GlucoTrack Post',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            'Bagikan sebagai post di GlucoTrack',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Icon(
+                      Icons.arrow_forward_ios,
+                      size: 16,
+                      color: Color(0xFF2C7796),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            InkWell(
+              onTap: () {
+                Navigator.pop(context);
+                shareExternal();
+              },
+              borderRadius: BorderRadius.circular(12),
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey.shade300),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.green.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Icon(
+                        Icons.share,
+                        color: Colors.green,
+                        size: 24,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    const Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Aplikasi Lain',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            'WhatsApp, Instagram, Facebook, dll',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Icon(
+                      Icons.arrow_forward_ios,
+                      size: 16,
+                      color: Colors.grey,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -473,7 +691,7 @@ class _GlucoseShareTemplateState extends State<GlucoseShareTemplate> {
 
               // Share Button
               ElevatedButton.icon(
-                onPressed: isSharing ? null : shareGlucoseResult,
+                onPressed: isSharing ? null : _showShareOptions,
                 icon: isSharing
                     ? const SizedBox(
                         width: 20,
