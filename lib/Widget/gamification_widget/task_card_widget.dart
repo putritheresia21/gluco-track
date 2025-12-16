@@ -29,7 +29,7 @@ class TaskCardWidget extends StatelessWidget {
             Color(0xFF2C7796),
           ],
         ),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
             color: const Color(0xFF2C7796).withOpacity(0.3),
@@ -52,7 +52,7 @@ class TaskCardWidget extends StatelessWidget {
                         task.title,
                         style: const TextStyle(
                           color: Colors.white,
-                          fontSize: 18,
+                          fontSize: 15,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -70,7 +70,7 @@ class TaskCardWidget extends StatelessWidget {
                         '+${task.maxPoints} Points',
                         style: const TextStyle(
                           color: Colors.white,
-                          fontSize: 12,
+                          fontSize: 10,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -84,7 +84,7 @@ class TaskCardWidget extends StatelessWidget {
                       '${task.completedSubTasks}/${task.totalSubTasks} Tasks',
                       style: TextStyle(
                         color: Colors.white.withOpacity(0.9),
-                        fontSize: 14,
+                        fontSize: 13,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -93,7 +93,7 @@ class TaskCardWidget extends StatelessWidget {
                       '${task.totalPoints}/${task.maxPoints} pts',
                       style: TextStyle(
                         color: Colors.white.withOpacity(0.9),
-                        fontSize: 14,
+                        fontSize: 13,
                         fontWeight: FontWeight.w600,
                       ),
                     ),

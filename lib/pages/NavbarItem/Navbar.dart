@@ -59,19 +59,30 @@ class CustomBottomNavState extends State<CustomBottomNav> {
   @override
   Widget build(BuildContext context) {
     final navHeight = widget.navbarHeight ?? 52;
-    
+
     return Scaffold(
       body: pages[selectedIndex],
-      bottomNavigationBar: SizedBox(
-        height: navHeight,
-        child: BottomAppBar(
-          padding: EdgeInsets.zero,
-          child: Container(
-            height: navHeight,
-            padding: EdgeInsets.symmetric(horizontal: 6),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: List.generate(5, (index) => buildNavItem(index)),
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          border: Border(
+            top: BorderSide(
+              color: Colors.grey.shade300,
+              width: 1,
+            ),
+          ),
+        ),
+        child: SizedBox(
+          height: navHeight,
+          child: BottomAppBar(
+            color: const Color(0xFFF5F5F5),
+            padding: EdgeInsets.zero,
+            child: Container(
+              height: navHeight,
+              padding: EdgeInsets.symmetric(horizontal: 6),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: List.generate(5, (index) => buildNavItem(index)),
+              ),
             ),
           ),
         ),

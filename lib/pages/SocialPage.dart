@@ -16,7 +16,7 @@ class SocialPage extends StatefulWidget {
 class _SocialPageState extends State<SocialPage> {
   int _currentIndex = 0;
   String _searchQuery = '';
-  
+
   // Header related
   final AuthService _authService = AuthService();
   final _gamification = GamificationService.instance;
@@ -79,45 +79,64 @@ class _SocialPageState extends State<SocialPage> {
   }
 
   Widget _buildHeaderContent() {
-    final currentUsername = _currentUserProfile?['username'] as String? ?? 'User';
+    final currentUsername =
+        _currentUserProfile?['username'] as String? ?? 'User';
     final currentAvatarUrl = _currentUserProfile?['avatar_url'] as String?;
     final firstName = _getFirstName(currentUsername);
-    final currentBadge = _isLoadingGamification ? BadgeLevel.bronze : _gamification.getCurrentBadge();
+    final currentBadge = _isLoadingGamification
+        ? BadgeLevel.bronze
+        : _gamification.getCurrentBadge();
 
     Color getBadgeColor(BadgeLevel level) {
       switch (level) {
-        case BadgeLevel.bronze: return const Color(0xFFCD7F32);
-        case BadgeLevel.silver: return const Color(0xFFC0C0C0);
-        case BadgeLevel.gold: return const Color(0xFFFFD700);
-        case BadgeLevel.platinum: return const Color(0xFFE5E4E2);
-        case BadgeLevel.diamond: return const Color(0xFFB9F2FF);
+        case BadgeLevel.bronze:
+          return const Color(0xFFCD7F32);
+        case BadgeLevel.silver:
+          return const Color(0xFFC0C0C0);
+        case BadgeLevel.gold:
+          return const Color(0xFFFFD700);
+        case BadgeLevel.platinum:
+          return const Color(0xFFE5E4E2);
+        case BadgeLevel.diamond:
+          return const Color(0xFFB9F2FF);
       }
     }
 
     IconData getBadgeIcon(BadgeLevel level) {
       switch (level) {
-        case BadgeLevel.bronze: return Icons.workspace_premium;
-        case BadgeLevel.silver: return Icons.military_tech;
-        case BadgeLevel.gold: return Icons.emoji_events;
-        case BadgeLevel.platinum: return Icons.stars;
-        case BadgeLevel.diamond: return Icons.diamond;
+        case BadgeLevel.bronze:
+          return Icons.workspace_premium;
+        case BadgeLevel.silver:
+          return Icons.military_tech;
+        case BadgeLevel.gold:
+          return Icons.emoji_events;
+        case BadgeLevel.platinum:
+          return Icons.stars;
+        case BadgeLevel.diamond:
+          return Icons.diamond;
       }
     }
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         children: [
           // Avatar
           _isLoadingProfile
-              ? const CircleAvatar(radius: 28, child: CircularProgressIndicator(strokeWidth: 2))
+              ? const CircleAvatar(
+                  radius: 25, child: CircularProgressIndicator(strokeWidth: 2))
               : CircleAvatar(
-                  radius: 28,
-                  backgroundImage: (currentAvatarUrl != null && currentAvatarUrl.isNotEmpty)
-                      ? NetworkImage(currentAvatarUrl)
-                      : null,
+                  radius: 25,
+                  backgroundImage:
+                      (currentAvatarUrl != null && currentAvatarUrl.isNotEmpty)
+                          ? NetworkImage(currentAvatarUrl)
+                          : null,
                   child: (currentAvatarUrl == null || currentAvatarUrl.isEmpty)
-                      ? Text(firstName[0].toUpperCase(), style: FontUtils.style(size: FontSize.xl, weight: FontWeightType.bold))
+                      ? Text(firstName[0].toUpperCase(),
+                          style: FontUtils.style(
+                              size: FontSize.xl,
+                              weight: FontWeightType.bold,
+                              color: Colors.white))
                       : null,
                 ),
           const SizedBox(width: 12),
@@ -128,18 +147,30 @@ class _SocialPageState extends State<SocialPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  'What\'s up,',
-                  style: FontUtils.style(size: FontSize.lg, weight: FontWeightType.bold, color: Colors.white),
-                ),
-                Text(
-                  '$firstName!',
-                  style: FontUtils.style(size: FontSize.lg, weight: FontWeightType.bold, color: Colors.white),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'What\'s up, ',
+                      style: FontUtils.style(
+                          size: FontSize.mdl,
+                          weight: FontWeightType.bold,
+                          color: Colors.black),
+                    ),
+                    Text(
+                      '$firstName!',
+                      style: FontUtils.style(
+                          size: FontSize.mdl,
+                          weight: FontWeightType.bold,
+                          color: Colors.black),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 2),
                 Text(
                   'Have anything to share?',
-                  style: FontUtils.style(size: FontSize.sm, color: Colors.white),
+                  style:
+                      FontUtils.style(size: FontSize.sm, color: Colors.black),
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
                 ),
@@ -151,42 +182,48 @@ class _SocialPageState extends State<SocialPage> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.grey.withOpacity(0.2),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(
-                  _isLoadingGamification ? Icons.workspace_premium : getBadgeIcon(currentBadge),
-                  color: Colors.white,
+                  _isLoadingGamification
+                      ? Icons.workspace_premium
+                      : getBadgeIcon(currentBadge),
+                  color: getBadgeColor(currentBadge),
                   size: 16,
                 ),
                 const SizedBox(width: 4),
                 Text(
-                  _isLoadingGamification ? '...' : currentBadge.toString().split('.').last.toUpperCase(),
+                  _isLoadingGamification
+                      ? '...'
+                      : currentBadge.toString().split('.').last.toUpperCase(),
                   style: FontUtils.style(
                     size: FontSize.xs,
                     weight: FontWeightType.bold,
-                    color: Colors.white,
+                    color: getBadgeColor(currentBadge),
                   ),
                 ),
               ],
             ),
           ),
+          const SizedBox(width: 8),
           // Search Icon
-          // InkWell(
-          //   onTap: () {
-          //     setState(() {
-          //       _isSearching = !_isSearching;
-          //       if (!_isSearching) {
-          //         _searchController.clear();
-          //         _searchQuery = '';
-          //       }
-          //     });
-          //   },
-          //   child: Icon(_isSearching ? Icons.close : Icons.search, color: Colors.black, size: 28),
-          // ),
+          InkWell(
+            onTap: () {
+              setState(() {
+                _isSearching = !_isSearching;
+                if (!_isSearching) {
+                  _searchController.clear();
+                  _searchQuery = '';
+                }
+              });
+            },
+            child: Icon(_isSearching ? Icons.close : Icons.search,
+                color: Colors.black, size: 28),
+          ),
         ],
       ),
     );
@@ -198,7 +235,7 @@ class _SocialPageState extends State<SocialPage> {
       showBack: false,
       showHeader: true,
       headerBottomRadius: BorderRadius.circular(0),
-      headerBackgroundColor: const Color(0xFF2C7796),
+      headerBackgroundColor: const Color(0xFFF5F5F5),
       headerForegroundColor: Colors.white,
       bodyBackgroundColor: const Color(0xFFF5F5F5),
       headerContent: _buildHeaderContent(),
@@ -218,7 +255,7 @@ class _SocialPageState extends State<SocialPage> {
                   });
                 },
                 decoration: InputDecoration(
-                  hintText: 'Search posts or users...',
+                  hintText: 'Search posts, articles, or users...',
                   prefixIcon: const Icon(Icons.search),
                   filled: true,
                   fillColor: Colors.white,
@@ -226,7 +263,8 @@ class _SocialPageState extends State<SocialPage> {
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
                   ),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 ),
               ),
             ),
@@ -242,10 +280,14 @@ class _SocialPageState extends State<SocialPage> {
                   child: Text(
                     'For you',
                     style: FontUtils.style(
-                      size: FontSize.lg,
-                      weight: _currentIndex == 0 ? FontWeightType.bold : FontWeightType.regular,
+                      size: FontSize.md,
+                      weight: _currentIndex == 0
+                          ? FontWeightType.bold
+                          : FontWeightType.regular,
                       color: _currentIndex == 0 ? Colors.black : Colors.black54,
-                      decoration: _currentIndex == 0 ? TextDecoration.underline : TextDecoration.none,
+                      decoration: _currentIndex == 0
+                          ? TextDecoration.underline
+                          : TextDecoration.none,
                     ),
                   ),
                 ),
@@ -255,10 +297,14 @@ class _SocialPageState extends State<SocialPage> {
                   child: Text(
                     'News',
                     style: FontUtils.style(
-                      size: FontSize.lg,
-                      weight: _currentIndex == 1 ? FontWeightType.bold : FontWeightType.regular,
+                      size: FontSize.md,
+                      weight: _currentIndex == 1
+                          ? FontWeightType.bold
+                          : FontWeightType.regular,
                       color: _currentIndex == 1 ? Colors.black : Colors.black54,
-                      decoration: _currentIndex == 1 ? TextDecoration.underline : TextDecoration.none,
+                      decoration: _currentIndex == 1
+                          ? TextDecoration.underline
+                          : TextDecoration.none,
                     ),
                   ),
                 ),

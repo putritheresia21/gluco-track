@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:glucotrack_app/services/social_services/PostServices.dart';
-import 'package:glucotrack_app/Widget/post_composser.dart';
 import 'package:glucotrack_app/services/social_services/post_media_service.dart';
 import 'package:glucotrack_app/Widget/status_bar_helper.dart';
 import 'package:glucotrack_app/Widget/ContentCard.dart';
 import 'package:glucotrack_app/Widget/ContentList.dart';
+import 'package:glucotrack_app/pages/SocialMedia/AddPostPage.dart';
 
 class PublicFeedPage extends StatefulWidget {
   final bool isInsideSocialPage;
@@ -162,6 +162,16 @@ class _PublicFeedPageState extends State<PublicFeedPage> {
     }
   }
 
+  Future<void> _navigateToAddPost() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const AddPostPage()),
+    );
+    if (result == true) {
+      _refresh();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -175,15 +185,13 @@ class _PublicFeedPageState extends State<PublicFeedPage> {
           // Posts List
           Expanded(
             child: ContentList<Map<String, dynamic>>(
-              items: [{'isComposer': true}, ..._filteredPosts, if (!_end && widget.searchQuery.isEmpty) {'isLoader': true}],
-              padding: const EdgeInsets.only(bottom: 24, top: 8),
+              items: [
+                ..._filteredPosts,
+                if (!_end && widget.searchQuery.isEmpty) {'isLoader': true}
+              ],
+              padding: const EdgeInsets.only(bottom: 24, top: 14),
               onRefresh: _refresh,
               itemBuilder: (context, item, index) {
-                // Post Composer at first position
-                if (item['isComposer'] == true) {
-                  return PostComposer(onPosted: () => _refresh());
-                }
-
                 // Loader at last position
                 if (item['isLoader'] == true) {
                   _load();
@@ -215,7 +223,8 @@ class _PublicFeedPageState extends State<PublicFeedPage> {
                 return ContentCard(
                   margin: const EdgeInsets.fromLTRB(12, 6, 12, 6),
                   backgroundColor: const Color(0xFFFCFCFC),
-                  headerAvatar: _Avatar(avatarUrl: avatarUrl, username: username),
+                  headerAvatar:
+                      _Avatar(avatarUrl: avatarUrl, username: username),
                   headerTitle: username,
                   headerSubtitle: _formatTimestamp(createdAt),
                   headerTrailing: Row(
@@ -343,6 +352,11 @@ class _PublicFeedPageState extends State<PublicFeedPage> {
             ),
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _navigateToAddPost,
+        backgroundColor: const Color(0xFF2D5F8D),
+        child: const Icon(Icons.edit, color: Colors.white),
       ),
     );
   }

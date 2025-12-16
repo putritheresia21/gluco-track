@@ -14,7 +14,6 @@ import 'package:glucotrack_app/utils/FontUtils.dart';
 import 'package:intl/intl.dart';
 import 'package:glucotrack_app/services/User_service.dart';
 
-
 //Semangat cukurukuuukkkk
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -98,21 +97,22 @@ class HomePageState extends State<HomePage> {
     try {
       final userId = _userService.currentUserId ?? 'default_user';
       final allRecords = await _glucoseRepository.getAllGlucoseRecords(userId);
-      
+
       // Filter records from last 7 days
       DateTime now = DateTime.now();
       DateTime startOfWeek = now.subtract(const Duration(days: 7));
-      
+
       final weeklyRecords = allRecords.where((record) {
         return record.timeStamp.isAfter(startOfWeek);
       }).toList();
-      
+
       double average = 0;
       if (weeklyRecords.isNotEmpty) {
-        double sum = weeklyRecords.fold(0.0, (prev, record) => prev + record.glucoseLevel);
+        double sum = weeklyRecords.fold(
+            0.0, (prev, record) => prev + record.glucoseLevel);
         average = sum / weeklyRecords.length;
       }
-      
+
       return {
         'average': average,
         'count': weeklyRecords.length,
@@ -128,17 +128,12 @@ class HomePageState extends State<HomePage> {
     return AppLayout(
       showBack: false,
       showHeader: true,
-      headerBottomRadius: BorderRadius.only(
-        bottomLeft: Radius.circular(28),
-        bottomRight: Radius.circular(28),
-      ),
-      headerBackgroundColor: const Color(0xFF2C7796),
+      headerBackgroundColor: const Color(0xFFF5F5F5),
       headerForegroundColor: Colors.black,
-      bodyBackgroundColor: Colors.white,
+      bodyBackgroundColor: const Color(0xFFF5F5F5),
       headerContent: buildHeaderContent(),
       headerHeight: 100,
       child: SafeArea(
-
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
           child: Padding(
@@ -147,21 +142,17 @@ class HomePageState extends State<HomePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 //const SizedBox(height: 30),
-
                 // Weekly Summary Card
                 FutureBuilder<Map<String, dynamic>>(
                   future: _getWeeklySummary(),
                   builder: (context, snapshot) {
                     return CustomCard(
-                      backgroundColor: Colors.white,
-                      // gradient: const LinearGradient(
-                      //   colors: [Color(0xFFD6E5EA), Color(0xFFC5D9E0)],
-                      //   begin: Alignment.topLeft,
-                      //   end: Alignment.bottomRight,
-                      // ),
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFFD6E5EA), Color(0xFFD6E5EA)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
                       borderRadius: 10,
-                      borderColor: Colors.blue.shade200,
-                      borderWidth: 1,
                       padding: const EdgeInsets.all(24),
                       onTap: () {
                         final userId = _userService.currentUserId ?? '';
@@ -189,7 +180,8 @@ class HomePageState extends State<HomePage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  DateFormat('EEEE, d MMM yyyy').format(DateTime.now()),
+                                  DateFormat('EEEE, d MMM yyyy')
+                                      .format(DateTime.now()),
                                   style: FontUtils.style(
                                     size: FontSize.md,
                                     weight: FontWeightType.medium,
@@ -200,7 +192,7 @@ class HomePageState extends State<HomePage> {
                                 Text(
                                   'Weekly Summary',
                                   style: FontUtils.style(
-                                    size: FontSize.xl,
+                                    size: FontSize.lg,
                                     weight: FontWeightType.bold,
                                     color: Colors.black,
                                   ),
@@ -210,8 +202,10 @@ class HomePageState extends State<HomePage> {
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
                                     Text(
-                                      snapshot.hasData && snapshot.data!['average'] > 0
-                                          ? snapshot.data!['average'].toStringAsFixed(0)
+                                      snapshot.hasData &&
+                                              snapshot.data!['average'] > 0
+                                          ? snapshot.data!['average']
+                                              .toStringAsFixed(0)
                                           : '-',
                                       style: FontUtils.style(
                                         size: FontSize.xxl,
@@ -233,12 +227,15 @@ class HomePageState extends State<HomePage> {
                                       ),
                                     ),
                                     const Spacer(),
-                                    if (snapshot.hasData && snapshot.data!['count'] > 0)
+                                    if (snapshot.hasData &&
+                                        snapshot.data!['count'] > 0)
                                       Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 12, vertical: 6),
                                         decoration: BoxDecoration(
                                           color: const Color(0xFF2C7796),
-                                          borderRadius: BorderRadius.circular(20),
+                                          borderRadius:
+                                              BorderRadius.circular(20),
                                         ),
                                         child: Text(
                                           '${snapshot.data!['count']} records',
@@ -295,7 +292,7 @@ class HomePageState extends State<HomePage> {
                       Text(
                         'Your Mission',
                         style: FontUtils.style(
-                          size: FontSize.xxl,
+                          size: FontSize.lg,
                           weight: FontWeightType.bold,
                         ),
                       ),
@@ -314,7 +311,7 @@ class HomePageState extends State<HomePage> {
                         child: Text(
                           'view all',
                           style: FontUtils.style(
-                            size: FontSize.lg,
+                            size: FontSize.md,
                             weight: FontWeightType.regular,
                             color: Colors.blue,
                             decoration: TextDecoration.underline,
@@ -368,7 +365,7 @@ class HomePageState extends State<HomePage> {
                   child: Text(
                     'Notifications',
                     style: FontUtils.style(
-                      size: FontSize.xxl,
+                      size: FontSize.lg,
                       weight: FontWeightType.bold,
                     ),
                   ),
@@ -376,7 +373,14 @@ class HomePageState extends State<HomePage> {
 
                 const SizedBox(height: 15),
                 CustomCard(
-                  backgroundColor: const Color(0xFF2C7796),
+                  gradient: const LinearGradient(
+                    colors: [
+                      Color(0xFF4A90B8),
+                      Color(0xFF2C7796),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
                   borderRadius: 12,
                   padding: const EdgeInsets.all(15),
                   child: Column(
@@ -385,7 +389,7 @@ class HomePageState extends State<HomePage> {
                       Text(
                         'Last 7 Days',
                         style: FontUtils.style(
-                          size: FontSize.xl,
+                          size: FontSize.md,
                           weight: FontWeightType.bold,
                           color: Colors.white,
                         ),
@@ -406,7 +410,7 @@ class HomePageState extends State<HomePage> {
                             child: Text(
                               'Eric Sohn comment: Busett',
                               style: FontUtils.style(
-                                size: FontSize.xl,
+                                size: FontSize.sm,
                                 weight: FontWeightType.semibold,
                                 color: Colors.white,
                               ),
@@ -472,7 +476,7 @@ class HomePageState extends State<HomePage> {
     );
   }
 
-  Widget buildHeaderContent({Color textColor = Colors.white}) {
+  Widget buildHeaderContent({Color textColor = Colors.black}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -483,7 +487,7 @@ class HomePageState extends State<HomePage> {
             Text(
               'Hello,',
               style: FontUtils.style(
-                size: FontSize.md,
+                size: FontSize.lg,
                 weight: FontWeightType.regular,
                 color: textColor,
               ),
@@ -517,6 +521,10 @@ class HomePageState extends State<HomePage> {
       return condition == GlucoseCondition.beforeMeal
           ? 'Before Meal'
           : 'After Meal';
+    }
+
+    String getTimeLabel(DateTime timestamp) {
+      return DateFormat('HH:mm').format(timestamp);
     }
 
     return CustomCard(
@@ -587,7 +595,7 @@ class HomePageState extends State<HomePage> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  getConditionLabel(record.condition),
+                  '${getConditionLabel(record.condition)} at ${getTimeLabel(record.timeStamp)}',
                   style: FontUtils.style(
                     size: FontSize.xs,
                     weight: FontWeightType.medium,
