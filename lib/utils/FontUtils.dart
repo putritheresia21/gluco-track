@@ -4,6 +4,7 @@ enum FontSize {
   xs,
   sm,
   md,
+  mdl,
   lg,
   xl,
   xxl,
@@ -26,6 +27,8 @@ class FontUtils {
         return 14.0;
       case FontSize.md:
         return 16.0;
+      case FontSize.mdl:
+        return 18.0;
       case FontSize.lg:
         return 22.0;
       case FontSize.xl:
@@ -69,5 +72,4 @@ class FontUtils {
       decoration: decoration,
     );
   }
-
 }

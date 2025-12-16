@@ -118,14 +118,10 @@ class _GlucoseChartState extends State<GlucoseChart> {
 
   List<Glucoserecord> getWeeklyRecords() {
     DateTime now = DateTime.now();
-    DateTime startOfWeek = now.subtract(Duration(days: now.weekday % 7));
-    startOfWeek =
-        DateTime(startOfWeek.year, startOfWeek.month, startOfWeek.day);
+    DateTime startOfWeek = now.subtract(const Duration(days: 7));
 
     return allRecords.where((record) {
-      return record.timeStamp
-              .isAfter(startOfWeek.subtract(const Duration(days: 1))) &&
-          record.timeStamp.isBefore(startOfWeek.add(const Duration(days: 7)));
+      return record.timeStamp.isAfter(startOfWeek);
     }).toList();
   }
 
@@ -177,8 +173,8 @@ class _GlucoseChartState extends State<GlucoseChart> {
         bottomLeft: Radius.circular(28),
         bottomRight: Radius.circular(28),
       ),
-      headerBackgroundColor: const Color(0xFF2C7796),
-      headerForegroundColor: Colors.white,
+      headerBackgroundColor: const Color(0xFFF5F5F5),
+      headerForegroundColor: Colors.black,
       bodyBackgroundColor: const Color(0xFFF5F5F5),
       title: 'Glucose Chart',
       headerHeight: 70,
@@ -204,13 +200,13 @@ class _GlucoseChartState extends State<GlucoseChart> {
                     const Text(
                       "History",
                       style: TextStyle(
-                        fontSize: 32,
+                        fontSize: 22,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     ElevatedButton.icon(
                       onPressed: pickDate,
-                      icon: const Icon(Icons.calendar_today, size: 18),
+                      icon: const Icon(Icons.calendar_today, size: 16),
                       label: const Text("Pick a Date"),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
@@ -233,167 +229,164 @@ class _GlucoseChartState extends State<GlucoseChart> {
                 if (selectedDate != null)
                   selectedDateRecords.isEmpty
                       ? Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.all(30),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF2C7796),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Column(
-                              children: [
-                                const Center(
-                                  child: Text(
-                                    "- mg/dL",
-                                    style: TextStyle(
-                                      fontSize: 48,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(30),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF2C7796),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Column(
+                            children: [
+                              const Center(
+                                child: Text(
+                                  "- mg/dL",
+                                  style: TextStyle(
+                                    fontSize: 25,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
                                   ),
                                 ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  "Tidak ada data untuk ${DateFormat('d MMM yyyy').format(selectedDate!)}",
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.white70,
-                                  ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                "Tidak ada data untuk ${DateFormat('d MMM yyyy').format(selectedDate!)}",
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.white70,
                                 ),
-                              ],
-                            ),
-                          )
+                              ),
+                            ],
+                          ),
+                        )
                       : Column(
                           children: selectedDateRecords.map((record) {
-                              Color statusColor = getGlucoseColor(
-                                  record.glucoseLevel, record.condition);
-                              String statusLabel = getGlucoseLabel(
-                                  record.glucoseLevel, record.condition);
+                            Color statusColor = getGlucoseColor(
+                                record.glucoseLevel, record.condition);
+                            String statusLabel = getGlucoseLabel(
+                                record.glucoseLevel, record.condition);
 
-                              return Container(
-                                margin: const EdgeInsets.only(bottom: 15),
-                                padding: const EdgeInsets.all(20),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFF2C7796),
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Row(
-                                              children: [
-                                                Text(
-                                                  record.glucoseLevel
-                                                      .toStringAsFixed(0),
-                                                  style: const TextStyle(
-                                                    fontSize: 48,
-                                                    fontWeight: FontWeight.bold,
+                            return Container(
+                              margin: const EdgeInsets.only(bottom: 15),
+                              padding: const EdgeInsets.all(20),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF2C7796),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Column(
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Text(
+                                                record.glucoseLevel
+                                                    .toStringAsFixed(0),
+                                                style: const TextStyle(
+                                                  fontSize: 48,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                              const SizedBox(width: 8),
+                                              const Padding(
+                                                padding:
+                                                    EdgeInsets.only(top: 15),
+                                                child: Text(
+                                                  "mg/dL",
+                                                  style: TextStyle(
+                                                    fontSize: 18,
                                                     color: Colors.white,
                                                   ),
                                                 ),
-                                                const SizedBox(width: 8),
-                                                const Padding(
-                                                  padding:
-                                                      EdgeInsets.only(top: 15),
-                                                  child: Text(
-                                                    "mg/dL",
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 8),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 12, vertical: 6),
+                                            decoration: BoxDecoration(
+                                              color: statusColor,
+                                              borderRadius:
+                                                  BorderRadius.circular(20),
+                                            ),
+                                            child: Text(
+                                              statusLabel,
+                                              style: const TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 14,
+                                              ),
+                                            ),
+                                          ),
+                                          // IoT Badge
+                                          if (record.isFromIoT)
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.only(top: 8),
+                                              child: Row(
+                                                children: [
+                                                  Icon(
+                                                    Icons.sensors,
+                                                    size: 14,
+                                                    color: Colors.blue[300],
+                                                  ),
+                                                  const SizedBox(width: 4),
+                                                  Text(
+                                                    'IoT Device',
                                                     style: TextStyle(
-                                                      fontSize: 18,
-                                                      color: Colors.white,
+                                                      fontSize: 12,
+                                                      color: Colors.blue[300],
+                                                      fontWeight:
+                                                          FontWeight.w600,
                                                     ),
                                                   ),
-                                                ),
-                                              ],
-                                            ),
-                                            const SizedBox(height: 8),
-                                            Container(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 12,
-                                                      vertical: 6),
-                                              decoration: BoxDecoration(
-                                                color: statusColor,
-                                                borderRadius:
-                                                    BorderRadius.circular(20),
-                                              ),
-                                              child: Text(
-                                                statusLabel,
-                                                style: const TextStyle(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 14,
-                                                ),
+                                                ],
                                               ),
                                             ),
-                                            // IoT Badge
-                                            if (record.isFromIoT)
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                    top: 8),
-                                                child: Row(
-                                                  children: [
-                                                    Icon(
-                                                      Icons.sensors,
-                                                      size: 14,
-                                                      color: Colors.blue[300],
-                                                    ),
-                                                    const SizedBox(width: 4),
-                                                    Text(
-                                                      'IoT Device',
-                                                      style: TextStyle(
-                                                        fontSize: 12,
-                                                        color: Colors.blue[300],
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                          ],
-                                        ),
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.end,
-                                          children: [
-                                            Text(
-                                              DateFormat('d MMM yyyy, HH:mm')
-                                                  .format(record.timeStamp),
-                                              style: const TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 14,
-                                              ),
+                                        ],
+                                      ),
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.end,
+                                        children: [
+                                          Text(
+                                            DateFormat('d MMM yyyy, HH:mm')
+                                                .format(record.timeStamp),
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 14,
                                             ),
-                                            const SizedBox(height: 4),
-                                            Text(
-                                              record.condition ==
-                                                      GlucoseCondition
-                                                          .beforeMeal
-                                                  ? "Before Meal"
-                                                  : "After Meal",
-                                              style: const TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w600,
-                                              ),
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            record.condition ==
+                                                    GlucoseCondition.beforeMeal
+                                                ? "Before Meal"
+                                                : "After Meal",
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w600,
                                             ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              );
-                            }).toList(),
-                          ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            );
+                          }).toList(),
+                        ),
 
                 // Show all records count if no date selected
                 if (selectedDate == null && allRecords.isNotEmpty)
@@ -412,42 +405,42 @@ class _GlucoseChartState extends State<GlucoseChart> {
 
                 if (allRecords.isEmpty)
                   Container(
-                      margin: const EdgeInsets.only(top: 20),
-                      padding: const EdgeInsets.all(40),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: const Center(
-                        child: Column(
-                          children: [
-                            Icon(
-                              Icons.insert_chart_outlined,
-                              size: 64,
+                    margin: const EdgeInsets.only(top: 20),
+                    padding: const EdgeInsets.all(40),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: const Center(
+                      child: Column(
+                        children: [
+                          Icon(
+                            Icons.insert_chart_outlined,
+                            size: 64,
+                            color: Colors.grey,
+                          ),
+                          SizedBox(height: 16),
+                          Text(
+                            'Belum ada data glukosa',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
                               color: Colors.grey,
                             ),
-                            SizedBox(height: 16),
-                            Text(
-                              'Belum ada data glukosa',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.grey,
-                              ),
+                          ),
+                          SizedBox(height: 8),
+                          Text(
+                            'Mulai tambahkan data pengukuran\nglukosa Anda',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey,
                             ),
-                            SizedBox(height: 8),
-                            Text(
-                              'Mulai tambahkan data pengukuran\nglukosa Anda',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey,
-                              ),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
+                  ),
               ],
             ),
           ),
@@ -488,7 +481,7 @@ class _GlucoseChartState extends State<GlucoseChart> {
           const Text(
             "Weekly Summary",
             style: TextStyle(
-              fontSize: 28,
+              fontSize: 22,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -499,7 +492,7 @@ class _GlucoseChartState extends State<GlucoseChart> {
               Text(
                 weeklyAvg > 0 ? weeklyAvg.toStringAsFixed(0) : "-",
                 style: const TextStyle(
-                  fontSize: 72,
+                  fontSize: 48,
                   fontWeight: FontWeight.bold,
                   color: Color(0xFFEF5350),
                   height: 1,
@@ -599,67 +592,78 @@ class _GlucoseChartState extends State<GlucoseChart> {
           tappedBarIndex = null;
         });
       },
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
+      child: Stack(
+        alignment: Alignment.topCenter,
+        clipBehavior: Clip.none,
         children: [
-          if (tappedBarIndex == index && (beforeValue > 0 || afterValue > 0))
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              margin: const EdgeInsets.only(bottom: 5),
-              decoration: BoxDecoration(
-                color: Colors.black87,
-                borderRadius: BorderRadius.circular(6),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              SizedBox(
+                height: maxHeight,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Container(
+                      width: 12,
+                      height: beforeHeight > 5
+                          ? beforeHeight
+                          : (beforeValue > 0 ? 5 : 0),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFF9800),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    Container(
+                      width: 12,
+                      height: afterHeight > 5
+                          ? afterHeight
+                          : (afterValue > 0 ? 5 : 0),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFEF5350),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              child: Text(
-                beforeValue > 0 && afterValue > 0
-                    ? "${beforeValue.toStringAsFixed(0)}/${afterValue.toStringAsFixed(0)}"
-                    : beforeValue > 0
-                        ? beforeValue.toStringAsFixed(0)
-                        : afterValue.toStringAsFixed(0),
+              const SizedBox(height: 8),
+              Text(
+                label,
                 style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black54,
+                ),
+              ),
+            ],
+          ),
+          if (tappedBarIndex == index && (beforeValue > 0 || afterValue > 0))
+            Positioned(
+              top: -30,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.black87,
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text(
+                  beforeValue > 0 && afterValue > 0
+                      ? "${beforeValue.toStringAsFixed(0)}/${afterValue.toStringAsFixed(0)}"
+                      : beforeValue > 0
+                          ? beforeValue.toStringAsFixed(0)
+                          : afterValue.toStringAsFixed(0),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ),
-          SizedBox(
-            height: maxHeight,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Container(
-                  width: 12,
-                  height: beforeHeight > 5
-                      ? beforeHeight
-                      : (beforeValue > 0 ? 5 : 0),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFF9800),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-                const SizedBox(width: 4),
-                Container(
-                  width: 12,
-                  height:
-                      afterHeight > 5 ? afterHeight : (afterValue > 0 ? 5 : 0),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFEF5350),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            label,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: Colors.black54,
-            ),
-          ),
         ],
       ),
     );

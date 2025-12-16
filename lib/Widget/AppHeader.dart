@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:glucotrack_app/utils/FontUtils.dart';
-import 'package:glucotrack_app/utils/FontUtils.dart';
 
 class AppHeader extends StatelessWidget implements PreferredSizeWidget {
-  final Widget? content;    
-  final String? title;      
+  final Widget? content;
+  final String? title;
   final bool showBack;
   final List<Widget>? actions;
   final Color backgroundColor;
@@ -17,7 +16,7 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
 
   const AppHeader({
     super.key,
-    this.content,                 
+    this.content,
     this.showBack = false,
     this.actions,
     this.backgroundColor = Colors.blue,
@@ -32,12 +31,15 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Size get preferredSize => Size.fromHeight(headerHeight);
+
   @override
   Widget build(BuildContext context) {
     return AppBar(
       backgroundColor: backgroundColor,
       foregroundColor: foregroundColor,
       elevation: elevation,
+      scrolledUnderElevation: 0,
+      automaticallyImplyLeading: showBack,
       leading: showBack
           ? IconButton(
               icon: const Icon(Icons.arrow_back),
@@ -54,9 +56,8 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
       shape: bottomBorderRadius != null || bottomBorder != null
           ? RoundedRectangleBorder(
               borderRadius: bottomBorderRadius ?? BorderRadius.zero,
-              side: bottomBorder != null
-                  ? bottomBorder!.bottom
-                  : BorderSide.none,
+              side:
+                  bottomBorder != null ? bottomBorder!.bottom : BorderSide.none,
             )
           : null,
     );
@@ -68,14 +69,12 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
     }
 
     if (title != null) {
-      return Text(
-        title!,
-        style: FontUtils.style(
-          size: FontSize.xl,
-          weight: FontWeightType.semibold,
-          color: foregroundColor,
-        )
-      );
+      return Text(title!,
+          style: FontUtils.style(
+            size: FontSize.xl,
+            weight: FontWeightType.semibold,
+            color: foregroundColor,
+          ));
     }
   }
 }

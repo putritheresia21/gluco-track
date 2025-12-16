@@ -13,7 +13,8 @@ class ContentCard extends StatelessWidget {
   final Widget? customContent;
   final List<String>? imageUrls;
   final VoidCallback? onImageTap;
-  final bool imageInline; // true = beside text (article style), false = below text (post style)
+  final bool
+      imageInline; // true = beside text (article style), false = below text (post style)
 
   // Footer section
   final List<Widget>? actions;
@@ -83,19 +84,24 @@ class ContentCard extends StatelessWidget {
                     headerSubtitle != null ||
                     headerTrailing != null)
                   _buildHeader(),
-                
+
                 // Spacing after header
                 if ((headerAvatar != null ||
                         headerTitle != null ||
                         headerSubtitle != null ||
                         headerTrailing != null) &&
-                    (title != null || body != null || customContent != null || imageUrls != null))
+                    (title != null ||
+                        body != null ||
+                        customContent != null ||
+                        imageUrls != null))
                   const SizedBox(height: 12),
 
                 // Content Section
                 if (customContent != null)
                   customContent!
-                else if (imageInline && imageUrls != null && imageUrls!.isNotEmpty)
+                else if (imageInline &&
+                    imageUrls != null &&
+                    imageUrls!.isNotEmpty)
                   _buildInlineContent()
                 else ...[
                   _buildContent(),
@@ -184,7 +190,7 @@ class ContentCard extends StatelessWidget {
                 Text(
                   title!,
                   style: const TextStyle(
-                    fontSize: 16,
+                    fontSize: 15,
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
                     height: 1.3,
@@ -195,7 +201,7 @@ class ContentCard extends StatelessWidget {
                 Text(
                   body!,
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 13,
                     color: Colors.grey.shade700,
                     height: 1.4,
                   ),
@@ -258,7 +264,7 @@ class ContentCard extends StatelessWidget {
 
   Widget _buildSingleImage(String url) {
     final isAsset = url.startsWith('assets/');
-    
+
     return ClipRRect(
       borderRadius: BorderRadius.circular(8),
       child: GestureDetector(
@@ -324,7 +330,7 @@ class ContentCard extends StatelessWidget {
         itemBuilder: (context, index) {
           final url = imageUrls![index];
           final isAsset = url.startsWith('assets/');
-          
+
           return GestureDetector(
             onTap: onImageTap,
             child: Stack(
@@ -388,7 +394,7 @@ class ContentCard extends StatelessWidget {
 
   Widget _buildInlineImage(String url) {
     final isAsset = url.startsWith('assets/');
-    
+
     return isAsset
         ? Image.asset(
             url,

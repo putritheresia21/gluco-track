@@ -13,7 +13,7 @@ class NewsPage extends StatefulWidget {
     this.searchQuery = '',
   });
 
-@override
+  @override
   State<NewsPage> createState() => _NewsPageState();
 }
 
