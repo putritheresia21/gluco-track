@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:glucotrack_app/pages/register_page.dart';
 import 'package:glucotrack_app/services/user_service.dart';
 import 'profile_page.dart';
-import 'package:glucotrack_app/pages/SocialMedia/feeds.dart';
+import 'package:glucotrack_app/pages/SocialMedia/Feeds.dart';
 
 class NotificationPage extends StatelessWidget {
   const NotificationPage({super.key});
