@@ -7,7 +7,9 @@ import 'package:glucotrack_app/utils/AppLayout.dart';
 import 'package:glucotrack_app/utils/FontUtils.dart';
 
 class AddPostPage extends StatefulWidget {
-  const AddPostPage({super.key});
+  final File? sharedImage;
+
+  const AddPostPage({super.key, this.sharedImage});
 
   @override
   State<AddPostPage> createState() => _AddPostPageState();
@@ -22,6 +24,14 @@ class _AddPostPageState extends State<AddPostPage> {
   final ScrollController _imageScrollController = ScrollController();
   bool _loading = false;
   String _replyOption = 'Everyone';
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.sharedImage != null) {
+      _images.add(widget.sharedImage!);
+    }
+  }
 
   @override
   void dispose() {
