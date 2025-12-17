@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:glucotrack_app/services/User_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:glucotrack_app/pages/login_page.dart';
 import 'package:glucotrack_app/services/auth_service.dart';
@@ -11,7 +12,6 @@ import 'package:glucotrack_app/pages/Gamification/gamification_main_page.dart';
 import 'package:glucotrack_app/Widget/CustomCard.dart';
 import 'package:glucotrack_app/utils/FontUtils.dart';
 import 'package:glucotrack_app/services/GlucoseRepository.dart';
-import 'package:glucotrack_app/services/SupabaseService.dart';
 import 'package:glucotrack_app/models/GlucoseRecord.dart';
 import 'package:intl/intl.dart';
 
@@ -26,6 +26,7 @@ class Profile extends StatefulWidget {
 
 class _ProfileState extends State<Profile> {
   final AuthService authService = AuthService();
+  final UserService _userService = UserService();
   final _gamification = GamificationService.instance;
   final _glucoseRepository = Glucoserepository();
   String username = 'Loading...';
@@ -46,8 +47,7 @@ class _ProfileState extends State<Profile> {
 
   Future<void> _loadGlucoseStats() async {
     try {
-      final userId =
-          SupabaseService.client.auth.currentUser?.id ?? 'default_user';
+      final userId = _userService.currentUserId ?? 'default_user';
       final lowest = await _glucoseRepository.getLowestGlucoseRecord(userId);
       final highest = await _glucoseRepository.getHighestGlucoseRecord(userId);
 
@@ -212,7 +212,7 @@ class _ProfileState extends State<Profile> {
                                     loadingUsername ? '...' : username,
                                     style: const TextStyle(
                                       color: Colors.white,
-                                      fontSize: 20,
+                                      fontSize: 18,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
@@ -245,7 +245,7 @@ class _ProfileState extends State<Profile> {
                                           color: loadingGamification
                                               ? Colors.grey
                                               : _getBadgeColor(currentBadge),
-                                          size: 18,
+                                          size: 16,
                                         ),
                                         const SizedBox(width: 6),
                                         Text(
@@ -261,7 +261,7 @@ class _ProfileState extends State<Profile> {
                                                 ? Colors.grey
                                                 : _getBadgeColor(currentBadge),
                                             fontWeight: FontWeight.bold,
-                                            fontSize: 14,
+                                            fontSize: 13,
                                           ),
                                         ),
                                       ],
@@ -280,7 +280,7 @@ class _ProfileState extends State<Profile> {
                       right: 20,
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                            vertical: 20, horizontal: 5),
+                            vertical: 15, horizontal: 5),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(20),
@@ -303,20 +303,20 @@ class _ProfileState extends State<Profile> {
                                     : totalPoints.toString(),
                                 label: "Points"),
                             _DividerLine(),
-                            _InfoColumn(value: "4", label: "Days Streak"),
-                            _DividerLine(),
                             _InfoColumn(
                                 value: loadingGamification
                                     ? '...'
                                     : completedTasks.toString(),
                                 label: "Missions Completed"),
+                            _DividerLine(),
+                            _InfoColumn(value: "4", label: "Days Streak"),
                           ],
                         ),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 70),
+                const SizedBox(height: 55),
 
                 // Lowest & Highest Card
                 Padding(
@@ -357,7 +357,7 @@ class _ProfileState extends State<Profile> {
                       const Text(
                         'Your Next Mission',
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -427,7 +427,7 @@ class _ProfileState extends State<Profile> {
                         }(),
                 ),
 
-                const SizedBox(height: 20),
+                const SizedBox(height: 15),
 
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -459,7 +459,7 @@ class _ProfileState extends State<Profile> {
                               'Edit Profile',
                               style: TextStyle(
                                 color: Color(0xFF003049),
-                                fontSize: 18,
+                                fontSize: 16,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -496,7 +496,7 @@ class _ProfileState extends State<Profile> {
                               'Logout',
                               style: TextStyle(
                                 color: Color(0xFF003049),
-                                fontSize: 18,
+                                fontSize: 16,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -507,7 +507,7 @@ class _ProfileState extends State<Profile> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 30),
+                const SizedBox(height: 10),
               ],
             ),
           ],
@@ -527,6 +527,10 @@ class _ProfileState extends State<Profile> {
       return condition == GlucoseCondition.beforeMeal
           ? 'Before Meal'
           : 'After Meal';
+    }
+
+    String getTimeLabel(DateTime timestamp) {
+      return DateFormat('HH:mm').format(timestamp);
     }
 
     return CustomCard(
@@ -597,7 +601,7 @@ class _ProfileState extends State<Profile> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  getConditionLabel(record.condition),
+                  '${getConditionLabel(record.condition)} at ${getTimeLabel(record.timeStamp)}',
                   style: FontUtils.style(
                     size: FontSize.xs,
                     weight: FontWeightType.medium,

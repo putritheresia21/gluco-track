@@ -292,7 +292,7 @@ class HomePageState extends State<HomePage> {
                       Text(
                         'Your Mission',
                         style: FontUtils.style(
-                          size: FontSize.lg,
+                          size: FontSize.mdl,
                           weight: FontWeightType.bold,
                         ),
                       ),
@@ -365,7 +365,7 @@ class HomePageState extends State<HomePage> {
                   child: Text(
                     'Notifications',
                     style: FontUtils.style(
-                      size: FontSize.lg,
+                      size: FontSize.mdl,
                       weight: FontWeightType.bold,
                     ),
                   ),
