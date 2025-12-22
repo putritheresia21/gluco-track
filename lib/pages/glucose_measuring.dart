@@ -6,6 +6,7 @@ import 'package:glucotrack_app/services/SupabaseService.dart';
 import 'package:glucotrack_app/pages/GlucosePrediction.dart';
 import 'package:glucotrack_app/pages/glucose_share_template.dart';
 import 'package:glucotrack_app/services/gamification_service/gamification_service.dart';
+import 'package:glucotrack_app/l10n/app_localizations.dart';
 
 class GlucoseMeasuring extends StatefulWidget {
   const GlucoseMeasuring({super.key});
@@ -94,10 +95,10 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
                 ),
               ),
               const SizedBox(width: 12),
-              const Expanded(
+              Expanded(
                 child: Text(
-                  'Bagikan Hasil',
-                  style: TextStyle(
+                  AppLocalizations.of(context)!.shareResult,
+                  style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
@@ -105,9 +106,9 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
               ),
             ],
           ),
-          content: const Text(
-            'Apakah Anda ingin membagikan hasil tes gula darah Anda saat ini?',
-            style: TextStyle(fontSize: 16),
+          content: Text(
+            AppLocalizations.of(context)!.shareResultMessage,
+            style: const TextStyle(fontSize: 16),
           ),
           actions: [
             TextButton(
@@ -118,9 +119,9 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
                   vertical: 12,
                 ),
               ),
-              child: const Text(
-                'Tidak',
-                style: TextStyle(
+              child: Text(
+                AppLocalizations.of(context)!.no,
+                style: const TextStyle(
                   fontSize: 16,
                   color: Colors.grey,
                   fontWeight: FontWeight.w600,
@@ -139,9 +140,9 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              child: const Text(
-                'Ya, Bagikan',
-                style: TextStyle(
+              child: Text(
+                AppLocalizations.of(context)!.yesShare,
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                   color: Colors.white,
@@ -180,8 +181,8 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
 
     if (!useCurrentTime && selectedDateTime == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text("Pilih tanggal dan waktu terlebih dahulu.")),
+        SnackBar(
+            content: Text(AppLocalizations.of(context)!.selectDateTimeFirst)),
       );
       return;
     }
@@ -217,8 +218,8 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text("Data glukosa berhasil disimpan."),
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.glucoseDataSaved),
               backgroundColor: Colors.green,
             ),
           );
@@ -229,8 +230,8 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
       } else {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text("Gagal menyimpan data ke database."),
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.failedSaveDatabase),
               backgroundColor: Colors.red,
             ),
           );
@@ -241,7 +242,7 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text("Gagal menyimpan data: $e"),
+            content: Text(AppLocalizations.of(context)!.failedSaveData(e.toString())),
             backgroundColor: Colors.red,
           ),
         );
@@ -268,11 +269,11 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
           ),
           child: AppBar(
             backgroundColor: const Color(0xFF2C7796),
-            title: const Padding(
-              padding: EdgeInsets.only(top: 20),
+            title: Padding(
+              padding: const EdgeInsets.only(top: 20),
               child: Text(
-                "Catatan Glukosa",
-                style: TextStyle(
+                AppLocalizations.of(context)!.glucoseRecord,
+                style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                   fontSize: 24,
@@ -291,9 +292,9 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                "Kadar Gula Darah (mg/dL)",
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context)!.glucoseLevelMgDl,
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                 ),
@@ -335,10 +336,10 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
                           keyboardType: TextInputType.number,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return "Kadar gula darah tidak boleh kosong";
+                              return AppLocalizations.of(context)!.glucoseLevelRequired;
                             }
                             if (double.tryParse(value) == null) {
-                              return "Masukkan angka yang valid";
+                              return AppLocalizations.of(context)!.validNumberRequired;
                             }
                             return null;
                           },
@@ -376,29 +377,29 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
                                     });
 
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
+                                      SnackBar(
                                         content: Text(
-                                            "Data dari IoT berhasil dimuat"),
+                                            AppLocalizations.of(context)!.iotDataLoaded),
                                         backgroundColor: Colors.green,
                                       ),
                                     );
                                   }
                                 },
                                 borderRadius: BorderRadius.circular(8),
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                    vertical: 10,
-                                  ),
-                                  child: const Text(
-                                    "Otomatis",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 10,
+                                    ),
+                                    child: Text(
+                                      AppLocalizations.of(context)!.automatic,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                      ),
                                     ),
                                   ),
-                                ),
                               ),
                             ),
                           ),
@@ -421,7 +422,7 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
                       ),
                       const SizedBox(width: 6),
                       Text(
-                        'Data dari Perangkat IoT',
+                        AppLocalizations.of(context)!.iotDeviceData,
                         style: TextStyle(
                           fontSize: 12,
                           color: Colors.blue[700],
@@ -432,9 +433,9 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
                   ),
                 ),
               const SizedBox(height: 24),
-              const Text(
-                "Kondisi Waktu Pengukuran",
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context)!.measurementCondition,
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                 ),
@@ -446,8 +447,8 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
                   return DropdownMenuItem(
                     value: condition,
                     child: Text(condition == GlucoseCondition.beforeMeal
-                        ? 'BeforeMeal'
-                        : 'AfterMeal'),
+                        ? AppLocalizations.of(context)!.beforeMeal
+                        : AppLocalizations.of(context)!.afterMeal),
                   );
                 }).toList(),
                 onChanged: (value) {
@@ -473,9 +474,9 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    "Gunakan Waktu Saat ini",
-                    style: TextStyle(
+                  Text(
+                    AppLocalizations.of(context)!.useCurrentTime,
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                     ),
@@ -504,14 +505,14 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
                   ),
                   child: Text(
                     selectedDateTime == null
-                        ? "Pilih Tanggal & Waktu"
-                        : "Tanggal & Waktu: ${selectedDateTime!.toLocal()}",
+                        ? AppLocalizations.of(context)!.selectDateTime
+                        : "${AppLocalizations.of(context)!.dateTime}${selectedDateTime!.toLocal()}",
                     style: const TextStyle(color: Colors.white),
                   ),
                 ),
               const SizedBox(height: 260),
               CustomButton(
-                text: "Save",
+                text: AppLocalizations.of(context)!.save,
                 backgroundColor: const Color(0xFF2C7796),
                 textColor: Colors.white,
                 fontSize: 18,

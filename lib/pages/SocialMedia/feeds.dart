@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:glucotrack_app/services/social_services/PostServices.dart';
+import 'package:glucotrack_app/l10n/app_localizations.dart';
 import 'package:glucotrack_app/services/social_services/post_media_service.dart';
 import 'package:glucotrack_app/Widget/status_bar_helper.dart';
 import 'package:glucotrack_app/Widget/ContentCard.dart';
@@ -51,76 +52,94 @@ class _PublicFeedPageState extends State<PublicFeedPage> {
   }
 
   Future<void> _load({bool reset = false}) async {
-    if (_loading) return;
-    setState(() => _loading = true);
-    try {
-      if (reset) {
-        _posts.clear();
-        _filteredPosts.clear();
-        _profiles = {};
-        _mediaMap = {};
-        _end = false;
-        _page = 0;
+  if (_loading) return;
+  setState(() => _loading = true);
+  try {
+    if (reset) {
+      _posts.clear();
+      _filteredPosts.clear();
+      _profiles = {};
+      _mediaMap = {};
+      _end = false;
+      _page = 0;
+    }
+    final from = _page * _pageSize;
+    final to = from + _pageSize - 1;
+
+    print('DEBUG _load: Loading posts from $from to $to');
+    final rows = await _svc.loadPublicFeed(from: from, to: to);
+    print('DEBUG _load: Received ${rows.length} posts');
+
+    // Debug: print isi posts
+    for (var post in rows) {
+      print('DEBUG Post: ${post['id']} - body: ${post['body']} - author: ${post['author_id']}');
+    }
+
+    final ids = rows.map((r) => r['author_id'] as String).toSet().toList();
+    print('DEBUG _load: Author IDs: $ids');
+    
+    final missing = ids.where((id) => !_profiles.containsKey(id)).toList();
+    print('DEBUG _load: Missing profiles: $missing');
+    
+    if (missing.isNotEmpty) {
+      final fetched = await _svc.fetchProfilesByIds(missing);
+      print('DEBUG _load: Fetched ${fetched.length} profiles');
+      _profiles.addAll(fetched);
+    }
+
+    final postIds = rows.map((r) => r['id'] as String).toList();
+    final media = await _svc.fetchMediaForPosts(postIds);
+
+    print('DEBUG: Found ${media.length} posts with media');
+    media.forEach((postId, items) {
+      print('DEBUG: Post $postId has ${items.length} media items');
+      for (var item in items) {
+        print(
+            'DEBUG: Media item: ${item['storage_path']} (${item['mime_type']})');
       }
-      final from = _page * _pageSize;
-      final to = from + _pageSize - 1;
+    });
 
-      final rows = await _svc.loadPublicFeed(from: from, to: to);
-
-      final ids = rows.map((r) => r['author_id'] as String).toSet().toList();
-      final missing = ids.where((id) => !_profiles.containsKey(id)).toList();
-      if (missing.isNotEmpty) {
-        final fetched = await _svc.fetchProfilesByIds(missing);
-        _profiles.addAll(fetched);
-      }
-
-      final postIds = rows.map((r) => r['id'] as String).toList();
-      final media = await _svc.fetchMediaForPosts(postIds);
-
-      print('DEBUG: Found ${media.length} posts with media');
-      media.forEach((postId, items) {
-        print('DEBUG: Post $postId has ${items.length} media items');
-        for (var item in items) {
-          print(
-              'DEBUG: Media item: ${item['storage_path']} (${item['mime_type']})');
-        }
-      });
-
-      final mediaSvc = PostMediaService();
-      final mapped = <String, List<Map<String, dynamic>>>{};
-      media.forEach((pid, items) {
-        mapped[pid] = items.map((m) {
-          final path = m['storage_path'] as String?;
-          if (path == null || path.isEmpty) {
-            print('DEBUG: storage_path is null or empty for media item');
-            return {
-              ...m,
-              'url': '',
-            };
-          }
-          final url = mediaSvc.publicUrl(path);
-          print('DEBUG: Generated URL for $path: $url');
+    final mediaSvc = PostMediaService();
+    final mapped = <String, List<Map<String, dynamic>>>{};
+    media.forEach((pid, items) {
+      mapped[pid] = items.map((m) {
+        final path = m['storage_path'] as String?;
+        if (path == null || path.isEmpty) {
+          print('DEBUG: storage_path is null or empty for media item');
           return {
             ...m,
-            'url': url,
+            'url': '',
           };
-        }).toList();
-      });
-      _mediaMap.addAll(mapped);
+        }
+        final url = mediaSvc.publicUrl(path);
+        print('DEBUG: Generated URL for $path: $url');
+        return {
+          ...m,
+          'url': url,
+        };
+      }).toList();
+    });
+    _mediaMap.addAll(mapped);
 
-      _posts.addAll(rows);
-      _filterPosts(widget.searchQuery);
-      if (rows.length < _pageSize) _end = true;
-      _page++;
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Gagal load feed: $e')));
-    } finally {
-      if (mounted) setState(() => _loading = false);
-    }
+    _posts.addAll(rows);
+    print('DEBUG _load: Total posts in _posts: ${_posts.length}');
+    
+    _filterPosts(widget.searchQuery);
+    print('DEBUG _load: Total filtered posts: ${_filteredPosts.length}');
+    
+    if (rows.length < _pageSize) _end = true;
+    _page++;
+  } catch (e) {
+    print('ERROR _load: $e');
+    if (!mounted) return;
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.failedToLoadFeed(e.toString()))));
+  } finally {
+    if (mounted) setState(() => _loading = false);
   }
+}
 
+  
   Future<void> _refresh() {
     return _load(reset: true);
   }
@@ -146,17 +165,19 @@ class _PublicFeedPageState extends State<PublicFeedPage> {
   }
 
   String _formatTimestamp(DateTime dateTime) {
+    if (!mounted) return '';
+    final l10n = AppLocalizations.of(context)!;
     final now = DateTime.now();
     final difference = now.difference(dateTime);
 
     if (difference.inMinutes < 1) {
-      return 'Just now';
+      return l10n.justNow;
     } else if (difference.inMinutes < 60) {
-      return '${difference.inMinutes} mins ago';
+      return l10n.minsAgo(difference.inMinutes);
     } else if (difference.inHours < 24) {
-      return '${difference.inHours} hours ago';
+      return l10n.hoursAgo(difference.inHours);
     } else if (difference.inDays < 7) {
-      return '${difference.inDays} days ago';
+      return l10n.daysAgo(difference.inDays);
     } else {
       return DateFormat('dd MMM yyyy').format(dateTime);
     }
@@ -256,8 +277,8 @@ class _PublicFeedPageState extends State<PublicFeedPage> {
                             ),
                             child: Text(
                               _following.contains(authorId)
-                                  ? 'Following'
-                                  : 'Follow',
+                                  ? AppLocalizations.of(context)!.following
+                                  : AppLocalizations.of(context)!.follow,
                               style: const TextStyle(
                                 color: Color(0xFF000000),
                                 fontWeight: FontWeight.w600,

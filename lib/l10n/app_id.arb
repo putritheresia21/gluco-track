@@ -1,0 +1,314 @@
+{
+  "appTitle": "GlucoTrack",
+  "hello": "Halo,",
+  "totalRecords": "Total Catatan",
+  "weeklySummary": "Ringkasan Mingguan",
+  "lowest": "Terendah",
+  "highest": "Tertinggi",
+  "yourMission": "Misi Anda",
+  "viewAll": "lihat semua",
+  "notifications": "Notifikasi",
+  "last7Days": "7 Hari Terakhir",
+  "logoutConfirm": "Konfirmasi Logout",
+  "logoutMessage": "Apakah Anda yakin ingin logout?",
+  "cancel": "Batal",
+  "logout": "Logout",
+  "yearsOld": "{age} tahun",
+  "@yearsOld": {
+    "placeholders": {
+      "age": {
+        "type": "int"
+      }
+    }
+  },
+  "points": "Poin",
+  "daysStreak": "Hari Beruntun",
+  "missionsCompleted": "Misi Selesai",
+  "yourNextMission": "Misi Berikutnya",
+  "noMissionsAvailable": "Belum ada misi tersedia",
+  "editProfile": "Edit Profil",
+  "mgDl": "mg/dL",
+  "loading": "Memuat...",
+  "noDataYet": "Belum ada data",
+  "beforeMeal": "Sebelum Makan",
+  "afterMeal": "Sesudah Makan",
+  "at": "pada jam",
+  "shareResult": "Bagikan Hasil",
+  "shareResultMessage": "Apakah Anda ingin membagikan hasil tes gula darah Anda saat ini?",
+  "no": "Tidak",
+  "yesShare": "Ya, Bagikan",
+  "selectDateTimeFirst": "Pilih tanggal dan waktu terlebih dahulu.",
+  "glucoseDataSaved": "Data glukosa berhasil disimpan.",
+  "failedSaveDatabase": "Gagal menyimpan data ke database.",
+  "failedSaveData": "Gagal menyimpan data: {error}",
+  "@failedSaveData": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "glucoseRecord": "Catatan Glukosa",
+  "glucoseLevelMgDl": "Kadar Gula Darah (mg/dL)",
+  "glucoseLevelRequired": "Kadar gula darah tidak boleh kosong",
+  "validNumberRequired": "Masukkan angka yang valid",
+  "iotDataLoaded": "Data dari IoT berhasil dimuat",
+  "automatic": "Otomatis",
+  "iotDeviceData": "Data dari Perangkat IoT",
+  "measurementCondition": "Kondisi Waktu Pengukuran",
+  "useCurrentTime": "Gunakan Waktu Saat ini",
+  "selectDateTime": "Pilih Tanggal & Waktu",
+  "dateTime": "Tanggal & Waktu: ",
+  "save": "Simpan",
+  "whatsUp": "Apa kabar, {name}!",
+  "@whatsUp": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "haveAnythingToShare": "Ada yang ingin dibagikan?",
+  "searchHint": "Cari kiriman, artikel, atau pengguna...",
+  "forYou": "Untuk Anda",
+  "news": "Berita",
+  "failedTriggerEsp32": "Gagal mengirim trigger ke ESP32",
+  "timeoutEsp32": "Timeout: ESP32 tidak merespons",
+  "measureAgain": "Ukur Lagi",
+  "startMeasurement": "Mulai Pengukuran",
+  "checkGlucoseNow": "Cek gula darahmu sekarang!",
+  "start": "Mulai",
+  "measurementProcess": "Proses Pengukuran",
+  "measurementResult": "Hasil Pengukuran",
+  "confidence": "Keyakinan: ",
+  "continueText": "Lanjutkan",
+  "measurementFailed": "Pengukuran Gagal",
+  "articleDetail": "Detail Artikel",
+  "social": "Sosial",
+  "socialMediaFeed": "Umpan Media Sosial",
+  "iotConnection": "Koneksi IOT",
+  "testingSocialMedia": "testing sosmed",
+  "writeSomethingFirst": "Tulis sesuatu dulu",
+  "posted": "Berhasil dikirim!",
+  "failedToPost": "Gagal mengirim: {error}",
+  "@failedToPost": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "post": "Kirim",
+  "failedToLoadFeed": "Gagal memuat feed: {error}",
+  "@failedToLoadFeed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "writeSomethingOrAddImage": "Tulis sesuatu atau tambahkan gambar",
+  "failedToCreateImage": "Gagal membuat gambar: {error}",
+  "@failedToCreateImage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToShare": "Gagal membagikan: {error}",
+  "@failedToShare": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "congratulationsPoints": "Selamat! Anda mendapat {points} poin",
+  "@congratulationsPoints": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "failedToClaimPoints": "Gagal klaim poin",
+  "follow": "Ikuti",
+  "following": "Diikuti",
+  "article1Title": "Olahraga: Obat yang Tidak Boleh Anda Lewatkan.",
+  "article1Preview": "Tetap aktif untuk meningkatkan kesehatan tubuh dan otak. Melewatkan olahraga berarti mengabaikan kesehatan Anda.",
+  "article1Caption": "Tetap aktif untuk meningkatkan kesehatan tubuh dan otak. Melewatkan olahraga berarti mengabaikan kesehatan Anda.",
+  "article1Content": "Saat orang memikirkan obat, mereka biasanya membayangkan pil, kapsul, atau resep dokter. Namun inilah kenyataannya—salah satu obat paling ampuh yang pernah Anda berikan kepada tubuh Anda tidak berasal dari apotek. Itu berasal dari gerakan. Olahraga adalah jenis obat yang tidak boleh Anda lewatkan, karena ia bekerja pada setiap bagian kesehatan Anda, mulai dari jantung dan paru-paru hingga suasana hati dan kejelasan mental Anda.\n\nCoba pikirkan: hanya 20–30 menit aktivitas fisik sehari dapat meningkatkan sirkulasi darah, memperkuat otot, dan menurunkan risiko penyakit kronis. Namun bukan hanya tubuh—otak Anda juga memanfaatkannya. Olahraga teratur melepaskan endorfin, mengurangi stres, dan bahkan mempertajam fokus. Singkatnya, menggerakkan tubuh bukan hanya tentang tetap bugar; ini tentang tetap hidup dan berkembang.\n\nBagian terbaiknya? Anda tidak butuh keanggotaan gym yang mahal atau peralatan canggih untuk memulai. Jalan cepat, olahraga singkat di rumah, atau bahkan peregangan sambil menonton TV bisa memberikan perbedaan nyata. Yang paling penting adalah konsistensi. Langkah kecil yang dilakukan setiap hari akan membawa lebih banyak hasil daripada memaksakan diri keras sebulan sekali.\n\nJadi, lain kali Anda merasa ingin melewatkan olahraga, ingatlah ini: Anda tidak hanya melewatkan latihan—Anda sedang melewatkan kesempatan untuk berinvestasi dalam kesehatan masa depan Anda. Anggaplah gerakan sebagai obat, karena tubuh dan otak Anda benar-benar tidak dapat berfungsi maksimal tanpanya.",
+  "article2Title": "Piring Sehat, Hidup Sehat",
+  "article2Preview": "Seimbangkan makanan Anda dengan warna dan variasi. Perubahan kecil membawa hasil besar.",
+  "article2Caption": "Seimbangkan makanan Anda dengan warna dan variasi. Perubahan kecil membawa hasil besar.",
+  "article2Content": "Gaya hidup sehat dimulai dari makanan yang Anda pilih setiap hari. Membangun piring yang seimbang tidak harus rumit—fokus saja pada variasi dan moderasi. Dengan menyertakan buah-buahan dan sayuran berwarna-warni, protein tanpa lemak, biji-bijian utuh, dan lemak sehat, Anda dapat memberikan apa yang dibutuhkan tubuh untuk tetap kuat dan bertenaga.\n\nSemakin banyak warna yang Anda tambahkan ke makanan Anda, semakin banyak nutrisi yang Anda masukkan ke dalam diet Anda. Makanan dengan warna alami yang kaya—seperti sayuran hijau, wortel, beri, dan paprika—penuh dengan vitamin, mineral, dan antioksidan yang mendukung kesejahteraan secara keseluruhan. Piring yang penuh warna bukan hanya lebih sehat tetapi juga lebih nikmat untuk dimakan.\n\nKontrol porsi adalah kunci lain untuk makan sehat. Anda tidak perlu menghilangkan semua makanan favorit Anda, tetapi Anda dapat mengurangi kelebihan gula, garam, dan lemak tidak sehat. Coba gunakan piring yang lebih kecil, tambahkan lebih banyak sayuran, dan hindari makan berlebihan dengan mendengarkan sinyal lapar tubuh Anda.\n\nPerubahan kecil, seperti menukar nasi putih dengan nasi merah atau memilih makanan yang dipanggang daripada digoreng, dapat memberikan perbedaan besar seiring waktu. Penyesuaian sederhana ini dapat mendukung pencernaan yang lebih baik, tingkat energi yang stabil, dan peningkatan kesehatan jangka panjang.\n\nIngatlah bahwa makan sehat adalah sebuah perjalanan, bukan diet ketat. Tujuannya adalah kemajuan—bukan kesempurnaan. Saat Anda membuat pilihan yang sadar secara konsisten, Anda akan merasa lebih baik, lebih kuat, dan lebih percaya diri dalam kehidupan sehari-hari Anda.",
+  "article3Title": "Mengelola Glukosa Jadi Sederhana",
+  "article3Preview": "Dengan pilihan yang tepat, Anda bisa tetap berenergi dan mencegah risiko. Kesehatan Anda berharga.",
+  "article3Caption": "Dengan pilihan yang tepat, Anda bisa tetap berenergi dan mencegah risiko. Kesehatan ada di tangan Anda.",
+  "article3Content": "Mengelola glukosa darah tidak harus terasa membebani. Memahami bagaimana makanan, aktivitas fisik, dan kebiasaan sehari-hari memengaruhi gula darah Anda dapat membantu Anda membuat keputusan yang lebih baik. Dengan pendekatan yang tepat, Anda dapat mempertahankan tingkat energi yang stabil dan mengurangi risiko masalah kesehatan jangka panjang.\n\nKarbohidrat memiliki dampak terbesar pada gula darah, jadi memilih jenis karbohidrat yang tepat sangatlah penting. Biji-bijian utuh, kacang-kacangan, sayuran, dan buah-buahan menawarkan energi yang lambat dan stabil, tidak seperti camilan manis dan makanan olahan yang menyebabkan lonjakan dan penurunan cepat. Kuncinya adalah keseimbangan—bukan eliminasi.\n\nAktivitas fisik yang teratur juga membantu tubuh Anda menggunakan glukosa secara lebih efisien. Bahkan gerakan sederhana seperti berjalan setelah makan, peregangan, atau melakukan olahraga ringan dapat mendukung kadar glukosa yang lebih sehat. Konsistensi lebih penting daripada intensitas.\n\nMemantau kebiasaan Anda dapat membantu Anda memahami apa yang terbaik untuk tubuh Anda. Perhatikan bagaimana makanan tertentu, stres, atau pola tidur memengaruhi energi Anda. Penyesuaian gaya hidup kecil dapat menghasilkan perbaikan besar.\n\nAnda memiliki kekuatan untuk mengendalikan kesehatan Anda. Dengan membuat pilihan yang sadar setiap hari, Anda dapat melindungi kesejahteraan Anda, tetap aktif lebih lama, dan merasa percaya diri dalam mengelola kadar glukosa Anda.",
+  "article4Title": "Panduan Anda Menuju Kesehatan Sehari-hari",
+  "article4Preview": "Tips praktis untuk hidup yang lebih sehat dan seimbang. Karena kesehatan adalah kekayaan.",
+  "article4Caption": "Tips praktis untuk hidup yang lebih sehat dan seimbang. Karena kesehatan adalah kekayaan.",
+  "article4Content": "Kesehatan (wellness) bukan hanya tentang menghindari penyakit—ini tentang merasa dalam kondisi terbaik secara fisik, mental, dan emosional. Mengambil langkah sederhana setiap hari dapat menciptakan gaya hidup yang lebih seimbang dan memuaskan. Kebiasaan sehat berkembang seiring waktu, satu pilihan pada satu waktu.\n\nMulailah dengan memberi asupan makanan bergizi bagi tubuh Anda, tetap terhidrasi, dan menjaga pola makan yang teratur. Diet yang seimbang mendukung suasana hati yang stabil, fokus yang lebih baik, dan kekebalan tubuh yang meningkat. Kebiasaan kecil seperti minum cukup air atau memilih makanan utuh dapat memberikan dampak besar.\n\nKesehatan mental sama pentingnya dengan kesehatan fisik. Mengambil istirahat, melatih perhatian penuh (mindfulness), menulis jurnal, atau menghabiskan waktu di alam dapat membantu mengurangi stres dan meningkatkan keseimbangan emosional. Jangan lupa istirahat—tidur yang berkualitas memungkinkan tubuh dan pikiran Anda untuk pulih.\n\nGerakan adalah bagian penting lainnya dari kesehatan. Baik itu berjalan, menari, yoga, atau olahraga, temukan aktivitas yang Anda nikmati sehingga olahraga terasa bermanfaat—bukan terpaksa. Tubuh yang kuat membantu mendukung kehidupan yang aktif dan mandiri.\n\nYang paling penting, bersikaplah baik pada diri sendiri. Kesehatan itu personal dan berbeda untuk setiap orang. Kemajuan mungkin lambat, tetapi konsistensi akan membantu Anda membangun kebiasaan yang bertahan seumur hidup. Kesehatan Anda benar-benar adalah kekayaan terbesar Anda.",
+  "article5Title": "Bergerak Setiap Hari, Hidup Lebih Kuat",
+  "article5Preview": "Rutinitas sederhana dapat mengubah energi dan kesehatan Anda. Jadikan gerakan sebagai obat harian Anda.",
+  "article5Caption": "Rutinitas sederhana dapat mengubah energi dan kesehatan Anda. Jadikan gerakan sebagai obat harian Anda.",
+  "article5Content": "Gerakan adalah salah satu hadiah terbaik yang bisa Anda berikan kepada tubuh Anda. Aktivitas fisik harian memperkuat otot, mendukung kesehatan jantung, meningkatkan fleksibilitas, dan meningkatkan suasana hati. Anda tidak butuh keanggotaan gym—mulailah saja dari tempat Anda berada.\n\nRutinitas sederhana seperti berjalan, peregangan, atau naik tangga dapat memberikan perbedaan yang bermakna. Bahkan 10 menit gerakan dapat meningkatkan sirkulasi, mengurangi kekakuan, dan memberi Anda lebih banyak energi sepanjang hari.\n\nOlahraga juga memainkan peran penting dalam menjaga berat badan yang sehat dan mengelola gula darah. Saat tubuh Anda bergerak, ia menggunakan glukosa sebagai bahan bakar, membantu menjaga keseimbangan dan mencegah lonjakan. Gerakan yang konsisten menjaga metabolisme Anda tetap aktif dan efisien.\n\nOlahraga teratur juga bermanfaat bagi kesehatan mental. Aktivitas fisik memicu pelepasan endorfin—kimia alami yang mengurangi stres dan meningkatkan kebahagiaan. Gerakan dapat membantu meningkatkan kualitas tidur, kepercayaan diri, dan suasana hati secara keseluruhan.\n\nJadikan olahraga sesuatu yang Anda nantikan, bukan beban. Pilih aktivitas yang Anda nikmati, tetap konsisten, dan rayakan kemenangan kecil. Semakin banyak Anda bergerak, semakin kuat dan sehat Anda jadinya—satu langkah pada satu waktu.",
+  "shareAsPost": "GlucoTrack Post",
+  "shareOptionsPrompt": "Pilih cara membagikan hasil pengukuran",
+  "shareAsPostSubtitle": "Bagikan sebagai post di GlucoTrack",
+  "otherApps": "Aplikasi Lain",
+  "socialAppsSubtitle": "WhatsApp, Instagram, Facebook, dll",
+  "sharing": "Membagikan...",
+  "bloodGlucoseResult": "Hasil Pengukuran Gula Darah",
+  "iotDeviceInvasive": "Perangkat IoT (Invasive)",
+  "manualGlucometer": "Glucometer Manual",
+  "conditionLabel": "Kondisi: ",
+  "footerStayHealthy": "💙 Jaga kesehatan Anda dengan GlucoTrack",
+  "login": "Masuk",
+  "signUp": "Daftar",
+  "welcomeBack": "Selamat Datang Kembali",
+  "loginToAccount": "Masuk ke akun Anda",
+  "enterEmail": "Masukkan email Anda",
+  "enterPassword": "Masukkan kata sandi Anda",
+  "rememberMe": "Ingat Saya",
+  "forgotPassword": "Lupa Kata Sandi?",
+  "dontHaveAccount": "Belum punya akun?",
+  "alreadyHaveAccount": "Sudah punya akun?",
+  "emailPasswordRequired": "Email dan Kata Sandi wajib diisi.",
+  "sessionNotActive": "Sesi belum aktif. Coba lagi.",
+  "loginFailed": "Gagal Masuk.",
+  "enterEmailReset": "Masukkan email untuk reset kata sandi.",
+  "checkEmailReset": "Cek email Anda untuk instruksi reset.",
+  "createAccount": "Buat akun baru Anda",
+  "enterUsername": "Masukkan nama pengguna Anda",
+  "male": "Laki-laki",
+  "female": "Perempuan",
+  "birthDate": "Tanggal Lahir",
+  "createPassword": "Buat kata sandi",
+  "confirmPassword": "Konfirmasi kata sandi",
+  "emailEmpty": "Email tidak boleh kosong",
+  "usernameEmpty": "Nama pengguna tidak boleh kosong",
+  "selectBirthDate": "Pilih tanggal lahir Anda",
+  "passwordMismatch": "Konfirmasi kata sandi tidak cocok",
+  "registrationFailed": "Pendaftaran gagal. Cek email/nama pengguna atau coba lagi.",
+  "registrationSuccess": "Pendaftaran berhasil! Silakan cek email Anda.",
+  "glucoseChart": "Grafik Glukosa",
+  "history": "Riwayat",
+  "selectDate": "Pilih Tanggal",
+  "all": "Semua",
+  "low": "Rendah",
+  "normal": "Normal",
+  "high": "Tinggi",
+  "weekly": "Mingguan",
+  "monthly": "Bulanan",
+  "noDataDateRange": "Tidak ada data pada rentang tanggal ini",
+  "noDataCategory": "Tidak ada data kategori ''{category}''",
+  "@noDataCategory": {
+    "placeholders": {
+      "category": {
+        "type": "String"
+      }
+    }
+  },
+  "noHistoryData": "Belum ada riwayat data",
+  "noDataAnalysis": "Belum ada data minggu ini untuk dianalisis.",
+  "glucoseStability": "Stabilitas Gula Darah",
+  "attentionRequired": "Perhatian Diperlukan",
+  "highGlucoseTrend": "Minggu ini gula darah Anda cenderung tinggi. Lebih dari 50% pencatatan di atas normal.",
+  "hypoglycemiaAlert": "Waspada Hipoglikemia",
+  "lowGlucoseTrend": "Terdeteksi sering terjadi kadar gula rendah. Pastikan makan teratur dan konsultasi dokter.",
+  "goodJob": "Kerja Bagus!",
+  "stableGlucoseMessage": "Gula darah Anda sangat terkendali minggu ini. Pertahankan pola hidup sehat Anda.",
+  "fairlyStable": "Cukup Stabil",
+  "stableVariationMessage": "Variasi gula darah Anda dalam batas wajar. Rata-rata minggu ini {avg} mg/dL.",
+  "@stableVariationMessage": {
+    "placeholders": {
+      "avg": {
+        "type": "String"
+      }
+    }
+  },
+  "average": "Rata-rata",
+  "whoCanReply": "Siapa yang bisa membalas?",
+  "whoCanReplySubtitle": "Pilih siapa yang bisa membalas postingan ini.",
+  "everyone": "Semua orang",
+  "followersOnly": "Hanya pengikut",
+  "discardPost": "Buang postingan?",
+  "discardPostMessage": "Ini tidak bisa dibatalkan dan draf Anda akan hilang.",
+  "discard": "Buang",
+  "addNewPost": "Tambah Postingan Baru",
+  "share": "Bagikan",
+  "writeSomethingHere": "Tulis sesuatu di sini....",
+  "characterCount": "{count, plural, =1{{count} karakter} other{{count} karakter}}",
+  "@characterCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "manualGlucoseTask": "{count}x Pencatatan Manual Gula Darah",
+  "@manualGlucoseTask": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "iotGlucoseTask": "{count}x Pencatatan IoT Gula Darah",
+  "@iotGlucoseTask": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "socialPostTask": "{count}x Posting pembaruan di Media Sosial",
+  "@socialPostTask": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "tasksProgress": "{completed}/{total} Tugas",
+  "@tasksProgress": {
+    "placeholders": {
+      "completed": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "completed": "Selesai",
+  "claim": "Klaim",
+  "justNow": "Baru saja",
+  "minsAgo": "{count} menit yang lalu",
+  "@minsAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursAgo": "{count} jam yang lalu",
+  "@hoursAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "daysAgo": "{count} hari yang lalu",
+  "@daysAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
+}

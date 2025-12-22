@@ -4,6 +4,7 @@ import 'package:glucotrack_app/pages/SocialMedia/NewsPage.dart';
 import 'package:glucotrack_app/utils/AppLayout.dart';
 import 'package:glucotrack_app/services/auth_service.dart';
 import 'package:glucotrack_app/services/gamification_service/gamification_service.dart';
+import 'package:glucotrack_app/l10n/app_localizations.dart';
 import 'package:glucotrack_app/utils/FontUtils.dart';
 
 class SocialPage extends StatefulWidget {
@@ -118,15 +119,15 @@ class _SocialPageState extends State<SocialPage> {
     }
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
       child: Row(
         children: [
           // Avatar
           _isLoadingProfile
               ? const CircleAvatar(
-                  radius: 25, child: CircularProgressIndicator(strokeWidth: 2))
+                  radius: 22, child: CircularProgressIndicator(strokeWidth: 2))
               : CircleAvatar(
-                  radius: 25,
+                  radius: 22,
                   backgroundImage:
                       (currentAvatarUrl != null && currentAvatarUrl.isNotEmpty)
                           ? NetworkImage(currentAvatarUrl)
@@ -134,56 +135,45 @@ class _SocialPageState extends State<SocialPage> {
                   child: (currentAvatarUrl == null || currentAvatarUrl.isEmpty)
                       ? Text(firstName[0].toUpperCase(),
                           style: FontUtils.style(
-                              size: FontSize.xl,
+                              size: FontSize.lg,
                               weight: FontWeightType.bold,
                               color: Colors.white))
                       : null,
                 ),
-          const SizedBox(width: 12),
-          // Greeting Text
+          const SizedBox(width: 10),
+          // Greeting Text - EXPANDED UNTUK FLEXIBLE
           Expanded(
-            flex: 2,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'What\'s up, ',
-                      style: FontUtils.style(
-                          size: FontSize.mdl,
-                          weight: FontWeightType.bold,
-                          color: Colors.black),
-                    ),
-                    Text(
-                      '$firstName!',
-                      style: FontUtils.style(
-                          size: FontSize.mdl,
-                          weight: FontWeightType.bold,
-                          color: Colors.black),
-                    ),
-                  ],
+                Text(
+                  AppLocalizations.of(context)!.whatsUp(firstName),
+                  style: FontUtils.style(
+                      size: FontSize.md,
+                      weight: FontWeightType.bold,
+                      color: Colors.black),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  'Have anything to share?',
+                  AppLocalizations.of(context)!.haveAnythingToShare,
                   style:
-                      FontUtils.style(size: FontSize.sm, color: Colors.black),
+                      FontUtils.style(size: FontSize.xs, color: Colors.black),
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
                 ),
               ],
             ),
           ),
-          const SizedBox(width: 8),
-          // Badge
+          const SizedBox(width: 6),
+          // Badge - SHRINK KE MINIMUM SIZE
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
               color: Colors.grey.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(16),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -193,9 +183,9 @@ class _SocialPageState extends State<SocialPage> {
                       ? Icons.workspace_premium
                       : getBadgeIcon(currentBadge),
                   color: getBadgeColor(currentBadge),
-                  size: 16,
+                  size: 13,
                 ),
-                const SizedBox(width: 4),
+                const SizedBox(width: 3),
                 Text(
                   _isLoadingGamification
                       ? '...'
@@ -209,7 +199,7 @@ class _SocialPageState extends State<SocialPage> {
               ],
             ),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: 6),
           // Search Icon
           InkWell(
             onTap: () {
@@ -222,7 +212,7 @@ class _SocialPageState extends State<SocialPage> {
               });
             },
             child: Icon(_isSearching ? Icons.close : Icons.search,
-                color: Colors.black, size: 28),
+                color: Colors.black, size: 22),
           ),
         ],
       ),
@@ -255,7 +245,7 @@ class _SocialPageState extends State<SocialPage> {
                   });
                 },
                 decoration: InputDecoration(
-                  hintText: 'Search posts, articles, or users...',
+                  hintText: AppLocalizations.of(context)!.searchHint,
                   prefixIcon: const Icon(Icons.search),
                   filled: true,
                   fillColor: Colors.white,
@@ -278,7 +268,7 @@ class _SocialPageState extends State<SocialPage> {
                 InkWell(
                   onTap: () => setState(() => _currentIndex = 0),
                   child: Text(
-                    'For you',
+                    AppLocalizations.of(context)!.forYou,
                     style: FontUtils.style(
                       size: FontSize.md,
                       weight: _currentIndex == 0
@@ -295,7 +285,7 @@ class _SocialPageState extends State<SocialPage> {
                 InkWell(
                   onTap: () => setState(() => _currentIndex = 1),
                   child: Text(
-                    'News',
+                    AppLocalizations.of(context)!.news,
                     style: FontUtils.style(
                       size: FontSize.md,
                       weight: _currentIndex == 1

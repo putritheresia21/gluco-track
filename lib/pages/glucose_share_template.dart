@@ -8,6 +8,7 @@ import 'dart:io';
 import 'dart:ui' as ui;
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:glucotrack_app/l10n/app_localizations.dart';
 
 class GlucoseShareTemplate extends StatefulWidget {
   final double glucoseLevel;
@@ -103,7 +104,7 @@ class _GlucoseShareTemplateState extends State<GlucoseShareTemplate> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gagal membuat gambar: $e')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.failedToCreateImage(e.toString()))),
         );
       }
       return null;
@@ -131,7 +132,7 @@ class _GlucoseShareTemplateState extends State<GlucoseShareTemplate> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gagal membagikan: $e')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.failedToShare(e.toString()))),
         );
       }
     } finally {
@@ -154,13 +155,13 @@ class _GlucoseShareTemplateState extends State<GlucoseShareTemplate> {
       if (imageFile != null) {
         await Share.shareXFiles(
           [XFile(imageFile.path)],
-          text: 'Hasil Pengukuran Gula Darah - GlucoTrack',
+          text: '${AppLocalizations.of(context)!.bloodGlucoseResult} - GlucoTrack',
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gagal membagikan: $e')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.failedToShare(e.toString()))),
         );
       }
     } finally {
@@ -194,16 +195,16 @@ class _GlucoseShareTemplateState extends State<GlucoseShareTemplate> {
               ),
             ),
             const SizedBox(height: 24),
-            const Text(
-              'Bagikan Hasil',
+            Text(
+              AppLocalizations.of(context)!.shareResult,
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
-              'Pilih cara membagikan hasil pengukuran',
+            Text(
+              AppLocalizations.of(context)!.shareOptionsPrompt,
               style: TextStyle(
                 fontSize: 14,
                 color: Colors.grey,
@@ -238,21 +239,21 @@ class _GlucoseShareTemplateState extends State<GlucoseShareTemplate> {
                       ),
                     ),
                     const SizedBox(width: 16),
-                    const Expanded(
+                    Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'GlucoTrack Post',
-                            style: TextStyle(
+                            AppLocalizations.of(context)!.shareAsPost,
+                            style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
                             ),
                           ),
-                          SizedBox(height: 4),
+                          const SizedBox(height: 4),
                           Text(
-                            'Bagikan sebagai post di GlucoTrack',
-                            style: TextStyle(
+                            AppLocalizations.of(context)!.shareAsPostSubtitle,
+                            style: const TextStyle(
                               fontSize: 13,
                               color: Colors.grey,
                             ),
@@ -297,21 +298,21 @@ class _GlucoseShareTemplateState extends State<GlucoseShareTemplate> {
                       ),
                     ),
                     const SizedBox(width: 16),
-                    const Expanded(
+                    Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Aplikasi Lain',
-                            style: TextStyle(
+                            AppLocalizations.of(context)!.otherApps,
+                            style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
                             ),
                           ),
-                          SizedBox(height: 4),
+                          const SizedBox(height: 4),
                           Text(
-                            'WhatsApp, Instagram, Facebook, dll',
-                            style: TextStyle(
+                            AppLocalizations.of(context)!.socialAppsSubtitle,
+                            style: const TextStyle(
                               fontSize: 13,
                               color: Colors.grey,
                             ),
@@ -342,8 +343,8 @@ class _GlucoseShareTemplateState extends State<GlucoseShareTemplate> {
         backgroundColor: const Color(0xFFF5F5F5),
         appBar: AppBar(
           backgroundColor: const Color(0xFF2C7796),
-          title: const Text(
-            'Bagikan Hasil',
+          title: Text(
+            AppLocalizations.of(context)!.shareResult,
             style: TextStyle(
               fontWeight: FontWeight.bold,
               color: Colors.white,
@@ -372,8 +373,8 @@ class _GlucoseShareTemplateState extends State<GlucoseShareTemplate> {
       backgroundColor: const Color(0xFFF5F5F5),
       appBar: AppBar(
         backgroundColor: const Color(0xFF2C7796),
-        title: const Text(
-          'Bagikan Hasil',
+        title: Text(
+          AppLocalizations.of(context)!.shareResult,
           style: TextStyle(
             fontWeight: FontWeight.bold,
             color: Colors.white,
@@ -449,7 +450,7 @@ class _GlucoseShareTemplateState extends State<GlucoseShareTemplate> {
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              'Hasil Pengukuran Gula Darah',
+                              AppLocalizations.of(context)!.bloodGlucoseResult,
                               style: TextStyle(
                                 fontSize: 14,
                                 color: Colors.white.withOpacity(0.9),
@@ -503,8 +504,8 @@ class _GlucoseShareTemplateState extends State<GlucoseShareTemplate> {
                                   const SizedBox(width: 6),
                                   Text(
                                     widget.isFromIoT
-                                        ? 'Perangkat IoT (Invasive)'
-                                        : 'Glucometer Manual',
+                                        ? AppLocalizations.of(context)!.iotDeviceInvasive
+                                        : AppLocalizations.of(context)!.manualGlucometer,
                                     style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.w600,
@@ -600,8 +601,8 @@ class _GlucoseShareTemplateState extends State<GlucoseShareTemplate> {
                                         size: 20,
                                       ),
                                       const SizedBox(width: 8),
-                                      const Text(
-                                        'Kondisi: ',
+                                      Text(
+                                        AppLocalizations.of(context)!.conditionLabel,
                                         style: TextStyle(
                                           fontSize: 14,
                                           color: Colors.black54,
@@ -611,8 +612,8 @@ class _GlucoseShareTemplateState extends State<GlucoseShareTemplate> {
                                       Text(
                                         widget.condition ==
                                                 GlucoseCondition.beforeMeal
-                                            ? 'Before Meal'
-                                            : 'After Meal',
+                                            ? AppLocalizations.of(context)!.beforeMeal
+                                            : AppLocalizations.of(context)!.afterMeal,
                                         style: const TextStyle(
                                           fontSize: 14,
                                           fontWeight: FontWeight.bold,
@@ -703,7 +704,7 @@ class _GlucoseShareTemplateState extends State<GlucoseShareTemplate> {
                       )
                     : const Icon(Icons.share, color: Colors.white),
                 label: Text(
-                  isSharing ? 'Membagikan...' : 'Bagikan Hasil',
+                  isSharing ? AppLocalizations.of(context)!.sharing : AppLocalizations.of(context)!.shareResult,
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,

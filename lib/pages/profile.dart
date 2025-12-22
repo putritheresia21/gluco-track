@@ -3,7 +3,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:glucotrack_app/pages/login_page.dart';
 import 'package:glucotrack_app/services/auth_service.dart';
 import 'package:glucotrack_app/Widget/status_bar_helper.dart';
-import 'package:glucotrack_app/pages/profile_page.dart';
 import 'package:glucotrack_app/services/gamification_service/gamification_service.dart';
 import 'package:glucotrack_app/Widget/gamification_widget/task_card_widget.dart';
 import 'package:glucotrack_app/pages/Gamification/task_detail_page.dart';
@@ -14,6 +13,9 @@ import 'package:glucotrack_app/services/GlucoseRepository.dart';
 import 'package:glucotrack_app/services/SupabaseService.dart';
 import 'package:glucotrack_app/models/GlucoseRecord.dart';
 import 'package:intl/intl.dart';
+import 'package:glucotrack_app/l10n/app_localizations.dart';
+import 'package:glucotrack_app/services/User_service.dart';
+import 'package:glucotrack_app/utils/AppLayout.dart';
 
 //Semangat cukurukuuukkkk
 
@@ -140,20 +142,20 @@ class _ProfileState extends State<Profile> {
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
-          title: const Text("Konfirmasi Logout"),
-          content: const Text("Apakah Anda yakin ingin logout?"),
+          title: Text(AppLocalizations.of(context)!.logoutConfirm),
+          content: Text(AppLocalizations.of(context)!.logoutMessage),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(dialogContext).pop();
               },
-              child: const Text("Batal"),
+              child: Text(AppLocalizations.of(context)!.cancel),
             ),
             ElevatedButton(
               onPressed: () {
                 logout(context);
               },
-              child: const Text("Logout"),
+              child: Text(AppLocalizations.of(context)!.logout),
             ),
           ],
         );
@@ -173,160 +175,162 @@ class _ProfileState extends State<Profile> {
     final completedTasks =
         tasks.fold(0, (sum, task) => sum + task.completedSubTasks);
 
-    return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
-      body: SafeArea(
-        child: ListView(
-          physics: const BouncingScrollPhysics(),
+    return AppLayout(
+      showHeader: false,
+      bodyBackgroundColor: const Color(0xFFF5F5F5),
+      child: SafeArea(
+        child: Column(
           children: [
-            Column(
+            // Fixed Header (tidak scroll)
+            Stack(
+              clipBehavior: Clip.none,
               children: [
-                Stack(
-                  clipBehavior: Clip.none,
+                Container(
+                  height: 180,
+                  width: double.infinity,
+                  decoration: const BoxDecoration(
+                    color: Color(0xFF2C7796),
+                    borderRadius: BorderRadius.only(
+                      bottomRight: Radius.circular(20),
+                      bottomLeft: Radius.circular(20),
+                    ),
+                  ),
+                  padding: const EdgeInsets.all(20),
+                  child: Row(
                   children: [
-                    Container(
-                      height: 180,
-                      width: double.infinity,
-                      decoration: const BoxDecoration(
-                        color: Color(0xFF2C7796),
-                        borderRadius: BorderRadius.only(
-                          bottomRight: Radius.circular(20),
-                          bottomLeft: Radius.circular(20),
+                    const CircleAvatar(
+                      radius: 43,
+                      backgroundImage:
+                          AssetImage('assets/profile/image.png'),
+                    ),
+                    const SizedBox(width: 15),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          loadingUsername ? '...' : username,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                      padding: const EdgeInsets.all(20),
-                      child: Column(
-                        children: [
-                          Row(
+                        Text(
+                          AppLocalizations.of(context)!.yearsOld(26),
+                          style: const TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(height: 5),
+                        // Badge
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: Colors.grey.shade300,
+                              width: 1,
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              const CircleAvatar(
-                                radius: 43,
-                                backgroundImage:
-                                    AssetImage('assets/profile/image.png'),
+                              Icon(
+                                loadingGamification
+                                    ? Icons.workspace_premium
+                                    : _getBadgeIcon(currentBadge),
+                                color: loadingGamification
+                                    ? Colors.grey
+                                    : _getBadgeColor(currentBadge),
+                                size: 18,
                               ),
-                              const SizedBox(width: 15),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    loadingUsername ? '...' : username,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const Text(
-                                    "26 years old",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 5),
-                                  // New Badge
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 12, vertical: 6),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(20),
-                                      border: Border.all(
-                                        color: Colors.grey.shade300,
-                                        width: 1,
-                                      ),
-                                    ),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Icon(
-                                          loadingGamification
-                                              ? Icons.workspace_premium
-                                              : _getBadgeIcon(currentBadge),
-                                          color: loadingGamification
-                                              ? Colors.grey
-                                              : _getBadgeColor(currentBadge),
-                                          size: 18,
-                                        ),
-                                        const SizedBox(width: 6),
-                                        Text(
-                                          loadingGamification
-                                              ? '...'
-                                              : currentBadge
-                                                  .toString()
-                                                  .split('.')
-                                                  .last
-                                                  .toUpperCase(),
-                                          style: TextStyle(
-                                            color: loadingGamification
-                                                ? Colors.grey
-                                                : _getBadgeColor(currentBadge),
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 14,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
+                              const SizedBox(width: 8),
+                              Text(
+                                loadingGamification
+                                    ? '...'
+                                    : currentBadge
+                                        .toString()
+                                        .split('.')
+                                        .last
+                                        .toUpperCase(),
+                                style: TextStyle(
+                                  color: loadingGamification
+                                      ? Colors.grey
+                                      : _getBadgeColor(currentBadge),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                ),
                               ),
                             ],
-                          )
-                        ],
-                      ),
-                    ),
-                    Positioned(
-                      top: 130,
-                      left: 20,
-                      right: 20,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 20, horizontal: 5),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            BoxShadow(
-                              blurRadius: 8,
-                              spreadRadius: 2,
-                              offset: const Offset(0, 3),
-                              color: Colors.black.withOpacity(0.5),
-                            )
-                          ],
+                          ),
                         ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            // Dynamic data from gamification
-                            _InfoColumn(
-                                value: loadingGamification
-                                    ? '...'
-                                    : totalPoints.toString(),
-                                label: "Points"),
-                            _DividerLine(),
-                            _InfoColumn(value: "4", label: "Days Streak"),
-                            _DividerLine(),
-                            _InfoColumn(
-                                value: loadingGamification
-                                    ? '...'
-                                    : completedTasks.toString(),
-                                label: "Missions Completed"),
-                          ],
-                        ),
-                      ),
+                      ],
                     ),
                   ],
                 ),
-                const SizedBox(height: 70),
+              ),
+              Positioned(
+                top: 150,
+                left: 20,
+                right: 20,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 20, horizontal: 5),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        blurRadius: 8,
+                        spreadRadius: 2,
+                        offset: const Offset(0, 3),
+                        color: Colors.black.withOpacity(0.5),
+                      )
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      _InfoColumn(
+                          value: loadingGamification
+                              ? '...'
+                              : totalPoints.toString(),
+                          label: AppLocalizations.of(context)!.points),
+                      _DividerLine(),
+                      _InfoColumn(value: "4", label: AppLocalizations.of(context)!.daysStreak),
+                      _DividerLine(),
+                      _InfoColumn(
+                          value: loadingGamification
+                              ? '...'
+                              : completedTasks.toString(),
+                          label: AppLocalizations.of(context)!.missionsCompleted),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 70),
 
-                // Lowest & Highest Card
-                Padding(
+          // Scrollable Content
+          Expanded(
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              padding: EdgeInsets.zero,
+              child: Column(
+                children: [
+                  // Lowest & Highest Card
+                  Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Expanded(
                         child: _buildGlucoseCard(
-                          title: 'Lowest',
+                          title: AppLocalizations.of(context)!.lowest,
                           record: lowestRecord,
                           color: const Color(0xFF62CE54),
                           icon: Icons.trending_down,
@@ -336,7 +340,7 @@ class _ProfileState extends State<Profile> {
                       const SizedBox(width: 14),
                       Expanded(
                         child: _buildGlucoseCard(
-                          title: 'Highest',
+                          title: AppLocalizations.of(context)!.highest,
                           record: highestRecord,
                           color: const Color(0xFFD9534F),
                           icon: Icons.trending_up,
@@ -354,9 +358,9 @@ class _ProfileState extends State<Profile> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
-                        'Your Next Mission',
-                        style: TextStyle(
+                      Text(
+                        AppLocalizations.of(context)!.yourNextMission,
+                        style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
@@ -372,8 +376,8 @@ class _ProfileState extends State<Profile> {
                           );
                           setState(() {});
                         },
-                        child: const Text(
-                          'view all',
+                        child: Text(
+                          AppLocalizations.of(context)!.viewAll,
                           style: TextStyle(
                             color: Colors.blue,
                             fontSize: 15,
@@ -402,8 +406,7 @@ class _ProfileState extends State<Profile> {
                           if (tasks.isEmpty) {
                             return Container(
                               height: 150,
-                              alignment: Alignment.center,
-                              child: const Text('No missions available'),
+                              child: Text(AppLocalizations.of(context)!.noMissionsAvailable),
                             );
                           }
 
@@ -443,27 +446,27 @@ class _ProfileState extends State<Profile> {
                         elevation: 2,
                       ),
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ProfilePage(),
-                          ),
-                        );
+                        // Navigator.push(
+                        //   context,
+                        //   MaterialPageRoute(
+                        //     builder: (context) => ProfilePage(),
+                        //   ),
+                        // );
                       },
-                      child: const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              'Edit Profile',
-                              style: TextStyle(
+                              AppLocalizations.of(context)!.editProfile,
+                              style: const TextStyle(
                                 color: Color(0xFF003049),
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            Icon(Icons.arrow_forward, color: Color(0xFF003049)),
+                            const Icon(Icons.arrow_forward, color: Color(0xFF003049)),
                           ],
                         ),
                       ),
@@ -487,30 +490,32 @@ class _ProfileState extends State<Profile> {
                       onPressed: () {
                         confirmLogout(context);
                       },
-                      child: const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              'Logout',
-                              style: TextStyle(
+                              AppLocalizations.of(context)!.logout,
+                              style: const TextStyle(
                                 color: Color(0xFF003049),
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            Icon(Icons.arrow_forward, color: Color(0xFF003049)),
+                            const Icon(Icons.arrow_forward, color: Color(0xFF003049)),
                           ],
                         ),
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(height: 30),
-              ],
+                  const SizedBox(height: 30),
+                ],
+              ),
             ),
-          ],
+          ),
+        ],
         ),
       ),
     );
@@ -525,12 +530,12 @@ class _ProfileState extends State<Profile> {
   }) {
     String getConditionLabel(GlucoseCondition condition) {
       return condition == GlucoseCondition.beforeMeal
-          ? 'Before Meal'
-          : 'After Meal';
+          ? AppLocalizations.of(context)!.beforeMeal
+          : AppLocalizations.of(context)!.afterMeal;
     }
 
     return CustomCard(
-      height: 140,
+      height: 160,
       alignment: Alignment.center,
       backgroundColor: color,
       borderRadius: 10,
@@ -585,7 +590,7 @@ class _ProfileState extends State<Profile> {
                     Padding(
                       padding: const EdgeInsets.only(bottom: 6),
                       child: Text(
-                        'mg/dL',
+                        AppLocalizations.of(context)!.mgDl,
                         style: FontUtils.style(
                           size: FontSize.sm,
                           weight: FontWeightType.semibold,

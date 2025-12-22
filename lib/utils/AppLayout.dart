@@ -51,7 +51,7 @@ class AppLayout extends StatelessWidget {
               bottomBorder: headerBottomBorder,
             )
           : null,
-      body: SafeArea(child: child),
+      body: child,
     );
   }
 }

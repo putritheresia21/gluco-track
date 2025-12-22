@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:glucotrack_app/pages/register_page.dart';
 import 'package:glucotrack_app/services/user_service.dart';
-import 'profile_page.dart';
 import 'package:glucotrack_app/pages/SocialMedia/Feeds.dart';
+import 'package:glucotrack_app/l10n/app_localizations.dart';
 
 class NotificationPage extends StatelessWidget {
   const NotificationPage({super.key});
@@ -13,7 +13,7 @@ class NotificationPage extends StatelessWidget {
       backgroundColor: const Color(0xFFF5F5F5),
       appBar: AppBar(
         backgroundColor: const Color(0xFFF5F5F5),
-        title: const Text('Social'),
+        title: Text(AppLocalizations.of(context)!.social),
       ),
       body: Center(
         child: Column(
@@ -26,7 +26,7 @@ class NotificationPage extends StatelessWidget {
                       MaterialPageRoute(
                           builder: (context) => PublicFeedPage()));
                 },
-                child: Text("Social Media Feed")),
+                child: Text(AppLocalizations.of(context)!.socialMediaFeed)),
             ElevatedButton(
                 onPressed: () {
                   Navigator.push(
@@ -34,9 +34,9 @@ class NotificationPage extends StatelessWidget {
                     MaterialPageRoute(builder: (context) => RegisterPage()),
                   );
                 },
-                child: const Text("Register Page")),
-            ElevatedButton(onPressed: () {}, child: Text("Koneksi IOT")),
-            ElevatedButton(onPressed: () {}, child: Text("testing sosmed")),
+                child: Text(AppLocalizations.of(context)!.signUp)),
+            ElevatedButton(onPressed: () {}, child: Text(AppLocalizations.of(context)!.iotConnection)),
+            ElevatedButton(onPressed: () {}, child: Text(AppLocalizations.of(context)!.testingSocialMedia)),
           ],
         ),
       ),

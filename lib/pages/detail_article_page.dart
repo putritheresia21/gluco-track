@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:glucotrack_app/l10n/app_localizations.dart';
 
 class ArticleDetailPage extends StatelessWidget {
   final String articleId;
@@ -35,9 +36,9 @@ class ArticleDetailPage extends StatelessWidget {
           ),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Article\'s Detail',
-          style: TextStyle(
+        title: Text(
+          AppLocalizations.of(context)!.articleDetail,
+          style: const TextStyle(
             color: Colors.black,
             fontSize: 20,
             fontWeight: FontWeight.bold,
