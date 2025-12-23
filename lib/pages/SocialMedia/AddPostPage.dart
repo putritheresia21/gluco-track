@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:glucotrack_app/services/social_services/PostServices.dart';
+import 'package:glucotrack_app/l10n/app_localizations.dart';
 import 'package:glucotrack_app/services/gamification_service/gamification_service.dart';
 import 'package:glucotrack_app/utils/AppLayout.dart';
 import 'package:glucotrack_app/utils/FontUtils.dart';
@@ -73,7 +74,7 @@ class _AddPostPageState extends State<AddPostPage> {
             ),
             const SizedBox(height: 24),
             Text(
-              'Who can reply?',
+              AppLocalizations.of(context)!.whoCanReply,
               style: FontUtils.style(
                 size: FontSize.xl,
                 weight: FontWeightType.bold,
@@ -81,7 +82,7 @@ class _AddPostPageState extends State<AddPostPage> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Pick who can reply to this post.',
+              AppLocalizations.of(context)!.whoCanReplySubtitle,
               style: FontUtils.style(
                 size: FontSize.md,
                 color: Colors.grey.shade600,
@@ -90,7 +91,7 @@ class _AddPostPageState extends State<AddPostPage> {
             const SizedBox(height: 24),
             _ReplyOption(
               icon: Icons.public,
-              title: 'Everyone',
+              title: AppLocalizations.of(context)!.everyone,
               isSelected: _replyOption == 'Everyone',
               onTap: () {
                 setState(() => _replyOption = 'Everyone');
@@ -100,7 +101,7 @@ class _AddPostPageState extends State<AddPostPage> {
             const SizedBox(height: 16),
             _ReplyOption(
               icon: Icons.person_add_alt,
-              title: 'Followers Only',
+              title: AppLocalizations.of(context)!.followersOnly,
               isSelected: _replyOption == 'Followers Only',
               onTap: () {
                 setState(() => _replyOption = 'Followers Only');
@@ -120,21 +121,21 @@ class _AddPostPageState extends State<AddPostPage> {
         context: context,
         builder: (context) => AlertDialog(
           title: Text(
-            'Discard post?',
+            AppLocalizations.of(context)!.discardPost,
             style: FontUtils.style(
               size: FontSize.lg,
               weight: FontWeightType.bold,
             ),
           ),
           content: Text(
-            'This can\'t be undone and you\'ll lose your draft.',
+            AppLocalizations.of(context)!.discardPostMessage,
             style: FontUtils.style(size: FontSize.md),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
               child: Text(
-                'Cancel',
+                AppLocalizations.of(context)!.cancel,
                 style: FontUtils.style(
                   size: FontSize.md,
                   color: Colors.grey.shade700,
@@ -144,7 +145,7 @@ class _AddPostPageState extends State<AddPostPage> {
             TextButton(
               onPressed: () => Navigator.pop(context, true),
               child: Text(
-                'Discard',
+                AppLocalizations.of(context)!.discard,
                 style: FontUtils.style(
                   size: FontSize.md,
                   color: Colors.red,
@@ -167,7 +168,7 @@ class _AddPostPageState extends State<AddPostPage> {
     final text = _controller.text.trim();
     if (text.isEmpty && _images.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Write something or add an image")),
+        SnackBar(content: Text(AppLocalizations.of(context)!.writeSomethingOrAddImage)),
       );
       return;
     }
@@ -184,13 +185,13 @@ class _AddPostPageState extends State<AddPostPage> {
       if (mounted) {
         Navigator.pop(context, true);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Posted!")),
+          SnackBar(content: Text(AppLocalizations.of(context)!.posted)),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Failed to post: $e")),
+          SnackBar(content: Text(AppLocalizations.of(context)!.failedToPost(e.toString()))),
         );
       }
     } finally {
@@ -208,7 +209,7 @@ class _AddPostPageState extends State<AddPostPage> {
       headerBackgroundColor: Colors.white,
       headerForegroundColor: Colors.black,
       elevation: 1,
-      headerHeight: 60,
+      headerHeight: 64,
       headerContent: Row(
         children: [
           IconButton(
@@ -217,9 +218,9 @@ class _AddPostPageState extends State<AddPostPage> {
           ),
           Expanded(
             child: Text(
-              'Add New Post',
+              AppLocalizations.of(context)!.addNewPost,
               style: FontUtils.style(
-                size: FontSize.xl,
+                size: FontSize.lg,
                 weight: FontWeightType.bold,
               ),
             ),
@@ -242,15 +243,15 @@ class _AddPostPageState extends State<AddPostPage> {
               ),
               child: _loading
                   ? const SizedBox(
-                      width: 16,
-                      height: 16,
+                      width: 14,
+                      height: 14,
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
                         valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                       ),
                     )
                   : Text(
-                      'Share',
+                      AppLocalizations.of(context)!.share,
                       style: FontUtils.style(
                         size: FontSize.md,
                         weight: FontWeightType.semibold,
@@ -264,14 +265,16 @@ class _AddPostPageState extends State<AddPostPage> {
       child: Column(
         children: [
           Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+            child: Container(
+              color: Colors.white,
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
                       CircleAvatar(
                         radius: 22,
                         backgroundColor: Colors.grey.shade300,
@@ -279,19 +282,26 @@ class _AddPostPageState extends State<AddPostPage> {
                       ),
                       const SizedBox(width: 12),
                       Expanded(
-                        child: TextField(
-                          controller: _controller,
-                          maxLines: null,
-                          decoration: InputDecoration(
-                            hintText: 'Write something here....',
-                            hintStyle: FontUtils.style(
-                              size: FontSize.md,
-                              color: Colors.grey.shade400,
+                        child: Container(
+                          color: Colors.white,
+                          child: TextField(
+                            controller: _controller,
+                            maxLines: null,
+                            decoration: InputDecoration(
+                              hintText: AppLocalizations.of(context)!.writeSomethingHere,
+                              hintStyle: FontUtils.style(
+                                size: FontSize.md,
+                                color: Colors.grey.shade400,
+                              ),
+                              border: InputBorder.none,
+                              filled: false,
+                              enabledBorder: InputBorder.none,
+                              focusedBorder: InputBorder.none,
+                              contentPadding: EdgeInsets.zero,
                             ),
-                            border: InputBorder.none,
+                            style: FontUtils.style(size: FontSize.md),
+                            onChanged: (_) => setState(() {}),
                           ),
-                          style: FontUtils.style(size: FontSize.md),
-                          onChanged: (_) => setState(() {}),
                         ),
                       ),
                     ],
@@ -346,8 +356,7 @@ class _AddPostPageState extends State<AddPostPage> {
                   ],
                 ],
               ),
-            ),
-          ),
+            ),          ),          ),
           Container(
             decoration: BoxDecoration(
               color: Colors.white,
@@ -367,7 +376,7 @@ class _AddPostPageState extends State<AddPostPage> {
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        'Who can reply?',
+                        AppLocalizations.of(context)!.whoCanReply,
                         style: FontUtils.style(
                           size: FontSize.sm,
                           color: const Color(0xFF2D5F8D),
@@ -379,7 +388,7 @@ class _AddPostPageState extends State<AddPostPage> {
                 ),
                 const Spacer(),
                 Text(
-                  '$characterCount character${characterCount != 1 ? 's' : ''}',
+                  AppLocalizations.of(context)!.characterCount(characterCount),
                   style: FontUtils.style(
                     size: FontSize.sm,
                     color: Colors.grey.shade600,

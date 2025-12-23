@@ -12,6 +12,9 @@ import 'package:glucotrack_app/pages/NavbarItem/Navbar.dart';
 import 'package:glucotrack_app/utils/AppLayout.dart';
 import 'package:glucotrack_app/utils/FontUtils.dart';
 import 'package:intl/intl.dart';
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
+import 'package:glucotrack_app/l10n/app_localizations.dart';
 import 'package:glucotrack_app/services/User_service.dart';
 
 //Semangat cukurukuuukkkk
@@ -27,6 +30,9 @@ class HomePageState extends State<HomePage> {
   final UserService _userService = UserService();
   final _gamification = GamificationService.instance;
   final _glucoseRepository = Glucoserepository();
+
+  File? profileImage;
+  String? profileImageUrl;
 
   Map<String, dynamic>? userProfile;
   bool loadingProfile = true;
@@ -115,7 +121,7 @@ class HomePageState extends State<HomePage> {
 
       return {
         'average': average,
-        'count': weeklyRecords.length,
+        'count': allRecords.length,
       };
     } catch (e) {
       print('Error loading weekly summary: $e');
@@ -190,7 +196,7 @@ class HomePageState extends State<HomePage> {
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
-                                  'Weekly Summary',
+                                  AppLocalizations.of(context)!.weeklySummary,
                                   style: FontUtils.style(
                                     size: FontSize.lg,
                                     weight: FontWeightType.bold,
@@ -218,7 +224,7 @@ class HomePageState extends State<HomePage> {
                                     Padding(
                                       padding: const EdgeInsets.only(bottom: 8),
                                       child: Text(
-                                        'mg/dL',
+                                        AppLocalizations.of(context)!.mgDl,
                                         style: FontUtils.style(
                                           size: FontSize.md,
                                           weight: FontWeightType.semibold,
@@ -238,7 +244,7 @@ class HomePageState extends State<HomePage> {
                                               BorderRadius.circular(20),
                                         ),
                                         child: Text(
-                                          '${snapshot.data!['count']} records',
+                                          '${snapshot.data!['count']} ${AppLocalizations.of(context)!.totalRecords}',
                                           style: FontUtils.style(
                                             size: FontSize.xs,
                                             weight: FontWeightType.semibold,
@@ -249,7 +255,7 @@ class HomePageState extends State<HomePage> {
                                   ],
                                 ),
                               ],
-                            ),
+                      ),
                     );
                   },
                 ),
@@ -260,7 +266,7 @@ class HomePageState extends State<HomePage> {
                   children: [
                     Expanded(
                       child: _buildGlucoseCard(
-                        title: 'Lowest',
+                        title: AppLocalizations.of(context)!.lowest,
                         record: lowestRecord,
                         color: const Color(0xFF62CE54),
                         icon: Icons.trending_down,
@@ -270,7 +276,7 @@ class HomePageState extends State<HomePage> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: _buildGlucoseCard(
-                        title: 'Highest',
+                        title: AppLocalizations.of(context)!.highest,
                         record: highestRecord,
                         color: const Color(0xFFD9534F),
                         icon: Icons.trending_up,
@@ -290,7 +296,7 @@ class HomePageState extends State<HomePage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Your Mission',
+                        AppLocalizations.of(context)!.yourMission,
                         style: FontUtils.style(
                           size: FontSize.mdl,
                           weight: FontWeightType.bold,
@@ -309,7 +315,7 @@ class HomePageState extends State<HomePage> {
                           setState(() {});
                         },
                         child: Text(
-                          'view all',
+                          AppLocalizations.of(context)!.viewAll,
                           style: FontUtils.style(
                             size: FontSize.md,
                             weight: FontWeightType.regular,
@@ -363,7 +369,7 @@ class HomePageState extends State<HomePage> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 1, vertical: 3),
                   child: Text(
-                    'Notifications',
+                    AppLocalizations.of(context)!.notifications,
                     style: FontUtils.style(
                       size: FontSize.mdl,
                       weight: FontWeightType.bold,
@@ -387,7 +393,7 @@ class HomePageState extends State<HomePage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Last 7 Days',
+                        AppLocalizations.of(context)!.last7Days,
                         style: FontUtils.style(
                           size: FontSize.md,
                           weight: FontWeightType.bold,
@@ -419,7 +425,7 @@ class HomePageState extends State<HomePage> {
                           ),
                           const SizedBox(width: 10),
                           Text(
-                            '2 days ago',
+                            AppLocalizations.of(context)!.daysAgo(2),
                             style: FontUtils.style(
                               size: FontSize.xs,
                               weight: FontWeightType.medium,
@@ -455,7 +461,7 @@ class HomePageState extends State<HomePage> {
                           ),
                           const SizedBox(width: 10),
                           Text(
-                            '2 days ago',
+                            AppLocalizations.of(context)!.daysAgo(2),
                             style: FontUtils.style(
                               size: FontSize.xs,
                               weight: FontWeightType.medium,
@@ -485,7 +491,7 @@ class HomePageState extends State<HomePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Hello,',
+              AppLocalizations.of(context)!.hello,
               style: FontUtils.style(
                 size: FontSize.lg,
                 weight: FontWeightType.regular,
@@ -519,8 +525,8 @@ class HomePageState extends State<HomePage> {
   }) {
     String getConditionLabel(GlucoseCondition condition) {
       return condition == GlucoseCondition.beforeMeal
-          ? 'Before Meal'
-          : 'After Meal';
+          ? AppLocalizations.of(context)!.beforeMeal
+          : AppLocalizations.of(context)!.afterMeal;
     }
 
     String getTimeLabel(DateTime timestamp) {
@@ -528,82 +534,124 @@ class HomePageState extends State<HomePage> {
     }
 
     return CustomCard(
-      height: 140,
+      height: 160,
       alignment: Alignment.center,
       backgroundColor: color,
       borderRadius: 10,
       padding: const EdgeInsets.all(16),
-      child: isLoading || record == null
+      child: isLoading
           ? const Center(
               child: CircularProgressIndicator(
                 color: Colors.white,
                 strokeWidth: 2,
               ),
             )
-          : Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          : record == null
+              ? Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      title,
-                      style: FontUtils.style(
-                        size: FontSize.md,
-                        weight: FontWeightType.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                    Icon(icon, color: Colors.white, size: 24),
-                  ],
-                ),
-                Text(
-                  DateFormat('d MMM yyyy').format(record.timeStamp),
-                  style: FontUtils.style(
-                    size: FontSize.xs,
-                    weight: FontWeightType.medium,
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      record.glucoseLevel.toStringAsFixed(0),
-                      style: FontUtils.style(
-                        size: FontSize.xl,
-                        weight: FontWeightType.bold,
-                        color: Colors.white,
-                        height: 1,
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 6),
-                      child: Text(
-                        'mg/dL',
-                        style: FontUtils.style(
-                          size: FontSize.sm,
-                          weight: FontWeightType.semibold,
-                          color: Colors.white,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          title,
+                          style: FontUtils.style(
+                            size: FontSize.md,
+                            weight: FontWeightType.bold,
+                            color: Colors.white,
+                          ),
                         ),
+                        Icon(icon, color: Colors.white, size: 24),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Center(
+                      child: Column(
+                        children: [
+                          Icon(
+                            Icons.info_outline,
+                            color: Colors.white.withOpacity(0.5),
+                            size: 40,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            AppLocalizations.of(context)!.noDataYet,
+                            style: FontUtils.style(
+                              size: FontSize.sm,
+                              weight: FontWeightType.medium,
+                              color: Colors.white.withOpacity(0.7),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  '${getConditionLabel(record.condition)} at ${getTimeLabel(record.timeStamp)}',
-                  style: FontUtils.style(
-                    size: FontSize.xs,
-                    weight: FontWeightType.medium,
-                    color: Colors.white70,
-                  ),
-                ),
-              ],
-            ),
+                )
+              : Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          title,
+                          style: FontUtils.style(
+                            size: FontSize.md,
+                            weight: FontWeightType.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                        Icon(icon, color: Colors.white, size: 24),
+                      ],
+                    ),
+                    Text(
+                      DateFormat('d MMM yyyy').format(record.timeStamp),
+                      style: FontUtils.style(
+                        size: FontSize.xs,
+                        weight: FontWeightType.medium,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          record.glucoseLevel.toStringAsFixed(0),
+                          style: FontUtils.style(
+                            size: FontSize.xl,
+                            weight: FontWeightType.bold,
+                            color: Colors.white,
+                            height: 1,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 6),
+                          child: Text(
+                            AppLocalizations.of(context)!.mgDl,
+                            style: FontUtils.style(
+                              size: FontSize.sm,
+                              weight: FontWeightType.semibold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '${getConditionLabel(record.condition)} ${AppLocalizations.of(context)!.at} ${getTimeLabel(record.timeStamp)}',
+                      style: FontUtils.style(
+                        size: FontSize.xs,
+                        weight: FontWeightType.medium,
+                        color: Colors.white70,
+                      ),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -4,6 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Widget/custom_button.dart';
 import '../Widget/InputField.dart';
+import 'package:glucotrack_app/l10n/app_localizations.dart';
 import 'register_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -31,7 +32,7 @@ class LoginPageState extends State<LoginPage> {
 
     if (email.isEmpty || pass.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Email dan Password wajib diisi.")),
+        SnackBar(content: Text(AppLocalizations.of(context)!.emailPasswordRequired)),
       );
       return;
     }
@@ -49,7 +50,7 @@ class LoginPageState extends State<LoginPage> {
       if (session == null) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Sesi belum aktif. Coba lagi.")),
+          SnackBar(content: Text(AppLocalizations.of(context)!.sessionNotActive)),
         );
         return;
       }
@@ -95,7 +96,7 @@ class LoginPageState extends State<LoginPage> {
     } on PostgrestException catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Gagal Login.")),
+        SnackBar(content: Text(AppLocalizations.of(context)!.loginFailed)),
       );
     } finally {
       if (mounted) setState(() => isLoading = false);
@@ -107,7 +108,7 @@ class LoginPageState extends State<LoginPage> {
     final email = emailController.text.trim();
     if (email.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Masukkan email untuk reset password.")),
+        SnackBar(content: Text(AppLocalizations.of(context)!.enterEmailReset)),
       );
       return;
     }
@@ -115,8 +116,8 @@ class LoginPageState extends State<LoginPage> {
       await Supabase.instance.client.auth.resetPasswordForEmail(email);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text("Cek email untuk instruksi reset password.")),
+        SnackBar(
+            content: Text(AppLocalizations.of(context)!.checkEmailReset)),
       );
     } on AuthException catch (e) {
       if (!mounted) return;
@@ -151,17 +152,17 @@ class LoginPageState extends State<LoginPage> {
               children: [
                 Image.asset('assets/Logo.png', height: 64, width: 64),
                 const SizedBox(height: 16),
-                const Text(
-                  "Welcome Back",
-                  style: TextStyle(
+                Text(
+                  AppLocalizations.of(context)!.welcomeBack,
+                  style: const TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ),
                 ),
-                const Text(
-                  "Login to your account",
-                  style: TextStyle(
+                Text(
+                  AppLocalizations.of(context)!.loginToAccount,
+                  style: const TextStyle(
                     fontSize: 16,
                     color: Colors.white70,
                   ),
@@ -170,7 +171,7 @@ class LoginPageState extends State<LoginPage> {
 
                 CustomInputField(
                   icon: Icons.email,
-                  hint: "Enter your email",
+                  hint: AppLocalizations.of(context)!.enterEmail,
                   controller: emailController,
                   obscureText: false,
                   borderRadius: 24,
@@ -179,7 +180,7 @@ class LoginPageState extends State<LoginPage> {
 
                 CustomInputField(
                   icon: Icons.lock,
-                  hint: "Enter your password",
+                  hint: AppLocalizations.of(context)!.enterPassword,
                   controller: passwordController,
                   obscureText: true,
                   borderRadius: 24,
@@ -201,9 +202,9 @@ class LoginPageState extends State<LoginPage> {
                           activeColor: Colors.white,
                           checkColor: Colors.blue,
                         ),
-                        const Text(
-                          "Remember Me",
-                          style: TextStyle(color: Colors.white),
+                        Text(
+                          AppLocalizations.of(context)!.rememberMe,
+                          style: const TextStyle(color: Colors.white),
                         ),
                       ],
                     ),
@@ -211,9 +212,9 @@ class LoginPageState extends State<LoginPage> {
                       onPressed: () {
                         // implementasi Forgot Password soon
                       },
-                      child: const Text(
-                        "Forgot Password?",
-                        style: TextStyle(
+                      child: Text(
+                        AppLocalizations.of(context)!.forgotPassword,
+                        style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
                         ),
@@ -224,7 +225,7 @@ class LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 165),
 
                 CustomButton(
-                  text: loading ? "Loading..." : "Login",
+                  text: loading ? AppLocalizations.of(context)!.loading : AppLocalizations.of(context)!.login,
                   onPressed: handleLogin,
                   backgroundColor: Colors.white,
                   textColor: Colors.black,
@@ -241,9 +242,9 @@ class LoginPageState extends State<LoginPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text(
-                      "Don’t have account?",
-                      style: TextStyle(color: Colors.white),
+                    Text(
+                      AppLocalizations.of(context)!.dontHaveAccount,
+                      style: const TextStyle(color: Colors.white),
                     ),
                     TextButton(
                       onPressed: () {
@@ -252,9 +253,9 @@ class LoginPageState extends State<LoginPage> {
                           MaterialPageRoute(builder: (_) => RegisterPage()),
                         );
                       },
-                      child: const Text(
-                        "Sign Up",
-                        style: TextStyle(
+                      child: Text(
+                        AppLocalizations.of(context)!.signUp,
+                        style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
                         ),

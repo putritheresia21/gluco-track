@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:glucotrack_app/services/social_services/PostServices.dart';
 import 'package:glucotrack_app/services/gamification_service/gamification_service.dart';
+import 'package:glucotrack_app/l10n/app_localizations.dart';
 
 class PostComposer extends StatefulWidget {
   const PostComposer({super.key, this.onPosted});
@@ -30,7 +31,7 @@ class _PostComposerState extends State<PostComposer> {
     final text = _controller.text.trim();
     if (text.isEmpty && _images.isEmpty) {
       ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text("Tulis sesuatu dulu")));
+          .showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.writeSomethingFirst)));
       return;
     }
     setState(() => _loading = true);
@@ -48,11 +49,11 @@ class _PostComposerState extends State<PostComposer> {
       _images.clear();
       widget.onPosted?.call();
       ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text("Posted!")));
+          .showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.posted)));
       setState(() {});
     } catch (e) {
       ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text("Gagal post: $e")));
+          .showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.failedToPost(e.toString()))));
     } finally {
       setState(() => _loading = false);
     }
@@ -69,8 +70,8 @@ class _PostComposerState extends State<PostComposer> {
           children: [
             TextField(
               controller: _controller,
-              decoration: const InputDecoration(
-                hintText: "Apa yang kamu pikirkan?",
+              decoration: InputDecoration(
+                hintText: AppLocalizations.of(context)!.writeSomethingHere,
                 border: InputBorder.none,
               ),
             ),
@@ -112,7 +113,7 @@ class _PostComposerState extends State<PostComposer> {
                   onPressed: _loading ? null : _submit,
                   child: _loading
                       ? const CircularProgressIndicator(strokeWidth: 2)
-                      : const Text("Post"),
+                      : Text(AppLocalizations.of(context)!.post),
                 )
               ],
             )

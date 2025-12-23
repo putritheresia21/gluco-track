@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:glucotrack_app/services/SendDataToEsp32/esp32_service.dart';
 import 'package:glucotrack_app/models/GlucoseData.dart';
+import 'package:glucotrack_app/l10n/app_localizations.dart';
 
 class Glucoseprediction extends StatefulWidget {
   @override
@@ -40,7 +41,7 @@ class _GlucosepredictionState extends State<Glucoseprediction> {
     if (!triggerSent) {
       setState(() {
         status = 'error';
-        errorMessage = 'Gagal mengirim trigger ke ESP32';
+        errorMessage = AppLocalizations.of(context)!.failedTriggerEsp32;
       });
       return;
     }
@@ -68,7 +69,7 @@ class _GlucosepredictionState extends State<Glucoseprediction> {
       if (pollingAttempts >= maxPollingAttempts) {
         setState(() {
           status = 'error';
-          errorMessage = 'Timeout: ESP32 tidak merespons';
+          errorMessage = AppLocalizations.of(context)!.timeoutEsp32;
         });
         break;
       }
@@ -105,9 +106,9 @@ class _GlucosepredictionState extends State<Glucoseprediction> {
                       color: Color(0xFF2C7796), size: 25),
                 ),
                 const SizedBox(width: 12),
-                const Text(
-                  "Glucose\nMeasuring",
-                  style: TextStyle(
+                Text(
+                  AppLocalizations.of(context)!.glucoseChart.replaceAll(' Chart', '\nMeasuring'),
+                  style: const TextStyle(
                     fontSize: 25,
                     fontWeight: FontWeight.bold,
                     color: Color(0xFF2C7796),
@@ -142,14 +143,14 @@ class _GlucosepredictionState extends State<Glucoseprediction> {
                           ),
                           elevation: 5,
                         ),
-                        child: const Row(
+                        child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.save),
-                            SizedBox(width: 10),
+                            const Icon(Icons.save),
+                            const SizedBox(width: 10),
                             Text(
-                              'Simpan Hasil',
-                              style: TextStyle(
+                              AppLocalizations.of(context)!.save,
+                              style: const TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.bold),
                             ),
                           ],
@@ -168,14 +169,14 @@ class _GlucosepredictionState extends State<Glucoseprediction> {
                           ),
                           elevation: 5,
                         ),
-                        child: const Row(
+                        child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.refresh),
-                            SizedBox(width: 10),
+                            const Icon(Icons.refresh),
+                            const SizedBox(width: 10),
                             Text(
-                              'Ukur Lagi',
-                              style: TextStyle(
+                              AppLocalizations.of(context)!.measureAgain,
+                              style: const TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.bold),
                             ),
                           ],
@@ -196,14 +197,14 @@ class _GlucosepredictionState extends State<Glucoseprediction> {
                           ),
                           elevation: 5,
                         ),
-                        child: const Row(
+                        child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.play_arrow),
-                            SizedBox(width: 10),
+                            const Icon(Icons.play_arrow),
+                            const SizedBox(width: 10),
                             Text(
-                              'Mulai Pengukuran',
-                              style: TextStyle(
+                              AppLocalizations.of(context)!.startMeasurement,
+                              style: const TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.bold),
                             ),
                           ],
@@ -354,15 +355,15 @@ class _GlucosepredictionState extends State<Glucoseprediction> {
             ),
             child: Column(
               children: [
-                Text(
-                  'Check your glucose now!',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
+                  Text(
+                    AppLocalizations.of(context)!.checkGlucoseNow,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
-                  textAlign: TextAlign.center,
-                ),
                 SizedBox(height: 30),
                 ElevatedButton(
                   onPressed: startMeasurement,
@@ -374,9 +375,9 @@ class _GlucosepredictionState extends State<Glucoseprediction> {
                       borderRadius: BorderRadius.circular(25),
                     ),
                   ),
-                  child: const Text(
-                    'Start',
-                    style: TextStyle(
+                  child: Text(
+                    AppLocalizations.of(context)!.start,
+                    style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
@@ -411,9 +412,9 @@ class _GlucosepredictionState extends State<Glucoseprediction> {
           ),
           child: Column(
             children: [
-              const Text(
-                'Measurement Process',
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context)!.measurementProcess,
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 20,
                   fontWeight: FontWeight.w600,
@@ -475,7 +476,7 @@ class _GlucosepredictionState extends State<Glucoseprediction> {
             Icon(Icons.check_circle, color: Colors.green, size: 50),
             SizedBox(height: 20),
             Text(
-              'Hasil Pengukuran',
+              AppLocalizations.of(context)!.measurementResult,
               style: TextStyle(fontSize: 18, color: Colors.grey[600]),
             ),
             SizedBox(height: 10),
@@ -515,7 +516,7 @@ class _GlucosepredictionState extends State<Glucoseprediction> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text('Confidence: ', style: TextStyle(color: Colors.grey[600])),
+                Text(AppLocalizations.of(context)!.confidence, style: TextStyle(color: Colors.grey[600])),
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   decoration: BoxDecoration(
@@ -631,9 +632,9 @@ class _GlucosepredictionState extends State<Glucoseprediction> {
           ),
           child: Column(
             children: [
-              const Text(
-                'Hasil Pengukuran',
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context)!.measurementResult,
+                style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w600,
                   color: Colors.white,
@@ -673,9 +674,9 @@ class _GlucosepredictionState extends State<Glucoseprediction> {
                     borderRadius: BorderRadius.circular(25),
                   ),
                 ),
-                child: const Text(
-                  'Continue',
-                  style: TextStyle(
+                child: Text(
+                  AppLocalizations.of(context)!.continueText,
+                  style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
@@ -709,9 +710,9 @@ class _GlucosepredictionState extends State<Glucoseprediction> {
           ),
           child: Column(
             children: [
-              const Text(
-                'Pengukuran Gagal',
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context)!.measurementFailed,
+                style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w600,
                   color: Colors.white,
@@ -725,7 +726,7 @@ class _GlucosepredictionState extends State<Glucoseprediction> {
               Text(
                 errorMessage.isNotEmpty
                     ? errorMessage
-                    : 'Timeout: ESP32 tidak merespons',
+                    : AppLocalizations.of(context)!.timeoutEsp32,
                 style: const TextStyle(
                   color: Colors.white70,
                   fontSize: 14,
@@ -746,9 +747,9 @@ class _GlucosepredictionState extends State<Glucoseprediction> {
                     borderRadius: BorderRadius.circular(25),
                   ),
                 ),
-                child: const Text(
-                  'Mulai Pengukuran',
-                  style: TextStyle(
+                child: Text(
+                  AppLocalizations.of(context)!.startMeasurement,
+                  style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),

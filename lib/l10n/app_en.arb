@@ -1,0 +1,318 @@
+{
+  "appTitle": "GlucoTrack",
+  "@appTitle": {
+    "description": "The title of the application"
+  },
+  "hello": "Hello,",
+  "totalRecords": "Total Records",
+  "weeklySummary": "Weekly Summary",
+  "lowest": "Lowest",
+  "highest": "Highest",
+  "yourMission": "Your Mission",
+  "viewAll": "view all",
+  "notifications": "Notifications",
+  "last7Days": "Last 7 Days",
+  "logoutConfirm": "Logout Confirmation",
+  "logoutMessage": "Are you sure you want to logout?",
+  "cancel": "Cancel",
+  "logout": "Logout",
+  "yearsOld": "{age} years old",
+  "@yearsOld": {
+    "placeholders": {
+      "age": {
+        "type": "int"
+      }
+    }
+  },
+  "points": "Points",
+  "daysStreak": "Days Streak",
+  "missionsCompleted": "Missions Completed",
+  "yourNextMission": "Your Next Mission",
+  "noMissionsAvailable": "No missions available",
+  "editProfile": "Edit Profile",
+  "mgDl": "mg/dL",
+  "loading": "Loading...",
+  "noDataYet": "No data yet",
+  "beforeMeal": "Before Meal",
+  "afterMeal": "After Meal",
+  "at": "at",
+  "shareResult": "Share Result",
+  "shareResultMessage": "Do you want to share your current blood glucose test results?",
+  "no": "No",
+  "yesShare": "Yes, Share",
+  "selectDateTimeFirst": "Select date and time first.",
+  "glucoseDataSaved": "Glucose data saved successfully.",
+  "failedSaveDatabase": "Failed to save data to database.",
+  "failedSaveData": "Failed to save data: {error}",
+  "@failedSaveData": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "glucoseRecord": "Glucose Record",
+  "glucoseLevelMgDl": "Blood Glucose Level (mg/dL)",
+  "glucoseLevelRequired": "Glucose level cannot be empty",
+  "validNumberRequired": "Enter a valid number",
+  "iotDataLoaded": "IoT data loaded successfully",
+  "automatic": "Automatic",
+  "iotDeviceData": "IoT Device Data",
+  "measurementCondition": "Measurement Condition",
+  "useCurrentTime": "Use Current Time",
+  "selectDateTime": "Select Date & Time",
+  "dateTime": "Date & Time: ",
+  "save": "Save",
+  "whatsUp": "What's up, {name}!",
+  "@whatsUp": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "haveAnythingToShare": "Have anything to share?",
+  "searchHint": "Search posts, articles, or users...",
+  "forYou": "For you",
+  "news": "News",
+  "failedTriggerEsp32": "Failed to send trigger to ESP32",
+  "timeoutEsp32": "Timeout: ESP32 not responding",
+  "measureAgain": "Measure Again",
+  "startMeasurement": "Start Measurement",
+  "checkGlucoseNow": "Check your glucose now!",
+  "start": "Start",
+  "measurementProcess": "Measurement Process",
+  "measurementResult": "Measurement Result",
+  "confidence": "Confidence: ",
+  "continueText": "Continue",
+  "measurementFailed": "Measurement Failed",
+  "articleDetail": "Article's Detail",
+  "social": "Social",
+  "socialMediaFeed": "Social Media Feed",
+  "iotConnection": "IoT Connection",
+  "testingSocialMedia": "testing social media",
+  "writeSomethingFirst": "Write something first",
+  "posted": "Posted!",
+  "failedToPost": "Failed to post: {error}",
+  "@failedToPost": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "post": "Post",
+  "failedToLoadFeed": "Failed to load feed: {error}",
+  "@failedToLoadFeed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "writeSomethingOrAddImage": "Write something or add an image",
+  "failedToCreateImage": "Failed to create image: {error}",
+  "@failedToCreateImage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToShare": "Failed to share: {error}",
+  "@failedToShare": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "congratulationsPoints": "Congratulations! You earned {points} points",
+  "@congratulationsPoints": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "failedToClaimPoints": "Failed to claim points",
+  "follow": "Follow",
+  "following": "Following",
+  "article1Title": "Exercise: The Medicine You Can't Skip.",
+  "article1Preview": "Stay active to boost both body and brain. Skipping workouts means missing your health.",
+  "article1Caption": "Stay active to boost both body and brain. Skipping workouts means skipping your health.",
+  "article1Content": "When people think about medicine, they usually imagine pills, capsules, or doctor's prescriptions. But here's the truth—one of the most powerful medicines you can ever give your body doesn't come from a pharmacy. It comes from movement. Exercise is the kind of medicine you can't skip, because it works on every part of your health, from your heart and lungs to your mood and mental clarity.\n\nThink about it: just 20–30 minutes of physical activity a day can improve blood circulation, strengthen muscles, and lower the risk of chronic diseases. But it's not just about the body—your brain benefits too. Regular workouts release endorphins, reduce stress, and even sharpen focus. In short, moving your body isn't just about staying fit; it's about staying alive and thriving.\n\nThe best part? You don't need an expensive gym membership or fancy equipment to start. A brisk walk, a quick home workout, or even stretching while watching TV can make a real difference. What matters most is consistency. Small steps done daily will bring more results than pushing yourself hard once a month.\n\nSo, the next time you feel like skipping exercise, remember this: you're not just skipping a workout—you're skipping an opportunity to invest in your future health. Treat movement like medicine, because your body and brain truly can't function at their best without it.",
+  "article2Title": "Healthy Plates, Healthy Life",
+  "article2Preview": "Balance your meals with color and variety. Small changes bring big results.",
+  "article2Caption": "Balance your meals with color and variety. Small changes bring big results.",
+  "article2Content": "A healthy lifestyle begins with the food you choose every day. Building a balanced plate doesn't have to be complicated—just focus on variety and moderation. By including colorful fruits and vegetables, lean proteins, whole grains, and healthy fats, you can give your body what it needs to stay strong and energized.\n\nThe more color you add to your meals, the more nutrients you introduce into your diet. Foods with rich natural colors—like leafy greens, carrots, berries, and peppers—are packed with vitamins, minerals, and antioxidants that support overall well-being. A colorful plate is not only healthier but also more enjoyable to eat.\n\nPortion control is another key to healthy eating. You don't need to remove all your favorite foods, but you can reduce excess sugar, salt, and unhealthy fats. Try using smaller plates, add more vegetables, and avoid overeating by listening to your body's hunger cues.\n\nSmall changes, like swapping white rice for brown rice or choosing grilled instead of fried foods, can make a big difference over time. These simple adjustments can support better digestion, stable energy levels, and improved long-term health.\n\nRemember that healthy eating is a journey, not a diet. The goal is progress—not perfection. When you make mindful choices consistently, you'll feel better, stronger, and more confident in your daily life.",
+  "article3Title": "Managing Glucose Made Simple",
+  "article3Preview": "With the right choices, you can stay energized and prevent risks. Your health matters.",
+  "article3Caption": "With the right choices, you can stay energized and prevent risks. Your health is in your hands.",
+  "article3Content": "Managing blood glucose doesn't have to be overwhelming. Understanding how food, physical activity, and daily habits affect your blood sugar can help you make better decisions. With the right approach, you can maintain stable energy levels and reduce the risk of long-term health problems.\n\nCarbohydrates have the biggest impact on blood sugar, so choosing the right type of carbs matters. Whole grains, beans, vegetables, and fruits offer slow and steady energy, unlike sugary snacks and processed foods that cause quick spikes and crashes. Balance is key—not elimination.\n\nRegular physical activity also helps your body use glucose more efficiently. Even simple movements like walking after meals, stretching, or doing light exercise can support healthier glucose levels. Consistency matters more than intensity.\n\nMonitoring your habits can help you understand what works best for your body. Pay attention to how certain meals, stress, or sleep patterns affect your energy. Small lifestyle adjustments can lead to big improvements.\n\nYou have the power to take control of your health. By making mindful choices every day, you can protect your well-being, stay active longer, and feel confident in managing your glucose levels.",
+  "article4Title": "Your Guide to Everyday Wellness",
+  "article4Preview": "Practical tips for a healthier, balanced life. Because health is wealth.",
+  "article4Caption": "Practical tips for a healthier, balanced life. Because health is wealth.",
+  "article4Content": "Wellness is not just about avoiding illness—it's about feeling your best physically, mentally, and emotionally. Taking simple steps each day can create a more balanced and fulfilling lifestyle. Healthy habits develop over time, one choice at a time.\n\nStart by fueling your body with nutritious food, staying hydrated, and maintaining regular meal patterns. A balanced diet supports stable moods, better focus, and improved immunity. Small habits like drinking enough water or choosing whole foods can make a big impact.\n\nMental wellness is just as important as physical health. Taking breaks, practicing mindfulness, journaling, or spending time in nature can help reduce stress and improve emotional balance. Don't forget to rest—quality sleep allows your body and mind to recover.\n\nMovement is another essential part of wellness. Whether it's walking, dancing, yoga, or sports, find activities you enjoy so exercise feels rewarding—not forced. A strong body helps support an active and independent life.\n\nMost importantly, be kind to yourself. Wellness is personal and different for everyone. Progress may be slow, but consistency will help you build habits that last a lifetime. Your health truly is your greatest wealth.",
+  "article5Title": "Move Daily, Live Stronger",
+  "article5Preview": "Simple routines can transform your energy and health. Make movement your daily medicine.",
+  "article5Caption": "Simple routines can transform your energy and health. Make movement your daily medicine.",
+  "article5Content": "Movement is one of the best gifts you can give your body. Daily physical activity strengthens your muscles, supports heart health, improves flexibility, and boosts mood. You don't need a gym membership—just start where you are.\n\nSimple routines like walking, stretching, or taking the stairs can make a meaningful difference. Even 10 minutes of movement can increase circulation, reduce stiffness, and give you more energy throughout the day.\n\nExercise also plays an important role in maintaining a healthy weight and managing blood sugar. When your body moves, it uses glucose as fuel, helping maintain balance and prevent spikes. Consistent movement keeps your metabolism active and efficient.\n\nRegular exercise benefits mental health as well. Physical activity triggers the release of endorphins—natural chemicals that reduce stress and increase happiness. Movement can help improve sleep, confidence, and overall mood.\n\nMake exercise something you look forward to, not a chore. Choose activities you enjoy, stay consistent, and celebrate small wins. The more you move, the stronger and healthier you become—one step at a time.",
+  "noArticlesFound": "No articles found",
+  "shareAsPost": "GlucoTrack Post",
+  "shareOptionsPrompt": "Choose how to share your measurement results",
+  "shareAsPostSubtitle": "Share as a post in GlucoTrack",
+  "otherApps": "Other Apps",
+  "socialAppsSubtitle": "WhatsApp, Instagram, Facebook, etc",
+  "sharing": "Sharing...",
+  "bloodGlucoseResult": "Blood Glucose Measurement Result",
+  "iotDeviceInvasive": "IoT Device (Invasive)",
+  "manualGlucometer": "Manual Glucometer",
+  "conditionLabel": "Condition: ",
+  "footerStayHealthy": "💙 Stay healthy with GlucoTrack",
+  "login": "Login",
+  "signUp": "Sign Up",
+  "welcomeBack": "Welcome Back",
+  "loginToAccount": "Login to your account",
+  "enterEmail": "Enter your email",
+  "enterPassword": "Enter your password",
+  "rememberMe": "Remember Me",
+  "forgotPassword": "Forgot Password?",
+  "dontHaveAccount": "Don't have an account?",
+  "alreadyHaveAccount": "Already have an account?",
+  "emailPasswordRequired": "Email and Password are required.",
+  "sessionNotActive": "Session not active. Try again.",
+  "loginFailed": "Login failed.",
+  "enterEmailReset": "Enter email for password reset.",
+  "checkEmailReset": "Check your email for reset instructions.",
+  "createAccount": "Create your new account",
+  "enterUsername": "Enter your username",
+  "male": "Male",
+  "female": "Female",
+  "birthDate": "Birth Date",
+  "createPassword": "Create a password",
+  "confirmPassword": "Confirm password",
+  "emailEmpty": "Email cannot be empty",
+  "usernameEmpty": "Username cannot be empty",
+  "selectBirthDate": "Select your birth date",
+  "passwordMismatch": "Password confirmation does not match",
+  "registrationFailed": "Registration failed. Check email/username or try again.",
+  "registrationSuccess": "Registration successful! Please check your email.",
+  "glucoseChart": "Glucose Chart",
+  "history": "History",
+  "selectDate": "Pilih Tanggal",
+  "all": "Semua",
+  "low": "Low",
+  "normal": "Normal",
+  "high": "High",
+  "weekly": "Weekly",
+  "monthly": "Monthly",
+  "noDataDateRange": "No data for this date range",
+  "noDataCategory": "No data for category ''{category}''",
+  "@noDataCategory": {
+    "placeholders": {
+      "category": {
+        "type": "String"
+      }
+    }
+  },
+  "noHistoryData": "No history data yet",
+  "noDataAnalysis": "No data this week for analysis.",
+  "glucoseStability": "Blood Glucose Stability",
+  "attentionRequired": "Attention Required",
+  "highGlucoseTrend": "Your glucose trend is high this week. Over 50% of records are above normal.",
+  "hypoglycemiaAlert": "Hypoglycemia Alert",
+  "lowGlucoseTrend": "Frequent low glucose detected. Ensure regular meals and consult a doctor.",
+  "goodJob": "Good Job!",
+  "stableGlucoseMessage": "Your glucose is well-controlled this week. Keep up your healthy lifestyle.",
+  "fairlyStable": "Fairly Stable",
+  "stableVariationMessage": "Your glucose variation is within reasonable limits. Average this week is {avg} mg/dL.",
+  "@stableVariationMessage": {
+    "placeholders": {
+      "avg": {
+        "type": "String"
+      }
+    }
+  },
+  "average": "Average",
+  "whoCanReply": "Who can reply?",
+  "whoCanReplySubtitle": "Pick who can reply to this post.",
+  "everyone": "Everyone",
+  "followersOnly": "Followers Only",
+  "discardPost": "Discard post?",
+  "discardPostMessage": "This can't be undone and you'll lose your draft.",
+  "discard": "Discard",
+  "addNewPost": "Add New Post",
+  "share": "Share",
+  "writeSomethingHere": "Write something here....",
+  "characterCount": "{count, plural, =1{{count} character} other{{count} characters}}",
+  "@characterCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "manualGlucoseTask": "{count}x Manual Glucose Recording",
+  "@manualGlucoseTask": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "iotGlucoseTask": "{count}x IoT Glucose Recording",
+  "@iotGlucoseTask": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "socialPostTask": "{count}x Post updates on Social Feeds",
+  "@socialPostTask": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "tasksProgress": "{completed}/{total} Tasks",
+  "@tasksProgress": {
+    "placeholders": {
+      "completed": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "completed": "Completed",
+  "claim": "Claim",
+  "justNow": "Just now",
+  "minsAgo": "{count} mins ago",
+  "@minsAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursAgo": "{count} hours ago",
+  "@hoursAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "daysAgo": "{count} days ago",
+  "@daysAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
+}

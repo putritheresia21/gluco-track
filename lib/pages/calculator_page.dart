@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:glucotrack_app/services/user_service.dart';
-import 'profile_page.dart';
+import 'profile.dart';
 
 class CalculatorPage extends StatefulWidget {
   @override

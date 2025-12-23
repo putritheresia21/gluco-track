@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:glucotrack_app/l10n/app_localizations.dart';
 import 'package:glucotrack_app/services/gamification_service/gamification_service.dart';
 
 class TaskDetailPage extends StatefulWidget {
@@ -26,15 +27,15 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
       if (success) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Selamat! Anda mendapat ${subTask.points} poin'),
+            content: Text(AppLocalizations.of(context)!.congratulationsPoints(subTask.points)),
             backgroundColor: Colors.green,
           ),
         );
         setState(() {});
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Gagal claim poin'),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.failedToClaimPoints),
             backgroundColor: Colors.red,
           ),
         );
@@ -44,13 +45,14 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
   }
 
   String _getSubTaskTitle(int requiredCount) {
+    final l10n = AppLocalizations.of(context)!;
     switch (widget.task.type) {
       case TaskType.manualGlucose:
-        return '${requiredCount}x Pencatatan Manual Gula Darah';
+        return l10n.manualGlucoseTask(requiredCount);
       case TaskType.iotGlucose:
-        return '${requiredCount}x Pencatatan IoT Gula Darah';
+        return l10n.iotGlucoseTask(requiredCount);
       case TaskType.socialPost:
-        return '${requiredCount}x Post any updates on Social Feeds';
+        return l10n.socialPostTask(requiredCount);
     }
   }
 
@@ -109,7 +111,9 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        '${widget.task.completedSubTasks}/${widget.task.totalSubTasks} Tasks',
+                        AppLocalizations.of(context)!.tasksProgress(
+                            widget.task.completedSubTasks,
+                            widget.task.totalSubTasks),
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 16,
@@ -156,9 +160,9 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
                       )),
                   if (completedTasks.isNotEmpty) ...[
                     const SizedBox(height: 12),
-                    const Text(
-                      'Completed',
-                      style: TextStyle(
+                    Text(
+                      AppLocalizations.of(context)!.completed,
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: Colors.grey,
@@ -313,9 +317,9 @@ class _SubTaskCard extends StatelessWidget {
                         color: Colors.white,
                       ),
                     )
-                  : const Text(
-                      'Claim',
-                      style: TextStyle(
+                  : Text(
+                      AppLocalizations.of(context)!.claim,
+                      style: const TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
                         fontSize: 13,

@@ -31,6 +31,24 @@ class Glucoserepository {
     }
   }
 
+  Future<List<Glucoserecord>> getGlucoseRecordsPaginated(
+      String userId, int limit, int offset) async {
+    try {
+      final response = await supabase
+          .from('glucose_records')
+          .select()
+          .eq('user_id', userId)
+          .order('timestamp', ascending: false)
+          .range(offset, offset + limit - 1);
+      return (response as List)
+          .map((record) => Glucoserecord.fromMap(record))
+          .toList();
+    } catch (e) {
+      print('Error fetching paginated records: $e');
+      return [];
+    }
+  }
+
   Future<List<Glucoserecord>> getGlucoseRecordsByDateRange(
     String userId,
     DateTime startDate,

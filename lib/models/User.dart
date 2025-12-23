@@ -20,6 +20,7 @@ class UserProfile {
   final Gender gender;
   final DateTime birthDate;
   final int age;
+  final String? avatarUrl;
 
   UserProfile({
     required this.id,
@@ -28,6 +29,7 @@ class UserProfile {
     required this.gender,
     required this.birthDate,
     required this.age,
+    this.avatarUrl,
   });
 
   Map<String, dynamic> toMap() {
@@ -38,6 +40,7 @@ class UserProfile {
       'gender': gender.toShortString(),
       'birth_date': birthDate.toIso8601String(),
       'age': age,
+      'avatar_url': avatarUrl,
     };
   }
 
@@ -49,6 +52,7 @@ class UserProfile {
       gender: Gender.fromString(map['gender']),
       birthDate: DateTime.parse(map['birth_date'] ?? ''),
       age: map['age'] ?? 0,
+      avatarUrl: map['avatar_url'],
     );
   }
 }
