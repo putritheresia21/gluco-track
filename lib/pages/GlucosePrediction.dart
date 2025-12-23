@@ -341,7 +341,7 @@ class _GlucosepredictionState extends State<Glucoseprediction> {
       child: Column(
         children: [
           _buildCircleButton(isLoading: false),
-          const SizedBox(height: 70),
+          const SizedBox(height: 150),
           Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
@@ -396,7 +396,7 @@ class _GlucosepredictionState extends State<Glucoseprediction> {
         // Circle dan progress ring
         _buildCircleButton(isLoading: true),
 
-        const SizedBox(height: 70),
+        const SizedBox(height: 150),
 
         // Box Bawah
         Container(
