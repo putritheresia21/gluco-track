@@ -211,9 +211,9 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
       if (success) {
         // Update gamification task
         if (isFromIoT) {
-          await _gamification.incrementTask(TaskType.iotGlucose);
+          await _gamification.incrementTaskProgress(TaskType.iotGlucose);
         } else {
-          await _gamification.incrementTask(TaskType.manualGlucose);
+          await _gamification.incrementTaskProgress(TaskType.manualGlucose);
         }
 
         if (mounted) {

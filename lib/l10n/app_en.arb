@@ -200,8 +200,8 @@
   "registrationSuccess": "Registration successful! Please check your email.",
   "glucoseChart": "Glucose Chart",
   "history": "History",
-  "selectDate": "Pilih Tanggal",
-  "all": "Semua",
+  "selectDate": "Select Date",
+  "all": "All",
   "low": "Low",
   "normal": "Normal",
   "high": "High",
@@ -314,5 +314,26 @@
         "type": "int"
       }
     }
-  }
+  },
+  "monitoring": "Monitoring",
+  "allDataDisplayed": "All data displayed",
+  "noDataThisWeek": "No data this week",
+  "noDataThisMonth": "No data this month",
+  "yourMissions": "Your Missions",
+  "optionalTaskInfo": "These tasks are optional. Complete them to get special rewards!",
+  "manualGlucoseTaskTitle": "Manual Blood Glucose Recording",
+  "manualGlucoseTaskDesc": "Record your blood glucose level manually using a glucometer",
+  "iotGlucoseTaskTitle": "IoT Blood Glucose Recording",
+  "iotGlucoseTaskDesc": "Record your blood glucose level using an IoT device",
+  "socialPostTaskTitle": "Post on Social Feeds",
+  "socialPostTaskDesc": "Share your experience on social feeds",
+  "seeDetail": "See Detail",
+  "tasks": "Tasks",
+  "editProfileTitle": "Edit Profile",
+  "changePhoto": "Change Photo",
+  "chooseFromGallery": "Choose from Gallery",
+  "takePhoto": "Take Photo",
+  "saveChanges": "Save Changes",
+  "profileUpdated": "Profile updated successfully",
+  "updateFailed": "Failed to update profile"
 }

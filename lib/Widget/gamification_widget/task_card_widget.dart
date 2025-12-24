@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:glucotrack_app/l10n/app_localizations.dart';
 import 'package:glucotrack_app/services/gamification_service/gamification_service.dart';
 
 class TaskCardWidget extends StatelessWidget {
@@ -81,7 +82,7 @@ class TaskCardWidget extends StatelessWidget {
                 Row(
                   children: [
                     Text(
-                      '${task.completedSubTasks}/${task.totalSubTasks} Tasks',
+                      '${task.completedSubTasks}/${task.totalSubTasks} ${AppLocalizations.of(context)!.tasks}',
                       style: TextStyle(
                         color: Colors.white.withOpacity(0.9),
                         fontSize: 13,
@@ -127,10 +128,10 @@ class TaskCardWidget extends StatelessWidget {
                       child: Container(
                         width: double.infinity,
                         padding: const EdgeInsets.symmetric(vertical: 12),
-                        child: const Text(
-                          'See Detail',
+                        child: Text(
+                          AppLocalizations.of(context)!.seeDetail,
                           textAlign: TextAlign.center,
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: Color(0xFF2C7796),
                             fontSize: 16,
                             fontWeight: FontWeight.bold,

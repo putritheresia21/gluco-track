@@ -599,4 +599,67 @@ class AppLocalizationsId extends AppLocalizations {
   String daysAgo(int count) {
     return '$count hari yang lalu';
   }
+
+  @override
+  String get monitoring => 'Pemantauan';
+
+  @override
+  String get allDataDisplayed => 'Semua data telah ditampilkan';
+
+  @override
+  String get noDataThisWeek => 'Belum ada data minggu ini';
+
+  @override
+  String get noDataThisMonth => 'Belum ada data bulan ini';
+
+  @override
+  String get yourMissions => 'Misi Anda';
+
+  @override
+  String get optionalTaskInfo => 'Task ini bersifat opsional. Selesaikan untuk mendapat reward spesial!';
+
+  @override
+  String get manualGlucoseTaskTitle => 'Pencatatan Gula Darah Manual';
+
+  @override
+  String get manualGlucoseTaskDesc => 'Catat kadar gula darah Anda secara manual menggunakan glucometer';
+
+  @override
+  String get iotGlucoseTaskTitle => 'Pencatatan Gula Darah dengan IoT';
+
+  @override
+  String get iotGlucoseTaskDesc => 'Catat kadar gula darah Anda menggunakan perangkat IoT';
+
+  @override
+  String get socialPostTaskTitle => 'Posting di Social Feeds';
+
+  @override
+  String get socialPostTaskDesc => 'Bagikan pengalaman Anda di social feeds';
+
+  @override
+  String get seeDetail => 'Lihat Detail';
+
+  @override
+  String get tasks => 'Tugas';
+
+  @override
+  String get editProfileTitle => 'Edit Profil';
+
+  @override
+  String get changePhoto => 'Ganti Foto';
+
+  @override
+  String get chooseFromGallery => 'Pilih dari Galeri';
+
+  @override
+  String get takePhoto => 'Ambil Foto';
+
+  @override
+  String get saveChanges => 'Simpan Perubahan';
+
+  @override
+  String get profileUpdated => 'Profil berhasil diperbarui';
+
+  @override
+  String get updateFailed => 'Gagal memperbarui profil';
 }

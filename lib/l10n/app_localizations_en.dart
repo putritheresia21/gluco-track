@@ -449,10 +449,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get history => 'History';
 
   @override
-  String get selectDate => 'Pilih Tanggal';
+  String get selectDate => 'Select Date';
 
   @override
-  String get all => 'Semua';
+  String get all => 'All';
 
   @override
   String get low => 'Low';
@@ -599,4 +599,67 @@ class AppLocalizationsEn extends AppLocalizations {
   String daysAgo(int count) {
     return '$count days ago';
   }
+
+  @override
+  String get monitoring => 'Monitoring';
+
+  @override
+  String get allDataDisplayed => 'All data displayed';
+
+  @override
+  String get noDataThisWeek => 'No data this week';
+
+  @override
+  String get noDataThisMonth => 'No data this month';
+
+  @override
+  String get yourMissions => 'Your Missions';
+
+  @override
+  String get optionalTaskInfo => 'These tasks are optional. Complete them to get special rewards!';
+
+  @override
+  String get manualGlucoseTaskTitle => 'Manual Blood Glucose Recording';
+
+  @override
+  String get manualGlucoseTaskDesc => 'Record your blood glucose level manually using a glucometer';
+
+  @override
+  String get iotGlucoseTaskTitle => 'IoT Blood Glucose Recording';
+
+  @override
+  String get iotGlucoseTaskDesc => 'Record your blood glucose level using an IoT device';
+
+  @override
+  String get socialPostTaskTitle => 'Post on Social Feeds';
+
+  @override
+  String get socialPostTaskDesc => 'Share your experience on social feeds';
+
+  @override
+  String get seeDetail => 'See Detail';
+
+  @override
+  String get tasks => 'Tasks';
+
+  @override
+  String get editProfileTitle => 'Edit Profile';
+
+  @override
+  String get changePhoto => 'Change Photo';
+
+  @override
+  String get chooseFromGallery => 'Choose from Gallery';
+
+  @override
+  String get takePhoto => 'Take Photo';
+
+  @override
+  String get saveChanges => 'Save Changes';
+
+  @override
+  String get profileUpdated => 'Profile updated successfully';
+
+  @override
+  String get updateFailed => 'Failed to update profile';
 }

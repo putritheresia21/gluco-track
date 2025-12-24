@@ -20,11 +20,10 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
 
     setState(() => _claiming = true);
 
-    final success =
-        await _gamification.claimSubTask(widget.task.type, subTask.id);
-
-    if (mounted) {
-      if (success) {
+    try {
+      await _gamification.claimReward(widget.task.type, subTask);
+      
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(AppLocalizations.of(context)!.congratulationsPoints(subTask.points)),
@@ -32,7 +31,10 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
           ),
         );
         setState(() {});
-      } else {
+      }
+    } catch (e) {
+      print('Error claiming subtask: $e');
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(AppLocalizations.of(context)!.failedToClaimPoints),

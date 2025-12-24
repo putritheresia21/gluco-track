@@ -948,13 +948,13 @@ abstract class AppLocalizations {
   /// No description provided for @selectDate.
   ///
   /// In en, this message translates to:
-  /// **'Pilih Tanggal'**
+  /// **'Select Date'**
   String get selectDate;
 
   /// No description provided for @all.
   ///
   /// In en, this message translates to:
-  /// **'Semua'**
+  /// **'All'**
   String get all;
 
   /// No description provided for @low.
@@ -1196,6 +1196,132 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count} days ago'**
   String daysAgo(int count);
+
+  /// No description provided for @monitoring.
+  ///
+  /// In en, this message translates to:
+  /// **'Monitoring'**
+  String get monitoring;
+
+  /// No description provided for @allDataDisplayed.
+  ///
+  /// In en, this message translates to:
+  /// **'All data displayed'**
+  String get allDataDisplayed;
+
+  /// No description provided for @noDataThisWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'No data this week'**
+  String get noDataThisWeek;
+
+  /// No description provided for @noDataThisMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'No data this month'**
+  String get noDataThisMonth;
+
+  /// No description provided for @yourMissions.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Missions'**
+  String get yourMissions;
+
+  /// No description provided for @optionalTaskInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'These tasks are optional. Complete them to get special rewards!'**
+  String get optionalTaskInfo;
+
+  /// No description provided for @manualGlucoseTaskTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manual Blood Glucose Recording'**
+  String get manualGlucoseTaskTitle;
+
+  /// No description provided for @manualGlucoseTaskDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Record your blood glucose level manually using a glucometer'**
+  String get manualGlucoseTaskDesc;
+
+  /// No description provided for @iotGlucoseTaskTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'IoT Blood Glucose Recording'**
+  String get iotGlucoseTaskTitle;
+
+  /// No description provided for @iotGlucoseTaskDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Record your blood glucose level using an IoT device'**
+  String get iotGlucoseTaskDesc;
+
+  /// No description provided for @socialPostTaskTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Post on Social Feeds'**
+  String get socialPostTaskTitle;
+
+  /// No description provided for @socialPostTaskDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Share your experience on social feeds'**
+  String get socialPostTaskDesc;
+
+  /// No description provided for @seeDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'See Detail'**
+  String get seeDetail;
+
+  /// No description provided for @tasks.
+  ///
+  /// In en, this message translates to:
+  /// **'Tasks'**
+  String get tasks;
+
+  /// No description provided for @editProfileTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Profile'**
+  String get editProfileTitle;
+
+  /// No description provided for @changePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Photo'**
+  String get changePhoto;
+
+  /// No description provided for @chooseFromGallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose from Gallery'**
+  String get chooseFromGallery;
+
+  /// No description provided for @takePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Take Photo'**
+  String get takePhoto;
+
+  /// No description provided for @saveChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Changes'**
+  String get saveChanges;
+
+  /// No description provided for @profileUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile updated successfully'**
+  String get profileUpdated;
+
+  /// No description provided for @updateFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update profile'**
+  String get updateFailed;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
