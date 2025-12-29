@@ -74,7 +74,7 @@ class HomePageState extends State<HomePage> {
   }
 
   Future<void> _initializeGamification() async {
-    await _gamification.initialize();
+    await _gamification.initialize(context: context);
     if (mounted) {
       setState(() {
         loadingGamification = false;
@@ -88,6 +88,7 @@ class HomePageState extends State<HomePage> {
       if (!mounted) return;
       setState(() {
         userProfile = data;
+        profileImageUrl = data?['avatar_url'];
         loadingProfile = false;
       });
     } catch (e) {
@@ -342,9 +343,9 @@ class HomePageState extends State<HomePage> {
                       )
                     : () {
                         final tasks = _gamification.getTasks();
-                        // Tampilkan task pertama dengan progress paling banyak
+                        // Tampilkan task pertama dengan progress paling sedikit
                         final sortedTasks = List<MainTask>.from(tasks)
-                          ..sort((a, b) => b.progress.compareTo(a.progress));
+                          ..sort((a, b) => a.progress.compareTo(b.progress));
                         final displayTask = sortedTasks.first;
 
                         return TaskCardWidget(
@@ -508,9 +509,12 @@ class HomePageState extends State<HomePage> {
             ),
           ],
         ),
-        const CircleAvatar(
+        CircleAvatar(
           radius: 35,
-          backgroundImage: AssetImage('assets/profile/image.png'),
+          backgroundColor: Colors.grey[300],
+          backgroundImage: profileImageUrl != null && profileImageUrl!.isNotEmpty
+              ? NetworkImage(profileImageUrl!)
+              : const AssetImage('assets/profile/image.png') as ImageProvider,
         ),
       ],
     );

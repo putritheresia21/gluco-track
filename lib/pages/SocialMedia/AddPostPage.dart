@@ -180,7 +180,7 @@ class _AddPostPageState extends State<AddPostPage> {
         await _svc.createPostWithImages(body: text, files: _images);
       }
 
-      await _gamification.incrementTask(TaskType.socialPost);
+      await _gamification.incrementTaskProgress(TaskType.socialPost);
 
       if (mounted) {
         Navigator.pop(context, true);

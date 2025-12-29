@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:glucotrack_app/l10n/app_localizations.dart';
 import 'package:glucotrack_app/services/gamification_service/gamification_service.dart';
 import 'package:glucotrack_app/Widget/gamification_widget/badge_widget.dart';
 import 'package:glucotrack_app/Widget/gamification_widget/task_card_widget.dart';
@@ -23,7 +24,7 @@ class _GamificationMainPageState extends State<GamificationMainPage> {
   }
 
   Future<void> _initialize() async {
-    await _gamification.initialize();
+    await _gamification.initialize(context: context);
     if (mounted) {
       setState(() => _loading = false);
     }
@@ -41,6 +42,10 @@ class _GamificationMainPageState extends State<GamificationMainPage> {
     final currentBadge = _gamification.getCurrentBadge();
     final totalPoints = _gamification.getTotalPoints();
     final tasks = _gamification.getTasks();
+    
+    // Sort tasks by progress (lowest first)
+    final sortedTasks = List<MainTask>.from(tasks)
+      ..sort((a, b) => a.progress.compareTo(b.progress));
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
@@ -60,11 +65,11 @@ class _GamificationMainPageState extends State<GamificationMainPage> {
                 onPressed: () => Navigator.pop(context),
               ),
             ),
-            title: const Padding(
-              padding: EdgeInsets.only(top: 20),
+            title: Padding(
+              padding: const EdgeInsets.only(top: 20),
               child: Text(
-                "Your Missions",
-                style: TextStyle(
+                AppLocalizations.of(context)!.yourMissions,
+                style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                   fontSize: 24,
@@ -127,10 +132,10 @@ class _GamificationMainPageState extends State<GamificationMainPage> {
                       ),
                     ),
                     const SizedBox(width: 12),
-                    const Expanded(
+                    Expanded(
                       child: Text(
-                        'Task ini bersifat opsional. Selesaikan untuk mendapat reward spesial!',
-                        style: TextStyle(
+                        AppLocalizations.of(context)!.optionalTaskInfo,
+                        style: const TextStyle(
                           fontSize: 13,
                           color: Color(0xFF1565C0),
                           height: 1.4,
@@ -145,16 +150,16 @@ class _GamificationMainPageState extends State<GamificationMainPage> {
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                itemCount: tasks.length,
+                itemCount: sortedTasks.length,
                 itemBuilder: (context, index) {
                   return TaskCardWidget(
-                    task: tasks[index],
+                    task: sortedTasks[index],
                     onSeeDetail: () async {
                       await Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) =>
-                              TaskDetailPage(task: tasks[index]),
+                              TaskDetailPage(task: sortedTasks[index]),
                         ),
                       );
                       setState(() {});

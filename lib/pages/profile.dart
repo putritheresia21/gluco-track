@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:glucotrack_app/services/User_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:glucotrack_app/pages/login_page.dart';
+import 'package:glucotrack_app/pages/edit_profile_page.dart';
 import 'package:glucotrack_app/services/auth_service.dart';
 import 'package:glucotrack_app/Widget/status_bar_helper.dart';
 import 'package:glucotrack_app/services/gamification_service/gamification_service.dart';
@@ -32,6 +33,7 @@ class _ProfileState extends State<Profile> {
   final _gamification = GamificationService.instance;
   final _glucoseRepository = Glucoserepository();
   String username = 'Loading...';
+  String? avatarUrl;
   bool loadingUsername = true;
   bool loadingGamification = true;
   bool loadingGlucoseStats = true;
@@ -71,7 +73,7 @@ class _ProfileState extends State<Profile> {
   }
 
   Future<void> _initializeGamification() async {
-    await _gamification.initialize();
+    await _gamification.initialize(context: context);
     if (mounted) {
       setState(() {
         loadingGamification = false;
@@ -85,12 +87,14 @@ class _ProfileState extends State<Profile> {
       if (!mounted) return;
       setState(() {
         username = data?['username'] ?? 'User';
+        avatarUrl = data?['avatar_url'];
         loadingUsername = false;
       });
     } catch (e) {
       if (!mounted) return;
       setState(() {
         username = 'User';
+        avatarUrl = null;
         loadingUsername = false;
       });
     }
@@ -198,9 +202,14 @@ class _ProfileState extends State<Profile> {
                   padding: const EdgeInsets.all(20),
                   child: Row(
                     children: [
-                      const CircleAvatar(
+                      CircleAvatar(
                         radius: 43,
-                        backgroundImage: AssetImage('assets/profile/image.png'),
+                        backgroundColor: Colors.grey[300],
+                        backgroundImage:
+                            avatarUrl != null && avatarUrl!.isNotEmpty
+                                ? NetworkImage(avatarUrl!)
+                                : const AssetImage('assets/profile/image.png')
+                                    as ImageProvider,
                       ),
                       const SizedBox(width: 15),
                       Column(
@@ -415,7 +424,7 @@ class _ProfileState extends State<Profile> {
 
                               final sortedTasks = List<MainTask>.from(tasks)
                                 ..sort(
-                                    (a, b) => b.progress.compareTo(a.progress));
+                                    (a, b) => a.progress.compareTo(b.progress));
                               final displayTask = sortedTasks.first;
 
                               return TaskCardWidget(
@@ -449,13 +458,17 @@ class _ProfileState extends State<Profile> {
                             ),
                             elevation: 2,
                           ),
-                          onPressed: () {
-                            // Navigator.push(
-                            //   context,
-                            //   MaterialPageRoute(
-                            //     builder: (context) => ProfilePage(),
-                            //   ),
-                            // );
+                          onPressed: () async {
+                            final result = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const EditProfilePage(),
+                              ),
+                            );
+                            // Refresh profile after edit
+                            if (result == true) {
+                              loadUsername();
+                            }
                           },
                           child: Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -466,7 +479,7 @@ class _ProfileState extends State<Profile> {
                                   AppLocalizations.of(context)!.editProfile,
                                   style: const TextStyle(
                                     color: Color(0xFF003049),
-                                    fontSize: 16,
+                                    fontSize: 18,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -504,7 +517,7 @@ class _ProfileState extends State<Profile> {
                                   AppLocalizations.of(context)!.logout,
                                   style: const TextStyle(
                                     color: Color(0xFF003049),
-                                    fontSize: 16,
+                                    fontSize: 18,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -608,7 +621,7 @@ class _ProfileState extends State<Profile> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  '${getConditionLabel(record.condition)} at ${getTimeLabel(record.timeStamp)}',
+                  getConditionLabel(record.condition),
                   style: FontUtils.style(
                     size: FontSize.xs,
                     weight: FontWeightType.medium,

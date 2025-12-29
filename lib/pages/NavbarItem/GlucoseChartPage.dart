@@ -949,13 +949,13 @@ class _GlucoseChartState extends State<GlucoseChart> {
 
     if (selectedTimeRange == TimeRange.weekly) {
         dataPoints = 7;
-        labels = ["M", "S", "S", "R", "K", "J", "S"];
+        labels = ["M", "T", "W", "T", "F", "S", "S"];
         Map<int, List<Glucoserecord>> groupedRecords = getWeeklyGroupedRecords();
         
         DateTime endOfWeek = displayedWeek.add(const Duration(days: 6));
         String startStr = DateFormat('d MMM').format(displayedWeek);
         String endStr = DateFormat('d MMM').format(endOfWeek);
-        titleText = 'Pemantauan $startStr - $endStr';
+        titleText = '${AppLocalizations.of(context)!.monitoring} $startStr - $endStr';
 
         for (int i = 0; i < dataPoints; i++) {
           List<Glucoserecord> records = groupedRecords[i] ?? [];
@@ -978,7 +978,7 @@ class _GlucoseChartState extends State<GlucoseChart> {
         labels = ["W1", "W2", "W3", "W4", "W5"];
         Map<int, List<Glucoserecord>> groupedRecords = getMonthlyGroupedRecords();
         
-        titleText = 'Pemantauan ${DateFormat('MMMM yyyy').format(displayedMonth)}';
+        titleText = '${AppLocalizations.of(context)!.monitoring} ${DateFormat('MMMM yyyy').format(displayedMonth)}';
 
         for (int i = 0; i < dataPoints; i++) {
           List<Glucoserecord> records = groupedRecords[i] ?? [];
@@ -1001,8 +1001,8 @@ class _GlucoseChartState extends State<GlucoseChart> {
     // Check if empty
     bool isEmpty = beforeSpots.isEmpty && afterSpots.isEmpty;
     String emptyMessage = selectedTimeRange == TimeRange.weekly 
-      ? "Belum ada data minggu ini" 
-      : "Belum ada data bulan ini";
+      ? AppLocalizations.of(context)!.noDataThisWeek
+      : AppLocalizations.of(context)!.noDataThisMonth;
 
     return Container(
       width: double.infinity,

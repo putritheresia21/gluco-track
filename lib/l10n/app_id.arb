@@ -310,5 +310,26 @@
         "type": "int"
       }
     }
-  }
+  },
+  "monitoring": "Pemantauan",
+  "allDataDisplayed": "Semua data telah ditampilkan",
+  "noDataThisWeek": "Belum ada data minggu ini",
+  "noDataThisMonth": "Belum ada data bulan ini",
+  "yourMissions": "Misi Anda",
+  "optionalTaskInfo": "Task ini bersifat opsional. Selesaikan untuk mendapat reward spesial!",
+  "manualGlucoseTaskTitle": "Pencatatan Gula Darah Manual",
+  "manualGlucoseTaskDesc": "Catat kadar gula darah Anda secara manual menggunakan glucometer",
+  "iotGlucoseTaskTitle": "Pencatatan Gula Darah dengan IoT",
+  "iotGlucoseTaskDesc": "Catat kadar gula darah Anda menggunakan perangkat IoT",
+  "socialPostTaskTitle": "Posting di Social Feeds",
+  "socialPostTaskDesc": "Bagikan pengalaman Anda di social feeds",
+  "seeDetail": "Lihat Detail",
+  "tasks": "Tugas",
+  "editProfileTitle": "Edit Profil",
+  "changePhoto": "Ganti Foto",
+  "chooseFromGallery": "Pilih dari Galeri",
+  "takePhoto": "Ambil Foto",
+  "saveChanges": "Simpan Perubahan",
+  "profileUpdated": "Profil berhasil diperbarui",
+  "updateFailed": "Gagal memperbarui profil"
 }
