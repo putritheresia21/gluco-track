@@ -8,6 +8,8 @@ import 'package:intl/intl.dart' as intl;
 import 'app_localizations_en.dart';
 import 'app_localizations_id.dart';
 
+// ignore_for_file: type=lint
+
 /// Callers can lookup localized strings with an instance of AppLocalizations
 /// returned by `AppLocalizations.of(context)`.
 ///
@@ -255,10 +257,22 @@ abstract class AppLocalizations {
   /// **'at'**
   String get at;
 
+  /// No description provided for @dataCannotBeEdited.
+  ///
+  /// In en, this message translates to:
+  /// **'Note: This data cannot be edited after submission. Please review carefully before saving.'**
+  String get dataCannotBeEdited;
+
+  /// No description provided for @dataSavedSharePrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Your glucose data is safely stored. Would you like to share this result now?'**
+  String get dataSavedSharePrompt;
+
   /// No description provided for @shareResult.
   ///
   /// In en, this message translates to:
-  /// **'Share Result'**
+  /// **'Record Saved'**
   String get shareResult;
 
   /// No description provided for @shareResultMessage.

@@ -77,6 +77,7 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
       barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
+          backgroundColor: const Color(0xFFF5F5F5),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
@@ -85,12 +86,12 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF2C7796).withOpacity(0.1),
+                  color: Colors.green.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: const Icon(
-                  Icons.share,
-                  color: Color(0xFF2C7796),
+                  Icons.check_circle,
+                  color: Colors.green,
                   size: 24,
                 ),
               ),
@@ -107,7 +108,7 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
             ],
           ),
           content: Text(
-            AppLocalizations.of(context)!.shareResultMessage,
+            AppLocalizations.of(context)!.dataSavedSharePrompt,
             style: const TextStyle(fontSize: 16),
           ),
           actions: [
@@ -217,13 +218,6 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
         }
 
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(AppLocalizations.of(context)!.glucoseDataSaved),
-              backgroundColor: Colors.green,
-            ),
-          );
-
           // Show share dialog after successful save
           await showShareDialog();
         }
@@ -242,7 +236,8 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)!.failedSaveData(e.toString())),
+            content: Text(
+                AppLocalizations.of(context)!.failedSaveData(e.toString())),
             backgroundColor: Colors.red,
           ),
         );
@@ -292,6 +287,35 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.orange.shade50,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.orange.shade200, width: 1),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.info_outline,
+                      color: Colors.orange.shade700,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        AppLocalizations.of(context)!.dataCannotBeEdited,
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.orange.shade900,
+                          height: 1.4,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
               Text(
                 AppLocalizations.of(context)!.glucoseLevelMgDl,
                 style: const TextStyle(
@@ -336,10 +360,12 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
                           keyboardType: TextInputType.number,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return AppLocalizations.of(context)!.glucoseLevelRequired;
+                              return AppLocalizations.of(context)!
+                                  .glucoseLevelRequired;
                             }
                             if (double.tryParse(value) == null) {
-                              return AppLocalizations.of(context)!.validNumberRequired;
+                              return AppLocalizations.of(context)!
+                                  .validNumberRequired;
                             }
                             return null;
                           },
@@ -379,27 +405,28 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
                                         content: Text(
-                                            AppLocalizations.of(context)!.iotDataLoaded),
+                                            AppLocalizations.of(context)!
+                                                .iotDataLoaded),
                                         backgroundColor: Colors.green,
                                       ),
                                     );
                                   }
                                 },
                                 borderRadius: BorderRadius.circular(8),
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                      vertical: 10,
-                                    ),
-                                    child: Text(
-                                      AppLocalizations.of(context)!.automatic,
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w600,
-                                      ),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 10,
+                                  ),
+                                  child: Text(
+                                    AppLocalizations.of(context)!.automatic,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
                                     ),
                                   ),
+                                ),
                               ),
                             ),
                           ),
@@ -510,7 +537,7 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
                     style: const TextStyle(color: Colors.white),
                   ),
                 ),
-              const SizedBox(height: 260),
+              const SizedBox(height: 180),
               CustomButton(
                 text: AppLocalizations.of(context)!.save,
                 backgroundColor: const Color(0xFF2C7796),

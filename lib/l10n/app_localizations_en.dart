@@ -2,6 +2,8 @@ import 'package:intl/intl.dart' as intl;
 
 import 'app_localizations.dart';
 
+// ignore_for_file: type=lint
+
 /// The translations for English (`en`).
 class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
@@ -90,7 +92,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get at => 'at';
 
   @override
-  String get shareResult => 'Share Result';
+  String get dataCannotBeEdited => 'Note: This data cannot be edited after submission. Please review carefully before saving.';
+
+  @override
+  String get dataSavedSharePrompt => 'Your glucose data is safely stored. Would you like to share this result now?';
+
+  @override
+  String get shareResult => 'Record Saved';
 
   @override
   String get shareResultMessage => 'Do you want to share your current blood glucose test results?';

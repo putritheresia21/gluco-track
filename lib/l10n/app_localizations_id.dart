@@ -2,6 +2,8 @@ import 'package:intl/intl.dart' as intl;
 
 import 'app_localizations.dart';
 
+// ignore_for_file: type=lint
+
 /// The translations for Indonesian (`id`).
 class AppLocalizationsId extends AppLocalizations {
   AppLocalizationsId([String locale = 'id']) : super(locale);
@@ -90,7 +92,13 @@ class AppLocalizationsId extends AppLocalizations {
   String get at => 'pada jam';
 
   @override
-  String get shareResult => 'Bagikan Hasil';
+  String get dataCannotBeEdited => 'Catatan: Data ini tidak dapat diubah setelah disimpan. Silakan periksa dengan baik sebelum melakukan submit.';
+
+  @override
+  String get dataSavedSharePrompt => 'Data gula darah kamu sudah tersimpan dengan aman. Apakah kamu ingin membagikan hasil ini sekarang?';
+
+  @override
+  String get shareResult => 'Data Tersimpan';
 
   @override
   String get shareResultMessage => 'Apakah Anda ingin membagikan hasil tes gula darah Anda saat ini?';

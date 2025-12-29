@@ -81,16 +81,18 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
-          children: const [
-            Text('Gluc',
+          children: [
+            const Text('Gluc',
                 style: TextStyle(
                     fontSize: 36,
                     fontWeight: FontWeight.w700,
                     color: Colors.white)),
             // pastikan assets/Logo.png ada di pubspec.yaml
-            // Transform.translate(offset: Offset(0, 2), child: Image.asset('assets/Logo.png', width: 27, height: 30)),
-            SizedBox(width: 8),
-            Text('Track',
+            Transform.translate(
+                offset: Offset(0, 2),
+                child: Image.asset('assets/Logo.png', width: 27, height: 30)),
+            // const SizedBox(width: 8),
+            const Text('Track',
                 style: TextStyle(
                     fontSize: 40,
                     fontWeight: FontWeight.w800,
