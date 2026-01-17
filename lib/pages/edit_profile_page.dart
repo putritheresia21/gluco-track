@@ -257,8 +257,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                 ? FileImage(_profileImage!)
                                 : (_profileImageUrl != null
                                     ? NetworkImage(_profileImageUrl!)
-                                    : const AssetImage('assets/profile/image.png'))
-                                as ImageProvider,
+                                    : null),
+                            child: (_profileImage == null && _profileImageUrl == null)
+                                ? const Icon(
+                                    Icons.person,
+                                    size: 60,
+                                    color: Color(0xFF2C7796),
+                                  )
+                                : null,
                           ),
                           Positioned(
                             bottom: 0,

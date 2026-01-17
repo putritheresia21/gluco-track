@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "299040350367",
-    "project_id": "glucotrack-80950",
-    "storage_bucket": "glucotrack-80950.firebasestorage.app"
+    "project_number": "535535028336",
+    "project_id": "glucotrack-d06c8",
+    "storage_bucket": "glucotrack-d06c8.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:299040350367:android:135298ac9d89dc66cb02aa",
+        "mobilesdk_app_id": "1:535535028336:android:5f69a45c00bbf08d854cb5",
         "android_client_info": {
           "package_name": "com.example.glucotrack_app"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyB-4t06_ErVs9wbBv18nXVoGtq72vUNAoo"
+          "current_key": "AIzaSyB4Z0_cIWQeH5RcgRajsccWv5DnpYQYlnU"
         }
       ],
       "services": {

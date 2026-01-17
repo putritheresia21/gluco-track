@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:glucotrack_app/l10n/app_localizations.dart';
 import 'package:glucotrack_app/services/gamification_service/gamification_service.dart';
+import 'package:glucotrack_app/pages/glucose_measuring.dart';
+import 'package:glucotrack_app/pages/GlucosePrediction.dart';
+import 'package:glucotrack_app/pages/SocialMedia/AddPostPage.dart';
 
 class TaskDetailPage extends StatefulWidget {
   final MainTask task;
@@ -141,6 +144,67 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
                       backgroundColor: Colors.white.withOpacity(0.3),
                       valueColor: const AlwaysStoppedAnimation<Color>(
                         Color(0xFFFFFFFF),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        // Navigate to action based on task type
+                        switch (widget.task.type) {
+                          case TaskType.manualGlucose:
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const GlucoseMeasuring(),
+                              ),
+                            );
+                            break;
+                          case TaskType.iotGlucose:
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => GlucosePrediction(),
+                              ),
+                            );
+                            break;
+                          case TaskType.socialPost:
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const AddPostPage(),
+                              ),
+                            );
+                            break;
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: const Color(0xFF2C7796),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.play_arrow_rounded,
+                            color: const Color(0xFF2C7796),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Do Mission',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),

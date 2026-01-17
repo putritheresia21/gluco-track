@@ -6,6 +6,7 @@ import '../Widget/custom_button.dart';
 import '../Widget/InputField.dart';
 import 'package:glucotrack_app/l10n/app_localizations.dart';
 import 'register_page.dart';
+import '../services/NotificationService.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -73,6 +74,10 @@ class LoginPageState extends State<LoginPage> {
       if (rememberMe) {
         await saveLoginData(uid, username);
       }
+
+      // 🔔 PENTING: Update FCM Token ke Server setelah login berhasil
+      // Supaya notifikasi bisa masuk ke device ini
+      await NotificationService().ensureTokenSaved();
 
       // if (!mounted) return;
       // ScaffoldMessenger.of(context).showSnackBar(

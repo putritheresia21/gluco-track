@@ -6,6 +6,7 @@ import 'package:glucotrack_app/l10n/app_localizations.dart';
 import 'profile.dart';
 import 'login_page.dart';
 import 'NavbarItem/Navbar.dart';
+import '../services/NotificationService.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({Key? key}) : super(key: key);
@@ -122,6 +123,9 @@ class RegisterPageState extends State<RegisterPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(AppLocalizations.of(context)!.registrationSuccess)),
       );
+
+      // 🔔 PENTING: Update FCM Token ke Server setelah register berhasil
+      await NotificationService().ensureTokenSaved();
 
       Navigator.pushReplacement(
         context,

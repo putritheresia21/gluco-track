@@ -8,9 +8,12 @@ import 'package:glucotrack_app/l10n/app_localizations.dart';
 import 'package:glucotrack_app/services/auth_service.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:glucotrack_app/Widget/ContentList.dart';
+import 'package:glucotrack_app/Widget/chart/GlucoseHourlyChart.dart';
 
 
-enum TimeRange { weekly, monthly }
+import 'package:glucotrack_app/pages/ReminderSettingsPage.dart';
+
+enum TimeRange { daily, weekly, monthly }
 
 class GlucoseChart extends StatefulWidget {
   const GlucoseChart({super.key});
@@ -34,10 +37,11 @@ class _GlucoseChartState extends State<GlucoseChart> {
   final ScrollController _scrollController = ScrollController();
 
   String? currentUserId;
-  TimeRange selectedTimeRange = TimeRange.weekly;
+  TimeRange selectedTimeRange = TimeRange.daily;
 
   DateTime displayedMonth = DateTime.now();
   late DateTime displayedWeek;
+  DateTime displayedDay = DateTime.now(); // Added for Daily view
   String selectedHistoryFilter = 'Semua';
   DateTimeRange? selectedDateRange; // Range tanggal terpilih
 
@@ -48,6 +52,12 @@ class _GlucoseChartState extends State<GlucoseChart> {
     displayedWeek = _getStartOfWeek(DateTime.now());
     _scrollController.addListener(_onScroll);
     _initializeAndLoadRecords();
+  }
+  
+  /// Public method to refresh data from external sources
+  Future<void> refreshData() async {
+    print('🔄 Refresh requested');
+    await loadInitialData();
   }
 
   @override
@@ -511,6 +521,31 @@ class _GlucoseChartState extends State<GlucoseChart> {
     return grouped;
   }
 
+  List<Glucoserecord> getDailyRecords() {
+    DateTime startOfDay = DateTime(displayedDay.year, displayedDay.month, displayedDay.day);
+    DateTime endOfDay = startOfDay.add(const Duration(days: 1));
+
+    return allRecords.where((record) {
+      return record.timeStamp.isAfter(startOfDay) && 
+             record.timeStamp.isBefore(endOfDay);
+    }).toList();
+  }
+
+  Map<int, List<Glucoserecord>> getDailyGroupedRecords() {
+    List<Glucoserecord> dailyRecords = getDailyRecords();
+    Map<int, List<Glucoserecord>> grouped = {};
+
+    for (int i = 0; i < 24; i++) {
+        grouped[i] = [];
+    }
+
+    for (var record in dailyRecords) {
+        int hour = record.timeStamp.hour;
+        grouped[hour]!.add(record);
+    }
+    return grouped;
+  }
+
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
@@ -536,16 +571,31 @@ class _GlucoseChartState extends State<GlucoseChart> {
       bodyBackgroundColor: const Color(0xFFF5F5F5),
       headerContent: Padding(
         padding: const EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 20),
-        child: Text(
-          AppLocalizations.of(context)!.glucoseChart,
-          style: const TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
-          ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              AppLocalizations.of(context)!.glucoseChart,
+              style: const TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            // Refresh button
+            IconButton(
+              icon: const Icon(Icons.refresh, color: Colors.black),
+              onPressed: () async {
+                await refreshData();
+              },
+            ),
+          ],
         ),
       ),
-      child: SingleChildScrollView(
-        controller: _scrollController,
+      child: RefreshIndicator(
+        onRefresh: refreshData,
+        color: const Color(0xFF2C7796),
+        child: SingleChildScrollView(
+          controller: _scrollController,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
           child: Column(
@@ -570,6 +620,7 @@ class _GlucoseChartState extends State<GlucoseChart> {
                     ),
                     child: Row(
                       children: [
+                         _buildToggleButton('Daily', TimeRange.daily),
                          _buildToggleButton(AppLocalizations.of(context)!.weekly, TimeRange.weekly),
                          _buildToggleButton(AppLocalizations.of(context)!.monthly, TimeRange.monthly),
                       ],
@@ -910,6 +961,7 @@ class _GlucoseChartState extends State<GlucoseChart> {
           ),
         ),
       ),
+    ),
     );
   }
 
@@ -947,7 +999,37 @@ class _GlucoseChartState extends State<GlucoseChart> {
     List<FlSpot> afterSpots = [];
     String titleText = "";
 
-    if (selectedTimeRange == TimeRange.weekly) {
+
+
+    if (selectedTimeRange == TimeRange.daily) {
+        dataPoints = 24; // 0-23 hours
+        // Labels for every 6 hours? or we handle in axis config
+        // Actually line chart axis logic handles titles.
+        // We just need dataPoints count for loop.
+        
+        Map<int, List<Glucoserecord>> groupedRecords = getDailyGroupedRecords();
+        titleText = DateFormat('EEEE, d MMM yyyy').format(displayedDay);
+
+        for (int i = 0; i < dataPoints; i++) {
+          List<Glucoserecord> records = groupedRecords[i] ?? [];
+          if (records.isNotEmpty) {
+             final before = records.where((r) => r.condition == GlucoseCondition.beforeMeal).toList();
+             final after = records.where((r) => r.condition == GlucoseCondition.afterMeal).toList();
+
+             // Calculate average for Before Meal
+             if (before.isNotEmpty) {
+               double avgBefore = before.fold(0.0, (sum, r) => sum + r.glucoseLevel) / before.length;
+               beforeSpots.add(FlSpot(i.toDouble(), avgBefore));
+             }
+
+             // Calculate average for After Meal
+             if (after.isNotEmpty) {
+               double avgAfter = after.fold(0.0, (sum, r) => sum + r.glucoseLevel) / after.length;
+               afterSpots.add(FlSpot(i.toDouble(), avgAfter));
+             }
+          }
+        }
+    } else if (selectedTimeRange == TimeRange.weekly) {
         dataPoints = 7;
         labels = ["M", "T", "W", "T", "F", "S", "S"];
         Map<int, List<Glucoserecord>> groupedRecords = getWeeklyGroupedRecords();
@@ -963,13 +1045,16 @@ class _GlucoseChartState extends State<GlucoseChart> {
             final before = records.where((r) => r.condition == GlucoseCondition.beforeMeal).toList();
             final after = records.where((r) => r.condition == GlucoseCondition.afterMeal).toList();
             
+            // Calculate average for Before Meal
             if (before.isNotEmpty) {
-              double avg = before.fold(0.0, (sum, r) => sum + r.glucoseLevel) / before.length;
-              beforeSpots.add(FlSpot(i.toDouble(), avg));
+              double avgBefore = before.fold(0.0, (sum, r) => sum + r.glucoseLevel) / before.length;
+              beforeSpots.add(FlSpot(i.toDouble(), avgBefore));
             }
+            
+            // Calculate average for After Meal
             if (after.isNotEmpty) {
-              double avg = after.fold(0.0, (sum, r) => sum + r.glucoseLevel) / after.length;
-              afterSpots.add(FlSpot(i.toDouble(), avg));
+              double avgAfter = after.fold(0.0, (sum, r) => sum + r.glucoseLevel) / after.length;
+              afterSpots.add(FlSpot(i.toDouble(), avgAfter));
             }
           }
         }
@@ -986,13 +1071,16 @@ class _GlucoseChartState extends State<GlucoseChart> {
              final before = records.where((r) => r.condition == GlucoseCondition.beforeMeal).toList();
              final after = records.where((r) => r.condition == GlucoseCondition.afterMeal).toList();
              
+             // Calculate average for Before Meal
              if (before.isNotEmpty) {
-               double avg = before.fold(0.0, (sum, r) => sum + r.glucoseLevel) / before.length;
-               beforeSpots.add(FlSpot(i.toDouble(), avg));
+               double avgBefore = before.fold(0.0, (sum, r) => sum + r.glucoseLevel) / before.length;
+               beforeSpots.add(FlSpot(i.toDouble(), avgBefore));
              }
+
+             // Calculate average for After Meal
              if (after.isNotEmpty) {
-               double avg = after.fold(0.0, (sum, r) => sum + r.glucoseLevel) / after.length;
-               afterSpots.add(FlSpot(i.toDouble(), avg));
+               double avgAfter = after.fold(0.0, (sum, r) => sum + r.glucoseLevel) / after.length;
+               afterSpots.add(FlSpot(i.toDouble(), avgAfter));
              }
           }
         }
@@ -1000,9 +1088,15 @@ class _GlucoseChartState extends State<GlucoseChart> {
     
     // Check if empty
     bool isEmpty = beforeSpots.isEmpty && afterSpots.isEmpty;
-    String emptyMessage = selectedTimeRange == TimeRange.weekly 
-      ? AppLocalizations.of(context)!.noDataThisWeek
-      : AppLocalizations.of(context)!.noDataThisMonth;
+
+    String emptyMessage;
+    if (selectedTimeRange == TimeRange.daily) {
+       emptyMessage = "No data for today";
+    } else if (selectedTimeRange == TimeRange.weekly) {
+       emptyMessage = AppLocalizations.of(context)!.noDataThisWeek;
+    } else {
+       emptyMessage = AppLocalizations.of(context)!.noDataThisMonth;
+    }
 
     return Container(
       width: double.infinity,
@@ -1028,7 +1122,9 @@ class _GlucoseChartState extends State<GlucoseChart> {
                 icon: const Icon(Icons.arrow_back_ios, size: 16, color: Colors.grey),
                 onPressed: () {
                     setState(() {
-                      if (selectedTimeRange == TimeRange.weekly) {
+                      if (selectedTimeRange == TimeRange.daily) {
+                        displayedDay = displayedDay.subtract(const Duration(days: 1));
+                      } else if (selectedTimeRange == TimeRange.weekly) {
                         displayedWeek = displayedWeek.subtract(const Duration(days: 7));
                       } else {
                         displayedMonth = DateTime(
@@ -1049,7 +1145,9 @@ class _GlucoseChartState extends State<GlucoseChart> {
                 icon: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
                 onPressed: () {
                     setState(() {
-                      if (selectedTimeRange == TimeRange.weekly) {
+                      if (selectedTimeRange == TimeRange.daily) {
+                        displayedDay = displayedDay.add(const Duration(days: 1));
+                      } else if (selectedTimeRange == TimeRange.weekly) {
                         displayedWeek = displayedWeek.add(const Duration(days: 7));
                       } else {
                         displayedMonth = DateTime(
@@ -1060,6 +1158,31 @@ class _GlucoseChartState extends State<GlucoseChart> {
               ),
             ],
           ),
+          // Reminder Button Row (Visible only in Daily view or always? User asked for it 'in the chart')
+          if (selectedTimeRange == TimeRange.daily)
+            Padding(
+               padding: const EdgeInsets.only(top: 10),
+               child: Align(
+                 alignment: Alignment.centerRight,
+                 child: TextButton.icon(
+                    onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ReminderSettingsPage(),
+                          ),
+                        );
+                    },
+                    icon: const Icon(Icons.notifications_active_outlined, size: 16, color: Color(0xFF2C7796)),
+                    label: const Text("Set Reminder", style: TextStyle(color: Color(0xFF2C7796), fontSize: 12)),
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      backgroundColor: const Color(0xFFE0F7FA),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                    ),
+                 ),
+               ),
+            ),
           const SizedBox(height: 30),
           
           if (isEmpty)
@@ -1094,7 +1217,18 @@ class _GlucoseChartState extends State<GlucoseChart> {
                     sideTitles: SideTitles(
                       showTitles: true,
                       getTitlesWidget: (value, meta) {
-                        if (value.toInt() >= 0 && value.toInt() < labels.length) {
+                        if (selectedTimeRange == TimeRange.daily) {
+                            if (value % 6 == 0) {
+                               return Padding(
+                                  padding: const EdgeInsets.only(top: 8.0),
+                                  child: Text(
+                                     '${value.toInt()}:00',
+                                     style: const TextStyle(color: Colors.grey, fontSize: 10),
+                                  ),
+                               );
+                            }
+                            return const Text('');
+                        } else if (value.toInt() >= 0 && value.toInt() < labels.length) {
                              return Padding(
                                 padding: const EdgeInsets.only(top: 8.0),
                                 child: Text(
@@ -1137,7 +1271,17 @@ class _GlucoseChartState extends State<GlucoseChart> {
                       color: const Color(0xFF2C7796),
                       barWidth: 4,
                       isStrokeCapRound: true,
-                      dotData: const FlDotData(show: true),
+                      dotData: FlDotData(
+                        show: true,
+                        getDotPainter: (spot, percent, barData, index) {
+                          return FlDotCirclePainter(
+                            radius: 4,
+                            color: const Color(0xFF2C7796),
+                            strokeWidth: 2,
+                            strokeColor: Colors.white,
+                          );
+                        },
+                      ),
                       belowBarData: BarAreaData(
                         show: true,
                         color: const Color(0xFF2C7796).withOpacity(0.05),
@@ -1151,7 +1295,17 @@ class _GlucoseChartState extends State<GlucoseChart> {
                       color: Colors.orange[400],
                       barWidth: 4,
                       isStrokeCapRound: true,
-                      dotData: const FlDotData(show: true),
+                      dotData: FlDotData(
+                        show: true,
+                        getDotPainter: (spot, percent, barData, index) {
+                          return FlDotCirclePainter(
+                            radius: 4,
+                            color: Colors.orange[400]!,
+                            strokeWidth: 2,
+                            strokeColor: Colors.white,
+                          );
+                        },
+                      ),
                       belowBarData: BarAreaData(
                         show: true,
                         color: Colors.orange[400]!.withOpacity(0.05),

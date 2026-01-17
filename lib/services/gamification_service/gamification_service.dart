@@ -404,4 +404,29 @@ class GamificationService {
       return 0;
     }
   }
+
+  Future<List<Map<String, dynamic>>> getLeaderboard() => _repository.getLeaderboard();
+  
+  Future<List<Map<String, dynamic>>> getMissionHistory({int limit = 5}) async {
+    final history = await _repository.getMissionHistory(limit: limit);
+    
+    // Map task data manually
+    for (var item in history) {
+      final userTaskId = item['user_task_id'];
+      try {
+        final task = _tasks.firstWhere((t) => t.databaseId == userTaskId);
+        item['user_tasks'] = {
+          'title': task.title,
+          'type': task.type.name,
+        };
+      } catch (e) {
+        item['user_tasks'] = {
+          'title': 'Unknown Mission',
+          'type': 'unknown',
+        };
+      }
+    }
+    
+    return history;
+  }
 }

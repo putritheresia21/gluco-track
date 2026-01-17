@@ -4,8 +4,12 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:glucotrack_app/l10n/app_localizations.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:glucotrack_app/services/NotificationService.dart';
+import 'package:glucotrack_app/services/ReminderService.dart';
 import 'pages/NavbarItem/navbar.dart';
 import 'pages/splash_screen.dart';
+import 'package:glucotrack_app/utils/NavigationHelper.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,6 +22,17 @@ Future<void> main() async {
     url: supabaseUrl,
     anonKey: supabaseAnonKey,
   );
+
+  // Initialize Firebase
+  await Firebase.initializeApp();
+  
+  // Initialize Notification Service
+  await NotificationService().initialize();
+  
+  // Reschedule all active glucose reminders
+  // This ensures reminders work after app restart/phone reboot
+  await ReminderService().rescheduleAllReminders();
+  
   runApp(const MainApp());
 }
 
@@ -27,6 +42,7 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
       title: 'GlucoTrack',
       localizationsDelegates: const [

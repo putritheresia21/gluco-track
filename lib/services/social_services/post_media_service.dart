@@ -38,9 +38,7 @@ class PostMediaService {
   }
 
   String publicUrl(String storagePath) {
-    final url = sb.storage.from(bucket).getPublicUrl(storagePath);
-    print('DEBUG: Generated public URL: $url');
-    return url;
+    return sb.storage.from(bucket).getPublicUrl(storagePath);
   }
 
   Future<String> signedUrl(String storagePath, {int expiresIn = 60}) =>
@@ -69,6 +67,15 @@ class PostMediaService {
         return 'video/mp4';
       default:
         return 'application/octet-stream';
+    }
+  }
+
+  Future<void> deleteFromStorage(String storagePath) async {
+    try {
+      await sb.storage.from(bucket).remove([storagePath]);
+    } catch (e) {
+      print('Error deleting file from storage: $e');
+      // Don't throw, just log - file might not exist
     }
   }
 

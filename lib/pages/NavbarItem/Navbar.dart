@@ -60,8 +60,13 @@ class CustomBottomNavState extends State<CustomBottomNav> {
   Widget build(BuildContext context) {
     final navHeight = widget.navbarHeight ?? 52;
 
+    // Rebuild GlucoseChart each time to get fresh data
+    final currentPage = selectedIndex == 1 
+        ? GlucoseChart(key: ValueKey(DateTime.now().millisecondsSinceEpoch))
+        : pages[selectedIndex];
+
     return Scaffold(
-      body: pages[selectedIndex],
+      body: currentPage,
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           border: Border(

@@ -7,6 +7,7 @@ import 'package:glucotrack_app/Widget/status_bar_helper.dart';
 import 'package:glucotrack_app/Widget/ContentCard.dart';
 import 'package:glucotrack_app/Widget/ContentList.dart';
 import 'package:glucotrack_app/pages/SocialMedia/AddPostPage.dart';
+import 'package:glucotrack_app/pages/SocialMedia/UserProfilePage.dart';
 
 class PublicFeedPage extends StatefulWidget {
   final bool isInsideSocialPage;
@@ -22,25 +23,48 @@ class PublicFeedPage extends StatefulWidget {
   State<PublicFeedPage> createState() => _PublicFeedPageState();
 }
 
-class _PublicFeedPageState extends State<PublicFeedPage> {
+enum FeedType { all, following, myPosts }
+
+class _PublicFeedPageState extends State<PublicFeedPage> 
+    with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   final _svc = PostService();
   final _posts = <Map<String, dynamic>>[];
   final _filteredPosts = <Map<String, dynamic>>[];
-  Map<String, List<Map<String, dynamic>>> _mediaMap = {};
-  Map<String, Map<String, dynamic>> _profiles = {};
   final Set<String> _following = <String>{};
   String? _currentUserId;
   bool _loading = false;
   bool _end = false;
   int _page = 0;
   final int _pageSize = 20;
+  FeedType _currentFeedType = FeedType.all;
+  late TabController _tabController;
+
+  @override
+  bool get wantKeepAlive => true; // Keep state alive when switching tabs
 
   @override
   void initState() {
     super.initState();
     StatusBarHelper.setLightStatusBar();
     _currentUserId = _svc.getCurrentUserId();
+    _tabController = TabController(length: 3, vsync: this); // Changed from 2 to 3
+    _tabController.addListener(_onTabChanged);
     _load(reset: true);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  void _onTabChanged() {
+    if (!_tabController.indexIsChanging) {
+      setState(() {
+        _currentFeedType = FeedType.values[_tabController.index];
+      });
+      _load(reset: true);
+    }
   }
 
   @override
@@ -51,93 +75,71 @@ class _PublicFeedPageState extends State<PublicFeedPage> {
     }
   }
 
+  // Removed reassemble auto-reload for better performance
+  // User can pull-to-refresh if they want fresh data
+
+
   Future<void> _load({bool reset = false}) async {
-  if (_loading) return;
-  setState(() => _loading = true);
-  try {
-    if (reset) {
-      _posts.clear();
-      _filteredPosts.clear();
-      _profiles = {};
-      _mediaMap = {};
-      _end = false;
-      _page = 0;
-    }
-    final from = _page * _pageSize;
-    final to = from + _pageSize - 1;
-
-    print('DEBUG _load: Loading posts from $from to $to');
-    final rows = await _svc.loadPublicFeed(from: from, to: to);
-    print('DEBUG _load: Received ${rows.length} posts');
-
-    // Debug: print isi posts
-    for (var post in rows) {
-      print('DEBUG Post: ${post['id']} - body: ${post['body']} - author: ${post['author_id']}');
-    }
-
-    final ids = rows.map((r) => r['author_id'] as String).toSet().toList();
-    print('DEBUG _load: Author IDs: $ids');
-    
-    final missing = ids.where((id) => !_profiles.containsKey(id)).toList();
-    print('DEBUG _load: Missing profiles: $missing');
-    
-    if (missing.isNotEmpty) {
-      final fetched = await _svc.fetchProfilesByIds(missing);
-      print('DEBUG _load: Fetched ${fetched.length} profiles');
-      _profiles.addAll(fetched);
-    }
-
-    final postIds = rows.map((r) => r['id'] as String).toList();
-    final media = await _svc.fetchMediaForPosts(postIds);
-
-    print('DEBUG: Found ${media.length} posts with media');
-    media.forEach((postId, items) {
-      print('DEBUG: Post $postId has ${items.length} media items');
-      for (var item in items) {
-        print(
-            'DEBUG: Media item: ${item['storage_path']} (${item['mime_type']})');
+    if (_loading) return;
+    setState(() => _loading = true);
+    try {
+      if (reset) {
+        _posts.clear();
+        _filteredPosts.clear();
+        _end = false;
+        _page = 0;
       }
-    });
+      final from = _page * _pageSize;
+      final to = from + _pageSize - 1;
 
-    final mediaSvc = PostMediaService();
-    final mapped = <String, List<Map<String, dynamic>>>{};
-    media.forEach((pid, items) {
-      mapped[pid] = items.map((m) {
-        final path = m['storage_path'] as String?;
-        if (path == null || path.isEmpty) {
-          print('DEBUG: storage_path is null or empty for media item');
-          return {
-            ...m,
-            'url': '',
-          };
+      // Load based on feed type
+      List<Map<String, dynamic>> rows;
+      if (_currentFeedType == FeedType.all) {
+        rows = await _svc.loadPublicFeed(from: from, to: to);
+      } else if (_currentFeedType == FeedType.following) {
+        rows = await _svc.loadFollowingFeed(from: from, to: to);
+      } else {
+        // My Posts
+        rows = await _svc.loadMyPosts(from: from, to: to);
+      }
+
+      _posts.addAll(rows);
+      
+      // TODO: Optimize this - loading following status one by one is too slow
+      // Temporarily disabled for better performance
+      /* 
+      // Load following status for all authors in this batch
+      final authorIds = rows
+          .map((post) => post['author_id'] as String?)
+          .where((id) => id != null && id != _currentUserId)
+          .cast<String>()
+          .toSet();
+      
+      for (final authorId in authorIds) {
+        try {
+          final isFollowing = await _svc.isFollowing(authorId);
+          if (isFollowing) {
+            _following.add(authorId);
+          }
+        } catch (e) {
+          print('Error checking following status for $authorId: $e');
         }
-        final url = mediaSvc.publicUrl(path);
-        print('DEBUG: Generated URL for $path: $url');
-        return {
-          ...m,
-          'url': url,
-        };
-      }).toList();
-    });
-    _mediaMap.addAll(mapped);
-
-    _posts.addAll(rows);
-    print('DEBUG _load: Total posts in _posts: ${_posts.length}');
-    
-    _filterPosts(widget.searchQuery);
-    print('DEBUG _load: Total filtered posts: ${_filteredPosts.length}');
-    
-    if (rows.length < _pageSize) _end = true;
-    _page++;
-  } catch (e) {
-    print('ERROR _load: $e');
-    if (!mounted) return;
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.failedToLoadFeed(e.toString()))));
-  } finally {
-    if (mounted) setState(() => _loading = false);
+      }
+      */
+      
+      _filterPosts(widget.searchQuery);
+      
+      if (rows.length < _pageSize) _end = true;
+      _page++;
+    } catch (e) {
+      print('ERROR _load: $e');
+      if (!mounted) return;
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.failedToLoadFeed(e.toString()))));
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
   }
-}
 
   
   Future<void> _refresh() {
@@ -154,10 +156,8 @@ class _PublicFeedPageState extends State<PublicFeedPage> {
         _filteredPosts.clear();
         _filteredPosts.addAll(_posts.where((post) {
           final body = (post['body'] as String? ?? '').toLowerCase();
-          final authorId = post['author_id'] as String;
-          final profile = _profiles[authorId];
-          final username =
-              (profile?['username'] as String? ?? '').toLowerCase();
+          final author = post['author'] as Map<String, dynamic>?;
+          final username = (author?['username'] as String? ?? '').toLowerCase();
           return body.contains(searchQuery) || username.contains(searchQuery);
         }));
       }
@@ -183,6 +183,209 @@ class _PublicFeedPageState extends State<PublicFeedPage> {
     }
   }
 
+  void _showCommentSheet(String postId, {String? replyToCommentId, VoidCallback? onCommentAdded}) {
+    final commentController = TextEditingController();
+    String? replyingToId;
+    String? replyingToUsername;
+    final refreshNotifier = ValueNotifier<int>(0); // For triggering refresh
+    
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setModalState) => DraggableScrollableSheet(
+          initialChildSize: 0.7,
+          minChildSize: 0.5,
+          maxChildSize: 0.95,
+          builder: (context, scrollController) => Container(
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            ),
+            child: Column(
+              children: [
+                // Header
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(color: Colors.grey.shade300),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Comments',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ],
+                  ),
+                ),
+                // Comments List
+                Expanded(
+                  child: ValueListenableBuilder<int>(
+                    valueListenable: refreshNotifier,
+                    builder: (context, _, __) => FutureBuilder<List<Map<String, dynamic>>>(
+                      future: _svc.getComments(postId),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const Center(child: CircularProgressIndicator());
+                        }
+                        
+                        if (snapshot.hasError) {
+                          return Center(child: Text('Error: ${snapshot.error}'));
+                        }
+                        
+                        final comments = snapshot.data ?? [];
+                        
+                        if (comments.isEmpty) {
+                          return const Center(
+                            child: Text('No comments yet. Be the first to comment!'),
+                          );
+                        }
+                        
+                        return ListView.builder(
+                          controller: scrollController,
+                          itemCount: comments.length,
+                          itemBuilder: (context, index) {
+                            return _CommentItem(
+                              comment: comments[index],
+                              postId: postId,
+                              currentUserId: _currentUserId,
+                              onDelete: () {
+                                refreshNotifier.value++;
+                              },
+                              onReply: (commentId, username) {
+                                setModalState(() {
+                                  replyingToId = commentId;
+                                  replyingToUsername = username;
+                                });
+                                commentController.clear();
+                              },
+                              formatTimestamp: _formatTimestamp,
+                              svc: _svc,
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ),
+                // Replying indicator
+                if (replyingToId != null)
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    color: Colors.grey.shade100,
+                    child: Row(
+                      children: [
+                        Icon(Icons.reply, size: 16, color: Colors.grey.shade600),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Replying to $replyingToUsername',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey.shade600,
+                          ),
+                        ),
+                        const Spacer(),
+                        IconButton(
+                          icon: Icon(Icons.close, size: 18, color: Colors.grey.shade600),
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                          onPressed: () {
+                            setModalState(() {
+                              replyingToId = null;
+                              replyingToUsername = null;
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                // Comment Input
+                Container(
+                  padding: EdgeInsets.only(
+                    bottom: MediaQuery.of(context).viewInsets.bottom,
+                    left: 16,
+                    right: 16,
+                    top: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border(
+                      top: BorderSide(color: Colors.grey.shade300),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: commentController,
+                          decoration: InputDecoration(
+                            hintText: replyingToId != null 
+                                ? 'Write a reply...' 
+                                : 'Add a comment...',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(24),
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
+                          ),
+                          maxLines: null,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      IconButton(
+                        icon: const Icon(Icons.send, color: Color(0xFF2D5F8D)),
+                        onPressed: () async {
+                          if (commentController.text.trim().isEmpty) return;
+                          
+                          try {
+                            await _svc.addComment(
+                              postId: postId,
+                              text: commentController.text.trim(),
+                              parentCommentId: replyingToId,
+                            );
+                            commentController.clear();
+                            setModalState(() {
+                              replyingToId = null;
+                              replyingToUsername = null;
+                            });
+                            // Trigger refresh
+                            refreshNotifier.value++;
+                            // Notify feed to update comment count
+                            onCommentAdded?.call();
+                          } catch (e) {
+                            if (mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Failed to add comment: $e')),
+                              );
+                            }
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   Future<void> _navigateToAddPost() async {
     final result = await Navigator.push(
       context,
@@ -195,6 +398,7 @@ class _PublicFeedPageState extends State<PublicFeedPage> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context); // Required for AutomaticKeepAliveClientMixin
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
       body: Column(
@@ -202,6 +406,21 @@ class _PublicFeedPageState extends State<PublicFeedPage> {
           Container(
             height: 1,
             color: Colors.grey.shade300,
+          ),
+          // Feed Type Tabs
+          Container(
+            color: Colors.white,
+            child: TabBar(
+              controller: _tabController,
+              labelColor: const Color(0xFF2D5F8D),
+              unselectedLabelColor: Colors.grey,
+              indicatorColor: const Color(0xFF2D5F8D),
+              tabs: const [
+                Tab(text: 'All'),
+                Tab(text: 'Following'),
+                Tab(text: 'My Posts'),
+              ],
+            ),
           ),
           // Posts List
           Expanded(
@@ -221,18 +440,23 @@ class _PublicFeedPageState extends State<PublicFeedPage> {
 
                 final p = item;
                 final authorId = p['author_id'] as String;
-                final profile = _profiles[authorId];
-                final username = (profile?['username'] as String?) ?? 'User';
-                final avatarUrl = profile?['avatar_url'] as String?;
+                final author = p['author'] as Map<String, dynamic>?;
+                final username = (author?['username'] as String?) ?? 'User';
+                final avatarUrl = author?['avatar_url'] as String?;
                 final body = (p['body'] as String?) ?? '';
                 final postId = p['id'] as String;
-                final medias = _mediaMap[postId] ?? const [];
+                final medias = (p['images'] as List<dynamic>?)?.cast<Map<String, dynamic>>() ?? const [];
                 final createdAt =
                     DateTime.tryParse(p['created_at'] as String? ?? '') ??
                         DateTime.now();
 
                 final isOwnPost =
                     _currentUserId != null && _currentUserId == authorId;
+
+                // Get like and comment data
+                final likeCount = p['like_count'] as int? ?? 0;
+                final commentCount = p['comment_count'] as int? ?? 0;
+                final isLiked = p['is_liked'] as bool? ?? false;
 
                 print(
                     'DEBUG: Rendering post $postId with ${medias.length} media items');
@@ -244,10 +468,21 @@ class _PublicFeedPageState extends State<PublicFeedPage> {
                 return ContentCard(
                   margin: const EdgeInsets.fromLTRB(12, 6, 12, 6),
                   backgroundColor: const Color(0xFFFCFCFC),
-                  headerAvatar:
-                      _Avatar(avatarUrl: avatarUrl, username: username),
+                  headerAvatar: _Avatar(avatarUrl: avatarUrl, username: username),
                   headerTitle: username,
                   headerSubtitle: _formatTimestamp(createdAt),
+                  onHeaderTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => UserProfilePage(
+                          userId: authorId,
+                          username: username,
+                          avatarUrl: avatarUrl,
+                        ),
+                      ),
+                    );
+                  },
                   headerTrailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -255,14 +490,108 @@ class _PublicFeedPageState extends State<PublicFeedPage> {
                       if (!isOwnPost) ...[
                         InkWell(
                           borderRadius: BorderRadius.circular(20),
-                          onTap: () {
+                          onTap: () async {
+                            final savedContext = context;
+                            final wasFollowing = _following.contains(authorId);
+                            
+                            // Show confirmation dialog for unfollow
+                            if (wasFollowing) {
+                              final confirmed = await showDialog<bool>(
+                                context: context,
+                                builder: (BuildContext dialogContext) {
+                                  return AlertDialog(
+                                    backgroundColor: Colors.white,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                    ),
+                                    title: Text(
+                                      'Unfollow $username?',
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18,
+                                      ),
+                                    ),
+                                    content: const Text(
+                                      'Are you sure you want to stop following this user?',
+                                      style: TextStyle(
+                                        color: Colors.black87,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () => Navigator.of(dialogContext).pop(false),
+                                        style: TextButton.styleFrom(
+                                          foregroundColor: Colors.grey[600],
+                                        ),
+                                        child: const Text(
+                                          'Cancel',
+                                          style: TextStyle(fontWeight: FontWeight.w600),
+                                        ),
+                                      ),
+                                      ElevatedButton(
+                                        onPressed: () => Navigator.of(dialogContext).pop(true),
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.red,
+                                          foregroundColor: Colors.white,
+                                          elevation: 0,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(20),
+                                          ),
+                                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                                        ),
+                                        child: const Text(
+                                          'Unfollow',
+                                          style: TextStyle(fontWeight: FontWeight.w600),
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                              
+                              // If user cancelled, don't proceed
+                              if (confirmed != true) return;
+                            }
+                            
+                            // Optimistic update
                             setState(() {
-                              if (_following.contains(authorId)) {
+                              if (wasFollowing) {
                                 _following.remove(authorId);
                               } else {
                                 _following.add(authorId);
                               }
                             });
+
+                            try {
+                              // Actual network call
+                              if (wasFollowing) {
+                                await _svc.unfollowUser(authorId);
+                              } else {
+                                await _svc.followUser(authorId);
+                              }
+                            } catch (e) {
+                              // Revert on error
+                              if (mounted) {
+                                setState(() {
+                                  if (wasFollowing) {
+                                    _following.add(authorId);
+                                  } else {
+                                    _following.remove(authorId);
+                                  }
+                                });
+                              }
+                              
+                              if (mounted) {
+                                try {
+                                  ScaffoldMessenger.of(savedContext).showSnackBar(
+                                    SnackBar(content: Text('Error: $e')),
+                                  );
+                                } catch (_) {
+                                  // Widget is disposed, ignore
+                                }
+                              }
+                            }
                           },
                           child: Container(
                             padding: const EdgeInsets.symmetric(
@@ -289,11 +618,94 @@ class _PublicFeedPageState extends State<PublicFeedPage> {
                         ),
                         const SizedBox(width: 8),
                       ],
-                      // Menu
-                      Icon(
-                        Icons.more_vert,
-                        color: Colors.grey.shade700,
-                      ),
+                      // Delete button for My Posts, menu icon for others
+                      if (_currentFeedType == FeedType.myPosts && isOwnPost)
+                        IconButton(
+                          icon: Icon(
+                            Icons.delete_outline,
+                            color: Colors.red.shade400,
+                          ),
+                          onPressed: () async {
+                            // Show confirmation dialog
+                            final confirmed = await showDialog<bool>(
+                              context: context,
+                              builder: (dialogContext) => AlertDialog(
+                                backgroundColor: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                title: const Text(
+                                  'Delete Post?',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                  ),
+                                ),
+                                content: const Text(
+                                  'Are you sure you want to delete this post? This action cannot be undone.',
+                                  style: TextStyle(
+                                    color: Colors.black87,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(dialogContext, false),
+                                    style: TextButton.styleFrom(
+                                      foregroundColor: Colors.grey[600],
+                                    ),
+                                    child: const Text(
+                                      'Cancel',
+                                      style: TextStyle(fontWeight: FontWeight.w600),
+                                    ),
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () => Navigator.pop(dialogContext, true),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.red,
+                                      foregroundColor: Colors.white,
+                                      elevation: 0,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                                    ),
+                                    child: const Text(
+                                      'Delete',
+                                      style: TextStyle(fontWeight: FontWeight.w600),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+
+                            if (confirmed == true) {
+                              try {
+                                await _svc.deletePost(postId);
+                                if (mounted) {
+                                  setState(() {
+                                    _posts.removeWhere((p) => p['id'] == postId);
+                                    _filteredPosts.removeWhere((p) => p['id'] == postId);
+                                  });
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text('Post deleted successfully')),
+                                  );
+                                }
+                              } catch (e) {
+                                if (mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text('Failed to delete post: $e')),
+                                  );
+                                }
+                              }
+                            }
+                          },
+                        )
+                      else
+                        Icon(
+                          Icons.more_vert,
+                          color: Colors.grey.shade700,
+                        ),
                     ],
                   ),
                   customContent: Column(
@@ -317,19 +729,44 @@ class _PublicFeedPageState extends State<PublicFeedPage> {
                         children: [
                           // Like button
                           InkWell(
-                            onTap: () {
-                              // Implement like functionality
+                            onTap: () async {
+                              try {
+                                // Optimistic update
+                                setState(() {
+                                  p['is_liked'] = !isLiked;
+                                  p['like_count'] = isLiked ? likeCount - 1 : likeCount + 1;
+                                });
+
+                                // Send to server
+                                if (isLiked) {
+                                  await _svc.unlikePost(postId);
+                                } else {
+                                  await _svc.likePost(postId);
+                                }
+                              } catch (e) {
+                                // Revert on error
+                                setState(() {
+                                  p['is_liked'] = isLiked;
+                                  p['like_count'] = likeCount;
+                                });
+                                print('Error toggling like: $e');
+                                if (mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text('Failed to update like: $e')),
+                                  );
+                                }
+                              }
                             },
                             child: Row(
                               children: [
                                 Icon(
-                                  Icons.favorite_border,
-                                  color: Colors.grey.shade700,
+                                  isLiked ? Icons.favorite : Icons.favorite_border,
+                                  color: isLiked ? Colors.red : Colors.grey.shade700,
                                   size: 22,
                                 ),
                                 const SizedBox(width: 6),
                                 Text(
-                                  '44',
+                                  '$likeCount',
                                   style: TextStyle(
                                     color: Colors.grey.shade700,
                                     fontSize: 14,
@@ -343,7 +780,15 @@ class _PublicFeedPageState extends State<PublicFeedPage> {
                           // Comment button
                           InkWell(
                             onTap: () {
-                              // Implement comment functionality
+                              _showCommentSheet(
+                                postId,
+                                onCommentAdded: () {
+                                  // Update comment count optimistically
+                                  setState(() {
+                                    p['comment_count'] = (p['comment_count'] as int? ?? 0) + 1;
+                                  });
+                                },
+                              );
                             },
                             child: Row(
                               children: [
@@ -354,7 +799,7 @@ class _PublicFeedPageState extends State<PublicFeedPage> {
                                 ),
                                 const SizedBox(width: 6),
                                 Text(
-                                  '19',
+                                  '$commentCount',
                                   style: TextStyle(
                                     color: Colors.grey.shade700,
                                     fontSize: 14,
@@ -444,9 +889,9 @@ class _MediaGridState extends State<_MediaGrid> {
         .where((m) => ((m['mime_type'] as String?) ?? '').startsWith('image/'))
         .toList();
 
-    print('DEBUG: Filtered to ${imgs.length} image items');
+
     if (imgs.isEmpty) {
-      print('DEBUG: No images found, returning empty widget');
+
       return const SizedBox.shrink();
     }
 
@@ -472,10 +917,10 @@ class _MediaGridState extends State<_MediaGrid> {
                     final mediaItem = imgs[i];
                     final url = mediaItem['url'] as String?;
 
-                    print('DEBUG: Trying to load image URL: $url');
+
 
                     if (url == null || url.isEmpty) {
-                      print('DEBUG: URL is null or empty');
+
                       return Container(
                         color: Colors.grey.shade200,
                         alignment: Alignment.center,
@@ -502,7 +947,7 @@ class _MediaGridState extends State<_MediaGrid> {
                           );
                         },
                         errorBuilder: (context, error, stackTrace) {
-                          print('DEBUG: Image loading error: $error');
+
                           return Container(
                             color: Colors.grey.shade200,
                             alignment: Alignment.center,
@@ -677,6 +1122,113 @@ class _FullscreenImageViewerState extends State<_FullscreenImageViewer> {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _CommentItem extends StatelessWidget {
+  const _CommentItem({
+    required this.comment,
+    required this.postId,
+    required this.currentUserId,
+    required this.onDelete,
+    required this.onReply,
+    required this.formatTimestamp,
+    required this.svc,
+    this.isReply = false,
+  });
+
+  final Map<String, dynamic> comment;
+  final String postId;
+  final String? currentUserId;
+  final VoidCallback onDelete;
+  final Function(String commentId, String username) onReply;
+  final String Function(DateTime) formatTimestamp;
+  final PostService svc;
+  final bool isReply;
+
+  @override
+  Widget build(BuildContext context) {
+    final author = comment['author'] as Map<String, dynamic>?;
+    final username = author?['username'] ?? 'User';
+    final avatarUrl = author?['avatar_url'];
+    final text = comment['text'] as String;
+    final commentId = comment['id'] as String;
+    final createdAt = DateTime.tryParse(
+      comment['created_at'] as String? ?? '',
+    ) ?? DateTime.now();
+    final replies = (comment['replies'] as List?)?.cast<Map<String, dynamic>>() ?? [];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          margin: EdgeInsets.only(left: isReply ? 48 : 0),
+          child: ListTile(
+            leading: CircleAvatar(
+              radius: isReply ? 16 : 20,
+              backgroundImage: avatarUrl != null ? NetworkImage(avatarUrl) : null,
+              child: avatarUrl == null ? Text(username[0].toUpperCase()) : null,
+            ),
+            title: Text(
+              username,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(text),
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    Text(
+                      formatTimestamp(createdAt),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    if (!isReply)
+                      InkWell(
+                        onTap: () => onReply(commentId, username),
+                        child: Text(
+                          'Reply',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey.shade700,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ],
+            ),
+            trailing: comment['user_id'] == currentUserId
+                ? IconButton(
+                    icon: const Icon(Icons.delete, size: 20),
+                    onPressed: () async {
+                      await svc.deleteComment(commentId);
+                      onDelete();
+                    },
+                  )
+                : null,
+          ),
+        ),
+        // Render nested replies
+        if (replies.isNotEmpty)
+          ...replies.map((reply) => _CommentItem(
+                comment: reply,
+                postId: postId,
+                currentUserId: currentUserId,
+                onDelete: onDelete,
+                onReply: onReply,
+                formatTimestamp: formatTimestamp,
+                svc: svc,
+                isReply: true,
+              )),
+      ],
     );
   }
 }

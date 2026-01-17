@@ -40,7 +40,7 @@ class _GlucoseShareTemplateState extends State<GlucoseShareTemplate> {
   }
 
   Future<void> _initializeLocale() async {
-    await initializeDateFormatting('id_ID', null);
+    await initializeDateFormatting('en_US', null);
     if (mounted) {
       setState(() {
         isLocaleInitialized = true;
@@ -49,39 +49,17 @@ class _GlucoseShareTemplateState extends State<GlucoseShareTemplate> {
   }
 
   Color getGlucoseColor(double level, GlucoseCondition condition) {
-    if (level < 70) {
-      return const Color(0xFFFFF59D);
-    } else if (condition == GlucoseCondition.beforeMeal) {
-      if (level >= 70 && level <= 99) {
-        return const Color(0xFF66BB6A);
-      } else {
-        return const Color(0xFFEF5350);
-      }
-    } else {
-      if (level < 140) {
-        return const Color(0xFF66BB6A);
-      } else {
-        return const Color(0xFFEF5350);
-      }
-    }
+    if (level < 70) return Colors.blue;
+    if (level >= 70 && level <= 99) return Colors.green;
+    if (level >= 100 && level <= 125) return Colors.orange;
+    return Colors.red;
   }
 
   String getGlucoseLabel(double level, GlucoseCondition condition) {
-    if (level < 70) {
-      return "Low";
-    } else if (condition == GlucoseCondition.beforeMeal) {
-      if (level >= 70 && level <= 99) {
-        return "Good";
-      } else {
-        return "High";
-      }
-    } else {
-      if (level < 140) {
-        return "Good";
-      } else {
-        return "High";
-      }
-    }
+    if (level < 70) return "Low";
+    if (level >= 70 && level <= 99) return "Normal";
+    if (level >= 100 && level <= 125) return "High";
+    return "Very High";
   }
 
   Future<File?> _captureAndSaveImage() async {
@@ -120,9 +98,9 @@ class _GlucoseShareTemplateState extends State<GlucoseShareTemplate> {
       final imageFile = await _captureAndSaveImage();
 
       if (imageFile != null && mounted) {
-        Navigator.pop(context); // Close glucose share template
-
-        Navigator.push(
+        // Use pushReplacement so the result of AddPostPage (true/false) is passed back
+        // to the caller of GlucoseShareTemplate (GlucoseMeasuring)
+        await Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (context) => AddPostPage(sharedImage: imageFile),
@@ -366,7 +344,7 @@ class _GlucoseShareTemplateState extends State<GlucoseShareTemplate> {
 
     final color = getGlucoseColor(widget.glucoseLevel, widget.condition);
     final label = getGlucoseLabel(widget.glucoseLevel, widget.condition);
-    final dayFormat = DateFormat('EEEE, d MMMM yyyy', 'id_ID');
+    final dayFormat = DateFormat('EEEE, d MMMM yyyy', 'en_US');
     final timeFormat = DateFormat('HH:mm');
 
     return Scaffold(
@@ -675,7 +653,7 @@ class _GlucoseShareTemplateState extends State<GlucoseShareTemplate> {
                       Padding(
                         padding: const EdgeInsets.all(24),
                         child: Text(
-                          '💙 Jaga kesehatan Anda dengan GlucoTrack',
+                          AppLocalizations.of(context)!.footerStayHealthy,
                           style: TextStyle(
                             fontSize: 12,
                             color: Colors.white.withOpacity(0.8),

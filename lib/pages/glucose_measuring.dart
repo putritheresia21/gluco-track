@@ -7,6 +7,7 @@ import 'package:glucotrack_app/pages/GlucosePrediction.dart';
 import 'package:glucotrack_app/pages/glucose_share_template.dart';
 import 'package:glucotrack_app/services/gamification_service/gamification_service.dart';
 import 'package:glucotrack_app/l10n/app_localizations.dart';
+import 'package:glucotrack_app/pages/NavbarItem/Navbar.dart';
 
 class GlucoseMeasuring extends StatefulWidget {
   const GlucoseMeasuring({super.key});
@@ -170,6 +171,21 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
 
       if (shareResult == 'back' || shareResult == null) {
         clearForm();
+      } else if (shareResult == 'posted' || shareResult == true) {
+        clearForm();
+        
+        // Langsung navigasi ke Feeds (Social Tab) dengan reset route
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (context) => CustomBottomNav(
+              userId: SupabaseService.client.auth.currentUser?.id ?? 'default', 
+              username: SupabaseService.client.auth.currentUser?.userMetadata?['username'] ?? 'User',
+              initialSelectedIndex: 3, // Tab Social/Feeds
+            ),
+          ),
+          (route) => false, // Hapus semua route sebelumnya
+        );
       }
     } else if (result == 'no') {
       clearForm();
@@ -387,7 +403,8 @@ class GlucoseMeasuringState extends State<GlucoseMeasuring> {
                                   final result = await Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => Glucoseprediction(),
+                                      // Revert to no-args constructor
+                                      builder: (context) => const GlucosePrediction(),
                                     ),
                                   );
 

@@ -218,4 +218,71 @@ class GamificationRepository {
     final gamification = await getUserGamification();
     return gamification['total_points'] as int;
   }
+
+  // ============ NEW FEATURES ============
+
+  /// Get leaderboard (Top 10 users by points)
+  Future<List<Map<String, dynamic>>> getLeaderboard() async {
+    try {
+      // 1. Fetch scores
+      final scoresResponse = await _client
+          .from('user_gamification')
+          .select('user_id, total_points, current_badge')
+          .order('total_points', ascending: false)
+          .limit(10);
+      
+      final scores = List<Map<String, dynamic>>.from(scoresResponse);
+      
+      if (scores.isEmpty) return [];
+
+      // 2. Fetch profiles for these users
+      final userIds = scores.map((e) => e['user_id']).toList();
+      final profilesResponse = await _client
+          .from('profiles')
+          .select('id, username, avatar_url')
+          .filter('id', 'in', userIds);
+          
+      final profiles = List<Map<String, dynamic>>.from(profilesResponse);
+      
+      // 3. Merge data
+      final Map<String, Map<String, dynamic>> profileMap = {
+        for (var p in profiles) p['id']: p
+      };
+
+      for (var score in scores) {
+        final userId = score['user_id'];
+        if (profileMap.containsKey(userId)) {
+          score['profiles'] = profileMap[userId];
+        } else {
+          score['profiles'] = {'username': 'Unknown User', 'avatar_url': null};
+        }
+      }
+      
+      return scores;
+    } catch (e) {
+      print('Error fetching leaderboard: $e');
+      return [];
+    }
+  }
+
+  /// Get mission history (Completed subtasks)
+  Future<List<Map<String, dynamic>>> getMissionHistory({int limit = 5}) async {
+    if (_userId == null) throw Exception('User not authenticated');
+
+    try {
+      // Just fetch subtasks, we will resolve titles in Service using cached tasks
+      final response = await _client
+          .from('user_subtasks')
+          .select('*') 
+          .eq('user_id', _userId!)
+          .eq('claimed', true)
+          .order('claimed_at', ascending: false)
+          .limit(limit);
+
+      return List<Map<String, dynamic>>.from(response);
+    } catch (e) {
+      print('Error fetching mission history: $e');
+      return [];
+    }
+  }
 }

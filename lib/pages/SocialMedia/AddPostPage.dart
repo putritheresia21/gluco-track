@@ -6,6 +6,8 @@ import 'package:glucotrack_app/l10n/app_localizations.dart';
 import 'package:glucotrack_app/services/gamification_service/gamification_service.dart';
 import 'package:glucotrack_app/utils/AppLayout.dart';
 import 'package:glucotrack_app/utils/FontUtils.dart';
+import 'package:glucotrack_app/pages/NavbarItem/Navbar.dart';
+import 'package:glucotrack_app/services/SupabaseService.dart';
 
 class AddPostPage extends StatefulWidget {
   final File? sharedImage;
@@ -183,10 +185,100 @@ class _AddPostPageState extends State<AddPostPage> {
       await _gamification.incrementTaskProgress(TaskType.socialPost);
 
       if (mounted) {
-        Navigator.pop(context, true);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.posted)),
-        );
+        // Jika posting dari shared image (glucose template), navigasi ke Feeds
+        if (widget.sharedImage != null) {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+              builder: (context) => CustomBottomNav(
+                userId: SupabaseService.client.auth.currentUser?.id ?? 'default',
+                username: SupabaseService.client.auth.currentUser?.userMetadata?['username'] ?? 'User',
+                initialSelectedIndex: 3, // Tab Social/Feeds
+              ),
+            ),
+            (route) => false,
+          );
+          
+          // Tampilkan popup sukses yang cantik
+          Future.delayed(const Duration(milliseconds: 300), () {
+            if (mounted) {
+              showDialog(
+                context: context,
+                barrierDismissible: true, // Bisa tap di luar untuk close
+                barrierColor: Colors.black26,
+                builder: (dialogContext) {
+                  // Auto dismiss setelah 1.5 detik
+                  Future.delayed(const Duration(milliseconds: 1500), () {
+                    if (Navigator.canPop(dialogContext)) {
+                      Navigator.pop(dialogContext);
+                    }
+                  });
+                  
+                  return Center(
+                    child: Material(
+                      color: Colors.transparent,
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 40),
+                        padding: const EdgeInsets.all(24),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.2),
+                              blurRadius: 20,
+                              offset: const Offset(0, 10),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: Colors.green.shade50,
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                Icons.check_circle,
+                                color: Colors.green.shade600,
+                                size: 48,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              AppLocalizations.of(dialogContext)!.posted,
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Your post is now live!',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey.shade600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              );
+            }
+          });
+        } else {
+          // Posting biasa, pop seperti biasa
+          Navigator.pop(context, true);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(AppLocalizations.of(context)!.posted)),
+          );
+        }
       }
     } catch (e) {
       if (mounted) {
