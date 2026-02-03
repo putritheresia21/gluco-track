@@ -498,38 +498,3 @@ class ReportDetailPage extends StatelessWidget {
   }
 }
 
-Future<void> startMeasurement() async {
-    // 1. Kirim trigger ke database
-    final response = await _supabaseService.sendMeasurementTrigger(userId);
-    
-    // 2. Pantau status pengukuran secara realtime
-    await for (final statusUpdate in _supabaseService.streamCommandStatus(userId)) {
-        if (statusUpdate['status'] == 'completed') {
-            // 3. Ambil data hasil pengukuran
-            final data = await _supabaseService.getLatestMeasurement(userId);
-            setState(() {
-                glucoseData = GlucoseData.fromJson(data);
-                status = 'success';
-            });
-            break; 
-        }
-    }
-}
-
-Future<void> startMeasurement() async {
-    // 1. Kirim trigger ke database
-    final response = await _supabaseService.sendMeasurementTrigger(userId);
-    
-    // 2. Pantau status pengukuran secara realtime
-    await for (final statusUpdate in _supabaseService.streamCommandStatus(userId)) {
-        if (statusUpdate['status'] == 'completed') {
-            // 3. Ambil data hasil pengukuran
-            final data = await _supabaseService.getLatestMeasurement(userId);
-            setState(() {
-                glucoseData = GlucoseData.fromJson(data);
-                status = 'success';
-            });
-            break; 
-        }
-    }
-}
